@@ -54,7 +54,12 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 NumberOfPages = totalPages,
-                ObjectList = disciplines.ToList()
+                ObjectList = disciplines.ToList(),
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay(){ FieldName = "Name" },
+                    new FieldDisplay(){ FieldName = "Description" },
+                }
             };
 
             return PartialView("List", model);

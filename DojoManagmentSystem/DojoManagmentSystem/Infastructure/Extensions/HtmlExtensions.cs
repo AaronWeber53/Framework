@@ -10,6 +10,11 @@ namespace DojoManagmentSystem.Infastructure.Extensions
 {
     public static class HtmlExtensions
     {
+        public static IHtmlString BuildList(this HtmlHelper htmlHelper, ListViewModel list)
+        {
+            return list.BuildList();
+        }
+
         public static IHtmlString GeneratePagingButtons(this HtmlHelper htmlHelper, ListViewModel viewModel)
         {
             return new MvcHtmlString(BuildPagingButtons(viewModel.CurrentPage, viewModel.NumberOfPages));

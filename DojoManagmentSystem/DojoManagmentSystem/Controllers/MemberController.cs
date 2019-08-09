@@ -60,9 +60,14 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 NumberOfPages = totalPages,
-                ObjectList = members.ToList()
+                ObjectList = members.ToList(),
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() { FieldName = "FirstName"},
+                    new FieldDisplay() { FieldName = "LastName"},
+                }
             };
-
+            IHtmlString list =  model.BuildList();
             return PartialView("Members", model);
         }
 
