@@ -1,0 +1,49 @@
+﻿@model DojoManagmentSystem.Models.Waiver
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Waiver</h4>
+    <hr />
+    <dl class="dl-horizontal">
+                <dt>
+            @Html.DisplayNameFor(model => model.Note)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Note)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DateSigned)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DateSigned)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IsSigned)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsSigned)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm("Delete", "Waiver", FormMethod.Post, new { id = "ModalForm" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default btn-danger" />
+            <button type="button" class="btn btn-primary float-right" data-dismiss="modal"><span aria-hidden="true">Cancel</span></button>
+        </div>
+    }
+</div>

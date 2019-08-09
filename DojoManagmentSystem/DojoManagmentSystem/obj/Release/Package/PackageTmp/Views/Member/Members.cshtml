@@ -1,0 +1,102 @@
+﻿@model DojoManagmentSystem.ViewModels.ListViewModel<DojoManagmentSystem.Models.Member>
+@using DojoManagmentSystem.Infastructure.Extensions
+
+<div class="table-responsive" id="pagingList" data-page="@Model.CurrentPage" data-sort="@Model.CurrentSort" data-search="@Model.CurrentSearch" data-baseurl="/Member/List">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">
+                    Open
+                </th>
+                <th scope="col">
+                    Has User
+                </th>
+                <th scope="col">
+                    <a data-sort="@ViewBag.FirstNameSortParm" href="" class="sortbutton">First Name</a>
+                </th>
+                <th scope="col">
+                    <a data-sort="@ViewBag.LastNameSortParm" class="sortbutton" href="">Last Name</a>
+                </th>
+                <th scope="col">
+                    Is Instructor
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ObjectList.Count() == 0)
+            {
+                <tr>
+                    <td colspan="4" style="color:red;">
+                        No Matches
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model.ObjectList.Where(x => !x.IsArchived))
+                {
+                    ViewBag.ClassName = null;
+
+                    if (item.DisciplineEnrolledMembers.Any(c => c.Expired))
+                    {
+                        ViewBag.ClassName = "redrow";
+                    }
+                    else if (item.DisciplineEnrolledMembers.Any(c => c.ExpiringSoon))
+                    {
+                        ViewBag.ClassName = "yellowrow";
+                    }
+
+                    <tr id="linkRow" data-link="/Member/Details/@item.Id" class=@ViewBag.ClassName>
+                        <td scope="row">
+                            <a class="btn btn-primary" href="/Member/Details/@item.Id">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                        </td>
+                        <td scope="row">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck1" name="">
+                                    @Html.CheckBoxFor(modelItem => item.HasUser, new { @class = "custom-control-input", id = "customCheck1", @disabled = "disabled" })
+                                    <label class="custom-control-label" for="customCheck"></label>
+                                </div>
+                            </div>
+                        </td>
+                        <td scope="row">
+                            @Html.DisplayFor(modelItem => item.FirstName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.LastName)
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="customCheck1" name="">
+                                    @Html.CheckBoxFor(modelItem => item.IsInstructor, new { @class = "custom-control-input", id = "customCheck1", @disabled = "disabled" })
+                                    <label class="custom-control-label" for="customCheck"></label>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger modal-link" data-targeturl="/Member/Delete/@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <div class="pagedList">
+        @Html.GeneratePagingButtons(1, 10)
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/site.js")
+}
+
+
+
+

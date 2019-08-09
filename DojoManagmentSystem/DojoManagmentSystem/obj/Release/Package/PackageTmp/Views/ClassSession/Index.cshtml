@@ -1,0 +1,27 @@
+﻿@model IEnumerable<DojoManagmentSystem.Models.Discipline>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+            @foreach (var discipline in Model.Where(x => !x.IsArchived))
+            {
+        <thead class="thead-dark tablerows">
+            <tr data-toggle="collapse" data-target="#@string.Format("data{0}", discipline.Id)" class="accordion-toggle">
+                <th scope="row">
+                    <h5>@discipline.Name</h5>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var classSession in discipline.ClassSessions.Where(x => !x.IsArchived))
+            {
+            <tr id="linkRow" data-link="/ClassSession/Details/@classSession.Id">
+                <td colspan="6" class="accordian-body collapse" id="@string.Format("data{0}", discipline.Id)"> @classSession.DayOfWeek: @classSession.StartTime.ToString("h:mm tt") </td>
+            </tr>
+            }
+        </tbody>
+                }
+        </table>
+    <div class="col-md-offset-2 col-md-10">
+        <button type="button" class="btn btn-primary float-right" data-dismiss="modal"><span aria-hidden="true">Cancel</span></button>
+    </div>
+</div>

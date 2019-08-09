@@ -1,0 +1,93 @@
+﻿@model DojoManagmentSystem.ViewModels.ListViewModel<DojoManagmentSystem.Models.Payment>
+@using DojoManagmentSystem.Infastructure.Extensions
+
+<div class="table-responsive" id="pagingList" data-page="@Model.CurrentPage" data-sort="@Model.CurrentSort" data-search="@Model.CurrentSearch" data-baseurl="@ViewBag.BaseUrl">
+    <table class="table table-hover">
+
+        <thead>
+            <tr>
+                <th scope="col" style="width: 2%;">
+                    Open
+                </th>
+                <th style="padding-left: 0; padding-right: 0;">
+                    Print
+                </th>
+                <th scope="col">
+                    <a data-sort="@ViewBag.FirstNameSortParm" href="" class="sortbutton">First Name</a>
+                </th>
+                <th scope="col">
+                    <a data-sort="@ViewBag.LastNameSortParm" class="sortbutton" href="">Last Name</a>
+                </th>
+                <th scope="col">
+                    Description
+                </th>
+                <th scope="col">
+                    Amount
+                </th>
+                <th scope="col">
+                    <a data-sort="@ViewBag.DateSortParm" class="sortbutton" href="">Date</a>
+                </th>
+                <th scope="col">
+                    <a data-sort="@ViewBag.PaymentTypeSortParm" class="sortbutton" href="">Payment Type</a>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ObjectList.Count() == 0)
+            {
+                <tr>
+                    <td colspan="6" style="color:red;">
+                        No Matches
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model.ObjectList.Where(x => !x.IsArchived))
+                {
+                <tr class="modal-row-link" data-targeturl="/Payments/Edit/@item.Id">
+                    <td scope="row">
+                        <button class="modal-link btn btn-primary" data-targeturl="/Payments/Edit/@item.Id">
+                            <i class="fas fa-external-link-alt"></i>
+                        </button>
+                    </td>
+                    <td style="padding-left: 0; padding-right: 0;">
+                        <a target="_blank" class="btn btn-primary" href="@Url.Action("PrintPaymentSlip", "Payments", new { id = item.Id })">
+                            <i class="fas fa-print"></i>
+                        </a>
+                    </td>
+
+                    <td scope="row">
+                        @Html.DisplayFor(modelItem => item.Member.FirstName)
+                    </td>
+                    <td scope="row">
+                        @Html.DisplayFor(modelItem => item.Member.LastName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Amount)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Date)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PaymentType)
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger modal-link" data-targeturl="/Payments/Delete/@item.Id">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
+    <div class="pagedList" data-otf-target="#memberList">
+        @Html.GeneratePagingButtons(Model)
+    </div>
+</div>
+

@@ -1,0 +1,33 @@
+﻿@model DojoManagmentSystem.Models.AttendanceSheet
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div class="row col-sm-12">
+    <p class="col-lg-8 mt-2">
+        <a class="h4" href="~/ClassSession/Details/@ViewBag.ClassSession"><i class="fas fa-arrow-left"></i> Back to Class Session</a>
+    </p>
+</div>
+
+<h2>Details</h2>
+
+<div>
+    <div class="row details">
+
+        @* Left column for cards *@
+        <div class="col-sm-12 details-column">
+
+            <div class="card bg-light col-sm-12">
+                @* Implement the details/edit for the discipline *@
+                <div class="card-body">
+                    @Html.Action("Edit", new { id = Model.Id })
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    @section Scripts {
+        @Scripts.Render("~/Scripts/Modal.js")
+    }

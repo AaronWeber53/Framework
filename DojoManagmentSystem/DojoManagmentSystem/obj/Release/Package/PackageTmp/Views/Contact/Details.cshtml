@@ -1,0 +1,184 @@
+﻿@model DojoManagmentSystem.ViewModels.ContactsViewModel
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div class="row col-sm-12">
+    <p class="col-lg-8 mt-2">
+        <a href="@Url.Action("Details", "Member", new { @id = Model.Contact.MemberId })" class="h4">
+            <i class="fas fa-arrow-left"></i> Back to Member
+        </a>
+    </p>
+</div>
+
+<div>
+    <div class="row details">
+
+        @* Left column for cards *@
+        <div class="col-xl-7 details-column">
+
+            <div class="card bg-light col-sm-12">
+                @* Implement the details/edit for the discipline *@
+                <div class="card-body">
+                    @Html.Action("Edit", new { id = Model.Contact.Id })
+                </div>
+            </div>
+
+            @* Card displaying class sessions  *@
+            
+        </div>
+
+        @* Right Section *@
+        <div class="col-xl-5 details-column">
+            
+            <div class="card bg-light col-sm-12">
+                <div class="card-header">
+                    <h4 class="float-left">Phone Numbers</h4>
+                    <div class="float-right">
+                        <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/MemberPhone/Create/@Model.Contact.Id">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th scope="col">
+                                        PhoneNumber
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.MemberPhones.Where(p => !p.IsArchived))
+                                {
+                                <tr class="modal-row-link" data-targeturl="/MemberPhone/Edit/@item.Id">
+                                    <td scope="row">
+                                        <button class="modal-link btn btn-primary" data-targeturl="/MemberPhone/Edit/@item.Id">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </button>
+                                    </td>
+                                    <td scope="row">
+                                        @Html.DisplayFor(modelItem => item.PhoneNumber)
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger modal-link" data-targeturl="/MemberPhone/Delete/@item.Id">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @* Card displaying enrolled members *@
+            <div class="card bg-light col-sm-12">
+                <div class="card-header">
+                    <h4 class="float-left">Emails</h4>
+                    <div class="float-right">
+                        <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/MemberEmail/Create/@Model.Contact.Id">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th scope="col">
+                                        Email
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.MemberEmails.Where(p => !p.IsArchived))
+                                {
+                                <tr class="modal-row-link" data-targeturl="/MemberEmail/Edit/@item.Id">
+                                    <td scope="row">
+                                        <button class="modal-link btn btn-primary" data-targeturl="/MemberEmail/Edit/@item.Id">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </button>
+                                    </td>
+                                    <td scope="row">
+                                        @Html.DisplayFor(modelItem => item.Email)
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger modal-link" data-targeturl="/MemberEmail/Delete/@item.Id">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+                @* Card displaying enrolled members *@
+                <div class="card bg-light col-sm-12">
+                    <div class="card-header">
+                        <h4 class="float-left">Addresses</h4>
+                        <div class="float-right">
+                            <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/MemberAddress/Create/@Model.Contact.Id">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th scope="col">
+                                            Address
+                                        </th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.MemberAddresses.Where(p => !p.IsArchived))
+                                    {
+                                    <tr class="modal-row-link" data-targeturl="/MemberAddress/Edit/@item.Id">
+                                        <td scope="row">
+                                            <button class="modal-link btn btn-primary" data-targeturl="/MemberAddress/Edit/@item.Id">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </button>
+                                        </td>
+                                        <td scope="row">
+                                            @Html.DisplayFor(modelItem => item.FullAddress)
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger modal-link" data-targeturl="/MemberAddress/Delete/@item.Id">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Modal.js")
+}

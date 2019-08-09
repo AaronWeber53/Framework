@@ -1,0 +1,36 @@
+﻿@model DojoManagmentSystem.Models.User
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>User</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Username)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Username)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Member.FullName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Member.FullName)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm("Delete", "Users", new { id = Model.Id }, FormMethod.Post, new { id = "ModalForm" }))
+    { 
+        @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <input type="submit" value="Remove User" class="btn btn-danger" />
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><span aria-hidden="true">Cancel</span></button>
+    </div>
+    }
+</div>

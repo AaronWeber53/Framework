@@ -1,0 +1,25 @@
+﻿@model IEnumerable<DojoManagmentSystem.Models.Member>
+
+@{
+    ViewBag.Title = "Index";
+}
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+
+<h3>Member List</h3>
+<br />
+<div class="form-inline my-2 my-lg-0 float-left">
+    @Html.TextBox("searchString", null, new { @class = "form-control mr-sm-2", placeholder = "Search by Name" })<button class="btn btn-primary my-2 my-sm-0 searchButton" type="submit" value="Search">Search</button>
+    <a href="/Member" class="btn btn-secondary my-2 ml-1">Clear</a>
+</div>
+
+<div class="float-right">
+    <button type="button" class="btn btn-primary modal-link" data-targeturl="/Member/Create">
+        <i class="fas fa-plus"></i> Create Member
+    </button>
+</div>
+
+@Html.Action("List")
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Modal.js")
+}

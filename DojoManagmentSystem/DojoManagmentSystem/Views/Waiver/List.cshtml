@@ -1,0 +1,84 @@
+﻿@model DojoManagmentSystem.ViewModels.ListViewModel<DojoManagmentSystem.Models.Waiver>
+@using DojoManagmentSystem.Infastructure.Extensions
+<div class="table-responsive" id="pagingList" data-page="@Model.CurrentPage" data-sort="@Model.CurrentSort" data-search="@Model.CurrentSearch" data-baseurl="/Waiver/List/@ViewBag.MemberId">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">
+                    Open
+                </th>
+                <th scope="col">
+                    Note
+                </th>
+                <th scope="col">
+                    Date Signed
+                </th>
+                <th scope="col">
+                    Is Signed
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.ObjectList.Count(x => !x.IsArchived) == 0)
+            {
+                <tr class="redrow">
+                    <td colspan="4">
+                        There are currently no waivers signed for this member
+                    </td>
+                </tr>
+            }
+            else
+            {
+                if (Model.ObjectList.Count(x => x.DateSigned > DateTime.Today.AddMonths(-12)) == 0)
+                {
+                    <tr class="redrow">
+                        <td colspan="5">
+                            All waivers are currently expired!
+                        </td>
+                    </tr>
+                }
+
+                foreach (var item in Model.ObjectList.Where(x => !x.IsArchived))
+                {
+                    if (!item.IsSigned)
+                    {
+                        ViewBag.ClassName = "redrow ";
+                    }
+                    else
+                    {
+                        ViewBag.ClassName = "";
+                    }
+                    <tr data-targeturl="/Waiver/Edit/@item.Id" class="modal-row-link @ViewBag.ClassName">
+                        <td scope="row">
+                            <button class="btn btn-primary modal-link" data-targeturl="/Waiver/Edit/@item.Id">
+                                <i class="fas fa-external-link-alt"></i>
+                            </button>
+                        </td>
+                        <td scope="row">
+                            @Html.DisplayFor(modelItem => item.Note)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateSigned)
+                        </td>
+                        <td>
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                    @Html.CheckBoxFor(modelItem => item.IsSigned, new { @class = "custom-control-input", id = "customCheck1", @disabled = "disabled" })
+                                    <label class="custom-control-label" for="customCheck"></label>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger modal-link" data-targeturl="/Waiver/Delete/@item.Id">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+
+        </tbody>
+    </table>
+    @Html.GeneratePagingButtons(Model)
+</div>

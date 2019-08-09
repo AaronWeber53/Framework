@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Dojo Managment System</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="d-flex" id="wrapper">
+        <!-- Sidebar -->
+        <div class="text-white bg-primary border-right" id="sidebar-wrapper" style="display: none;">
+            <div class="sidebar-heading">
+                <img style="margin-left: 30%;" class="img-thumbnail" src="~/images/logo.jpg" />
+            </div>
+            <div style="font-size: 1rem;" class="sidebar-heading-text">Wisconsin Budokai <br /> Martial Arts</div>
+            <div class="list-group list-group-flush">
+                @Html.ActionLink("Home", "Index", "Home", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.ActionLink("Disciplines", "Index", "Disciplines", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.ActionLink("Members", "Index", "Member", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.ActionLink("Payments", "Index", "Payments", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.ActionLink("Quick Attendance", "QuickAttendance", "AttendanceSheet", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+            </div>
+            <div class="list-group list-group-flush navBottom">
+                <a class="list-group-item list-group-item-action bg-primary text-white" href="/Member/Details/@ViewBag.UserId">
+                    Hello @ViewBag.FullName,
+                    <br />
+                    View Profile
+                </a>
+                @Html.ActionLink("Log Out", "SignOut", "Session", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+
+            </div>
+        </div>
+        <!-- /#sidebar-wrapper -->
+        <!-- Page Content -->
+        <div id="page-content-wrapper">
+            <!-- Top Navbar -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-primary border-bottom">
+                <button class="btn btn-light" id="menu-toggle">
+                    <span class="nav__Icon fas navbar-toggler-icon"></span>
+                </button>
+                <div style="text-align:center" class="navwelcome mx-auto"><h3><a base href="/Home/Index">Wisconsin Budokai</a></h3></div>
+            </nav>
+            <div class="container-fluid" id="lockIcon">
+                @RenderBody()
+            </div>
+        </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/site")
+
+    <script>
+        // This will toggle the menu when the navicon is clicked.
+
+        $(function () {
+            $("#menu-toggle").click(function (e) {
+                e.preventDefault();
+                $("#sidebar-wrapper").animate({ width: 'toggle' });
+                $(".nav__Icon").toggleClass("navbar-toggler-icon fa-arrow-left", 1000);
+                $('html').toggleClass('scrollLock');
+            });
+
+            registerComboBoxes();
+
+        });
+
+    </script>
+
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

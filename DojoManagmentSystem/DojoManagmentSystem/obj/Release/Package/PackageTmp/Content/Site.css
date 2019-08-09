@@ -1,0 +1,69 @@
+﻿.navwelcome a {
+    color: white;
+    font-weight: bolder;
+}
+
+tr#linkRow, tr.modal-row-link {
+    cursor: pointer;
+}
+
+    tr#linkRow:hover, tr.modal-row-link:hover{
+        background-color: lightgrey;
+    }
+
+    .details .card {
+        padding: 0 !important;
+    }
+
+.btn {
+    box-shadow: 2px 3px 2px -2px gray;
+}
+
+.card {
+    box-shadow: 4px 4px 2px -2px gray;
+}
+
+.navbar{
+     min-height: 75px;
+}
+@media (min-width: 1025px) {
+    .details-column .card:not(:first-of-type) {
+        margin-top: 5px;
+    }
+}
+@media (max-width: 1024px) {
+    .card{
+        margin-top: 5px;
+    }
+    .details-column .card {
+        margin-top: 10px;
+    }
+    .scrollLock {
+        overflow: hidden;
+    }
+}
+
+.yellowrow {
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.redrow {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.alert-success#successTag {
+    display: none;
+    background-color: #28a745 !important;
+}
+
+.sortbutton {
+    color: #29ABE0;
+}
+
+.lockButton{
+    font-size: 1.5rem;
+}

@@ -1,0 +1,49 @@
+﻿@model DojoManagmentSystem.Models.Contact
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Delete</title>
+</head>
+<body>
+    <h3>Are you sure you want to delete this?</h3>
+    <div>
+        <h4>Payment</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.RelationShip)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.RelationShip)
+            </dd>
+
+        </dl>
+
+        @using (Html.BeginForm("Delete", "Contact", FormMethod.Post, new { id = "ModalForm" }))
+        {
+            @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default btn-danger" />
+            <button type="button" class="btn btn-primary" data-dismiss="modal"><span aria-hidden="true">Cancel</span></button>
+        </div>
+        }
+    </div>
+</body>
+</html>

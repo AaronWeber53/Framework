@@ -1,0 +1,73 @@
+﻿@model DojoManagmentSystem.ViewModels.QuickAttendanceViewModel
+
+@{
+    ViewBag.Title = "Quick Attendance";
+}
+
+<div class="mt-5 col-md-8 col-sm-12 col-lg-8 col-xl-4 ml-auto mr-auto">
+    <div class="card">
+        <h5 class="card-header">
+            Wisconsin Budokai Martial Arts
+            @if (ViewBag.IsLocked)
+            {
+                <a class="modal-link text-primary float-right lockButton" href="" onclick="return false;" data-targeturl="/Session/UnlockSession">
+                    <i class="fas fa-lock"></i>
+                </a>
+            }
+            else
+            {
+                <a href="/Session/LockSession" class="float-right text-primary lockButton" style="color: black;">
+                    <i class="fas fa-unlock"></i>
+                </a>
+            }
+        </h5>
+        <div class="card-body" id="formBody">
+            <div class="form-group">
+                @Html.Label("Class", htmlAttributes: new { @class = "control-label col-md-12" })
+                <div class="col-md-12">
+                    @if (Model.Disciplines.Count <= 0)
+                    {
+                        <fieldset disabled="">
+                            <input class="form-control" value="No Class Session Today" />
+                        </fieldset>
+                    }
+                    else
+                    {
+                        @Html.DropDownList("DisciplineID", new SelectList(
+                                        Model.Disciplines.Select(x => new { Value = x.Id, Text = x.Name }),
+                                        "Value",
+                                        "Text"))
+                    }
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.Label("Member", htmlAttributes: new { @class = "control-label col-md-12" })
+                <div class="col-md-12">
+                    @Html.DropDownList("MemberID", new SelectList(
+                    Model.Members.Select(x => new { Value = x.Id, Text = x.FullName }),
+                    "Value",
+                    "Text"))
+                </div>
+            </div>
+
+            <div class="mt-3 col-sm-12">
+                <button type="submit" name="button" id="quickSubmitButton" class="btn btn-primary col-sm-12">Check In</button>
+            </div>
+        </div>
+        <div class="card-footer text-muted text-center">
+            Quick Attendance
+        </div>
+    </div>
+</div>
+<div class="mt-1 col-md-8 col-sm-12 col-lg-8 col-xl-4 ml-auto mr-auto" id="showTag">
+    <div class="alert alert-dismissible alert-success" id="checkInTag" style="display:none;">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong id="checkInText"></strong>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/quickAttendance.js")
+    @Scripts.Render("~/Scripts/Modal.js")
+}

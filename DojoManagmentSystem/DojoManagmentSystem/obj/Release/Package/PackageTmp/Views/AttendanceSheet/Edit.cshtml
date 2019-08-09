@@ -1,0 +1,100 @@
+﻿@model IEnumerable<DojoManagmentSystem.ViewModels.AttendanceViewModel>
+
+@{
+    ViewBag.Title = "Edit";
+    string None = "None";
+}
+
+<div id="form">
+    <h4>Attendance Sheet</h4>
+    <div class="row">
+        <p class=" col-sm-2">
+            @ViewBag.Name
+            <br />
+            @ViewBag.DisplayDate
+            <br />
+            @ViewBag.DayOfWeek
+            @ViewBag.Time
+        </p>
+    </div>
+    <hr />
+    @using (Ajax.BeginForm("Edit", new AjaxOptions
+    {
+        InsertionMode = InsertionMode.Replace,
+        HttpMethod = "Post",
+        UpdateTargetId = "form",
+    }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+
+            <div class="table">
+                <table class="table" id="attendanceTable">
+                    <button type="button" class="btn btn-primary modal-link" data-targeturl="/AttendanceSheet/DropIn/@ViewBag.ClassSessionId?Date=@ViewBag.Date">
+                        Add Drop In Member
+                    </button>
+
+                    <thead>
+                        <tr>
+                            <th scope="col">
+                                Name
+                            </th>
+                            <th scope="col">
+                                Present
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @foreach (var item in Model)
+                        {
+                            @Html.Hidden("ClassSessionId", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.Hidden("AttendanceDate", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.Hidden("Id", null, htmlAttributes: new { @class = "form-control" })
+                            <tr>
+                                <td scope="row">
+                                    @{
+                                        @Html.DisplayFor(modelItem => item.FullName);
+                                    }
+                                </td>
+                                <td scope="row">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            @Html.CheckBoxFor(modelItem => item.Present, new { @value = @item.MemberId, @class = "custom-control-input", id = "customCheck1" })
+                                            <label class="custom-control-label" for="customCheck"></label>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="form-group row">
+                    <div class="col-md-offset-2 col-md-1">
+                        <input type="submit" value="Save" class="btn btn-primary" />
+                    </div>
+                    @if (ViewBag.IsValid)
+                    {
+
+                        <div id="successTag" class="alert alert-dismissible alert-success mb-0" style="padding: .4em 1em;">
+                            <strong>The attendance sheet has been succesfully saved.</strong>
+                            <script>
+                                displaySaveMessage();
+                            </script>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script>
+    registerTableCheckBoxes();
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+}
