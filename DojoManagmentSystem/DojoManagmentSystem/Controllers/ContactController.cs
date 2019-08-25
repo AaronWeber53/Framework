@@ -14,8 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class ContactController : BaseController<Contact>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         // GET: Disciplines
         public ActionResult Index()
         {

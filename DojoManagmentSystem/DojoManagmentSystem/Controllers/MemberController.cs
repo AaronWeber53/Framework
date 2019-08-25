@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using DojoManagmentSystem.DAL;
@@ -15,8 +16,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class MemberController : BaseController<Member>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>()
         {
             new FieldDisplay("HasUser") { AllowSort = false},
@@ -32,12 +31,13 @@ namespace DojoManagmentSystem.Controllers
             ListViewModel<Payment> model = new ListViewModel<Payment>()
             {
                 RelationID = id,
-                Action = "Payments",
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
                 ObjectList = db.Payments,
+                ListSettings = new ListSettings() { ModalOpen = true },
                 FieldsToDisplay = new List<FieldDisplay>
             {
                 new FieldDisplay() {FieldName = "Amount" },
@@ -46,21 +46,17 @@ namespace DojoManagmentSystem.Controllers
                 new FieldDisplay() {FieldName = "Description" },
             }
             };
-             
-            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
-            {
-                return PartialView(ListView, model);
-            }
-            return View(ListView, model);
+
+            return ListView(model);
         }
-        
+
         //// GET: Payments
         public ActionResult Contacts(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
             ListViewModel<Contact> model = new ListViewModel<Contact>()
             {
                 RelationID = id,
-                Action = "Contacts",            
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
@@ -73,26 +69,23 @@ namespace DojoManagmentSystem.Controllers
                 new FieldDisplay() {FieldName = "IsPrimary" },
             }
             };
-             
-            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
-            {
-                return PartialView(ListView, model);
-            }
-            return View(ListView, model);
+
+            return ListView(model);
         }
-        
+
         //// GET: Payments
         public ActionResult Waivers(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
             ListViewModel<Waiver> model = new ListViewModel<Waiver>()
             {
                 RelationID = id,
-                Action = "Waivers",
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
                 ObjectList = db.Waivers,
+                ListSettings = new ListSettings() { ModalOpen = true },
                 FieldsToDisplay = new List<FieldDisplay>
             {
                 new FieldDisplay() {FieldName = "IsSigned" },
@@ -100,12 +93,8 @@ namespace DojoManagmentSystem.Controllers
                 new FieldDisplay() {FieldName = "Note" },
             }
             };
-             
-            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
-            {
-                return PartialView(ListView, model);
-            }
-            return View(ListView, model);
+
+            return ListView(model);
         }
 
         public ActionResult Attendance(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
@@ -113,12 +102,12 @@ namespace DojoManagmentSystem.Controllers
             ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
             {
                 RelationID = id,
-                Action = "Attendance",
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
-                ListSettings = new ListSettings() { ItemsPerPage = 3 },
+                ListSettings = new ListSettings() { ItemsPerPage = 3, AllowOpen = false },
                 ObjectList = db.AttendanceSheets,
                 FieldsToDisplay = new List<FieldDisplay>
                 {
@@ -126,11 +115,7 @@ namespace DojoManagmentSystem.Controllers
                 }
             };
 
-            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
-            {
-                return PartialView(ListView, model);
-            }
-            return View(ListView, model);
+            return ListView(model);
         }
 
         public ActionResult Disciplines(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
@@ -138,27 +123,23 @@ namespace DojoManagmentSystem.Controllers
             ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
             {
                 RelationID = id,
-                Action = "Disciplines",            
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
+                ListSettings = new ListSettings() { ModalOpen = true },
                 ObjectList = db.DisciplineEnrolledMembers,
                 FieldsToDisplay = new List<FieldDisplay>
                 {
                     new FieldDisplay() {FieldName = "StartDate" },
                     new FieldDisplay() {FieldName = "EndDate" },
-                    new FieldDisplay() {FieldName = "MembershipLength" },
                     new FieldDisplay() {FieldName = "RemainingCost" },
                     new FieldDisplay() {FieldName = "Cost" },
                 }
             };
 
-            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
-            {
-                return PartialView(ListView, model);
-            }
-            return View(ListView, model);
+            return ListView(model);
         }
         #endregion
 

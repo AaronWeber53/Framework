@@ -14,8 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class DisciplineEnrolledMemberController : BaseController<DisciplineEnrolledMember>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Index(int id)
         {
             ViewBag.DisciplineId = id;
@@ -121,29 +119,29 @@ namespace DojoManagmentSystem.Controllers
         }
         
 
-        public ActionResult Edit(int? id, string origin)
+        public ActionResult Edit(int? id)
         {
             DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
 
             // If opened from the member page, generates a link to the discipline page
-            if (origin == "member")
-            {
-                ViewBag.LinkValue = "Go to Discipline";
-                ViewBag.LinkUrl = $"/Disciplines/Details/{enrolledMember.DisciplineId}";
-            }
-            // If opened from the discipline page, generates a link to the member page
-            else if (origin == "discipline")
-            {
-                ViewBag.LinkValue = "Go to Member";
-                ViewBag.LinkUrl = $"/Member/Details/{enrolledMember.MemberId}";
-            }
+            //if (origin == "member")
+            //{
+            //    ViewBag.LinkValue = "Go to Discipline";
+            //    ViewBag.LinkUrl = $"/Disciplines/Detail/{enrolledMember.DisciplineId}";
+            //}
+            //// If opened from the discipline page, generates a link to the member page
+            //else if (origin == "discipline")
+            //{
+            //    ViewBag.LinkValue = "Go to Member";
+            //    ViewBag.LinkUrl = $"/Member/Details/{enrolledMember.MemberId}";
+            //}
 
             if (enrolledMember == null)
             {
                 return HttpNotFound();
             }
 
-            ViewBag.Origin = origin;
+            //ViewBag.Origin = origin;
             return PartialView(enrolledMember);
         }
         
@@ -165,7 +163,7 @@ namespace DojoManagmentSystem.Controllers
             if (origin[0] == "member")
             {
                 ViewBag.LinkValue = "Go to Discipline";
-                ViewBag.LinkUrl = $"/Disciplines/Details/{enrolledMember.DisciplineId}";
+                ViewBag.LinkUrl = $"/Discipline/Details/{enrolledMember.DisciplineId}";
             }
             // If opened from the discipline page, generates a link to the member page
             else if (origin[0] == "discipline")

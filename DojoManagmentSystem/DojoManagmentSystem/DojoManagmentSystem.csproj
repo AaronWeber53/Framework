@@ -268,11 +268,11 @@
     <Content Include="Views\Payments\Details.cshtml" />
     <Content Include="Views\Payments\Edit.cshtml" />
     <Content Include="Views\Payments\Index.cshtml" />
-    <Content Include="Views\Disciplines\Create.cshtml" />
-    <Content Include="Views\Disciplines\Delete.cshtml" />
-    <Content Include="Views\Disciplines\Details.cshtml" />
-    <Content Include="Views\Disciplines\Edit.cshtml" />
-    <Content Include="Views\Disciplines\Index.cshtml" />
+    <Content Include="Views\Discipline\Create.cshtml" />
+    <Content Include="Views\Discipline\Delete.cshtml" />
+    <Content Include="Views\Discipline\Details.cshtml" />
+    <Content Include="Views\Discipline\Edit.cshtml" />
+    <Content Include="Views\Discipline\Index.cshtml" />
     <Content Include="Views\ClassSession\Create.cshtml" />
     <Content Include="Views\ClassSession\Delete.cshtml" />
     <Content Include="Views\ClassSession\Details.cshtml" />

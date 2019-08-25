@@ -6,7 +6,7 @@
 
 <div class="row col-sm-12">
     <p class="col-lg-8 mt-2">
-        <a href="@Url.Action("Details", "Disciplines", new { @id = Model.DisciplineId })" class="h4">
+        <a href="@Url.Action("Details", "Discipline", new { @id = Model.DisciplineId })" class="h4">
             <i class="fas fa-arrow-left"></i> Back to Discipline
         </a>
     </p>
@@ -28,7 +28,7 @@
                 <h5 class="float-left">Attendance History</h5>
             </div>
             <div class="card-body">
-                @Html.Action("List", "AttendanceSheet", new { id = Model.Id })
+                @Html.Action("Attendance", new { id = Model.Id })
             </div>
         </div>
     </div>

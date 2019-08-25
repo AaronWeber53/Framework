@@ -150,12 +150,12 @@ namespace DojoManagmentSystem.ViewModels
             {
                 if (ListSettings.ModalOpen)
                 {
-                    stringBuilder.Append($"dcata-targeturl='{Controller}/Details/{obj.Id}'");
+                    stringBuilder.Append($"dcata-targeturl='{ObjectType.Name}/Details/{obj.Id}'");
                     classNames.Add("modal-row-link");
                 }
                 else
                 {
-                    stringBuilder.Append($"id='linkRow' data-link='{Controller}/Details/{obj.Id}'");
+                    stringBuilder.Append($"id='linkRow' data-link='{ObjectType.Name}/Details/{obj.Id}'");
                 }
             }
             stringBuilder.Append("class='");
@@ -171,13 +171,13 @@ namespace DojoManagmentSystem.ViewModels
                 stringBuilder.Append("<td>");
                 if (ListSettings.ModalOpen)
                 {
-                    stringBuilder.Append($"<button class='btn btn-primary modal-link' data-targeturl='/{Controller}/Details/{obj.Id}'>");
+                    stringBuilder.Append($"<button class='btn btn-primary modal-link' data-targeturl='/{ObjectType.Name}/Edit/{obj.Id}'>");
                     stringBuilder.Append("<i class='fas fa-external-link-alt'></i>");
                     stringBuilder.Append("</button>");
                 }
                 else
                 {
-                    stringBuilder.Append($"<a class='btn btn-primary' href='/{Controller}/Details/{obj.Id}'>");
+                    stringBuilder.Append($"<a class='btn btn-primary' href='/{ObjectType.Name}/Details/{obj.Id}'>");
                     stringBuilder.Append("<i class='fas fa-external-link-alt'></i>");
                     stringBuilder.Append("</a>");
                 }
@@ -219,7 +219,7 @@ namespace DojoManagmentSystem.ViewModels
             if (ListSettings.AllowDelete)
             {
                 stringBuilder.Append("<td>");
-                stringBuilder.Append($"<button type='button' class='btn btn-danger modal-link' data-targeturl='/{Controller}/Delete/{obj.Id}'>");
+                stringBuilder.Append($"<button type='button' class='btn btn-danger modal-link' data-targeturl='/{ObjectType.Name}/Delete/{obj.Id}'>");
                 stringBuilder.Append("<i class='fas fa-trash-alt'></i>");
                 stringBuilder.Append("</button>");
                 stringBuilder.Append("</td>");

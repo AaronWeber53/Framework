@@ -36,7 +36,7 @@
                         </div>
 
                         <div class="card-body">
-                            @Html.Action("List", "ClassSession", new { id = Model.Id })
+                            @Html.Action("ClassSessions", new { id = Model.Id })
                         </div>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
                             </div>
                         </div>
                         <div class="card-body">
-                            @Html.Action("MembersList", "DisciplineEnrolledMember", new { id = Model.Id })
+                            @Html.Action("Members", new { id = Model.Id })
                         </div>
                     </div>
                 </div>

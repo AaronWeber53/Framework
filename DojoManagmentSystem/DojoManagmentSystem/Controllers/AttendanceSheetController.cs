@@ -18,8 +18,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class AttendanceSheetController : BaseController<AttendanceSheet>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         // GET: AttendanceSheet
         public ActionResult Index()
         {

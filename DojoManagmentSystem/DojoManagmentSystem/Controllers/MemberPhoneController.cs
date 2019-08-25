@@ -14,8 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class MemberPhoneController : BaseController<MemberPhone>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         // GET: Disciplines/Create
         public ActionResult Create(int id)
         {

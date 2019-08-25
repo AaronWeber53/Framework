@@ -13,8 +13,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class HomeController : BaseController
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Index()
         {
             // Gets all of the discipline enrolled members from the database and puts them in a list.

@@ -13,9 +13,7 @@ using DojoManagmentSystem.ViewModels;
 namespace DojoManagmentSystem.Controllers
 {
     public class WaiverController : BaseController<Waiver>
-    {
-        private DojoManagmentContext db = new DojoManagmentContext();
-        
+    {        
         // GET: Waiver/Details/5
         public ActionResult Details(int? id)
         {

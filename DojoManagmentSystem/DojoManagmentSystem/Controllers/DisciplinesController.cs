@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using DojoManagmentSystem.DAL;
@@ -12,10 +13,8 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class DisciplinesController : BaseController<Discipline>
+    public class DisciplineController : BaseController<Discipline>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         protected override ListSettings ListSettings => new ListSettings() { AllowDelete = false };
 
         protected override List<FieldDisplay> ListDisplay
@@ -28,6 +27,51 @@ namespace DojoManagmentSystem.Controllers
                     new FieldDisplay(){ FieldName = "Description" },
                 };
             }
+        }
+        public ActionResult ClassSessions(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<ClassSession> model = new ListViewModel<ClassSession>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.ClassSessions,
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "StartTime" },
+                    new FieldDisplay() {FieldName = "EndTime" },
+                    new FieldDisplay() {FieldName = "DayOfWeek" },
+                }
+            };
+
+            return ListView(model);
+        }
+
+        public ActionResult Members(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = new ListSettings() { ModalOpen = true },
+                ObjectList = db.DisciplineEnrolledMembers,
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "StartDate" },
+                    new FieldDisplay() {FieldName = "EndDate" },
+                    new FieldDisplay() {FieldName = "RemainingCost" },
+                    new FieldDisplay() {FieldName = "Cost" },
+                }
+            };
+
+            return ListView(model);
         }
 
         // GET: Disciplines

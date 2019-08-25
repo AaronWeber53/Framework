@@ -14,8 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class MemberAddressController : BaseController<MemberAddress>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Create(int id)
         {
             MemberAddress memberAddress = new MemberAddress();

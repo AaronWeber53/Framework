@@ -14,8 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class MemberEmailController : BaseController<MemberEmail>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Create(int id)
         {
             MemberEmail memberEmail = new MemberEmail();

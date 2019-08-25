@@ -4,11 +4,13 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using DojoManagmentSystem.DAL;
 using DojoManagmentSystem.Models;
 using DojoManagmentSystem.ViewModels;
+using DojoManagmentSystem.Infastructure.Extensions;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -23,48 +25,31 @@ namespace DojoManagmentSystem.Controllers
             return PartialView(disciplines.ToList());
         }
 
-        public ActionResult List(int id, string sortOrder = null, string searchString = null, int page = 1)
+        public ActionResult Attendance(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
-            ViewBag.DisciplineId = id;
-            ViewBag.EndTimeSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "endtime_desc" ? "endtime_asc" : "endtime_desc";
-            ViewBag.StartTimeSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "starttime_desc" ? "starttime_asc" : "starttime_desc";
-
             // Gets the members from the database
-            var sessions = from mem in db.ClassSessions
-                              where !mem.IsArchived && mem.DisciplineId == id
-                              select mem;
+            var sheets = from mem in db.AttendanceSheets
+                         group mem by DbFunctions.TruncateTime(mem.AttendanceDate)
+                              into groups
+                         select groups.FirstOrDefault();
 
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
+            ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
             {
-                case "starttime_desc":
-                    sessions = sessions.OrderByDescending(m => m.StartTime);
-                    break;
-                case "starttime_asc":
-                    sessions = sessions.OrderBy(m => m.StartTime);
-                    break;
-                case "endtime_desc":
-                    sessions = sessions.OrderByDescending(m => m.EndTime);
-                    break;
-                case "endtime_asc":
-                    sessions = sessions.OrderBy(m => m.EndTime);
-                    break;
-
-                default:
-                    sessions = sessions.OrderBy(m => m.DayOfWeek);
-                    break;
-            }
-
-            ListViewModel<ClassSession> model = new ListViewModel<ClassSession>()
-            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                ObjectList = sessions
+                FilterField = filter,
+                ListSettings = new ListSettings() { ModalOpen = true },
+                ObjectList = sheets,
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "AttendanceDate" },
+                }
             };
 
-            return PartialView("List", model);
-
+            return ListView(model);
         }
 
         // GET: ClassSession/Details/5

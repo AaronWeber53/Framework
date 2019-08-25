@@ -15,7 +15,7 @@ namespace DojoManagmentSystem
     {
         protected DojoManagmentContext db = new DojoManagmentContext();
 
-        protected string ListView = "~/Views/Shared/List.cshtml";
+        protected string ListViewPath = "~/Views/Shared/List.cshtml";
 
         /// <summary>
         /// Whenever a action is executed this function will be called first.
@@ -161,12 +161,16 @@ namespace DojoManagmentSystem
                 FieldsToDisplay = ListDisplay
             };
 
-            if (Request.IsAjaxRequest())
-            {
-                return PartialView(ListView, model);
-            }
-            return View(ListView, model);
+            return ListView(model);
         }
 
+        protected ActionResult ListView(ListViewModel model)
+        {
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                return PartialView(ListViewPath, model);
+            }
+            return View(ListViewPath, model);
+        }
     }
 }

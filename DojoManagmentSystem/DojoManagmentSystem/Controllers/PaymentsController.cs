@@ -16,8 +16,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class PaymentsController : BaseController<Payment>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         protected override ListSettings ListSettings => new ListSettings() { ModalOpen = true, AllowDelete = false };
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>
         {
