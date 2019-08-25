@@ -62,7 +62,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        @Html.Action("List", "Contact", new { id = Model.Id })
+                        @Html.Action("Contacts", new { id = Model.Id })
                     </div>
                 </div>
             </div>
@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        @Html.Action("List", "Waiver", new { id = Model.Id })
+                        @Html.Action("Waivers", new { id = Model.Id })
                     </div>
                 </div>
 
@@ -101,14 +101,14 @@
                         <h4 class="float-left">Memberships</h4>
                     </div>
                     <div class="card-body">
-                        @Html.Action("DisciplineList", "DisciplineEnrolledMember", new { id = Model.Id })
+                        @Html.Action("Disciplines", new { id = Model.Id })
                     </div>
                 </div>
             </div>
 
             <div class="col-xl-5 details-column float-right">
                 @* Attendance History table here *@
-                @Html.Action("AttendanceList", new { id = Model.Id })
+                @Html.Action("Attendance", new { id = Model.Id })
 
             </div>
         </div>
@@ -138,7 +138,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        @Html.Action("List", "Payments", new { id = Model.Id })
+                        @Html.Action("Payments", new { id = Model.Id })
                     </div>
                 </div>
             </div>

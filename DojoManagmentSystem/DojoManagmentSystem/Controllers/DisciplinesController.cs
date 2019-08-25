@@ -12,57 +12,28 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class DisciplinesController : BaseController
+    public class DisciplinesController : BaseController<Discipline>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
+
+        protected override ListSettings ListSettings => new ListSettings() { AllowDelete = false };
+
+        protected override List<FieldDisplay> ListDisplay
+        {
+            get
+            {
+                return new List<FieldDisplay>()
+                {
+                    new FieldDisplay(){ FieldName = "Name" },
+                    new FieldDisplay(){ FieldName = "Description" },
+                };
+            }
+        }
 
         // GET: Disciplines
         public ActionResult Index()
         {
             return View(db.Disciplines.ToList());
-        }
-
-        public ActionResult List(string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ViewBag.NameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "name_desc" ? "name_asc" : "name_desc";
-
-            // Gets the members from the database
-            var disciplines = from mem in db.Disciplines
-                          where !mem.IsArchived
-                          select mem;
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    disciplines = disciplines.OrderByDescending(m => m.Name);
-                    break;
-                case "name_asc":
-                    disciplines = disciplines.OrderBy(m => m.Name);
-                    break;
-
-                default:
-                    disciplines = disciplines.OrderBy(m => m.Name);
-                    break;
-            }
-            int totalPages = GetTotalPages(disciplines.Count());
-            disciplines = disciplines.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Discipline> model = new ListViewModel<Discipline>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = disciplines.ToList(),
-                FieldsToDisplay = new List<FieldDisplay>
-                {
-                    new FieldDisplay(){ FieldName = "Name" },
-                    new FieldDisplay(){ FieldName = "Description" },
-                }
-            };
-
-            return PartialView("List", model);
         }
 
         // GET: Disciplines/Details/5

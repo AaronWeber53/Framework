@@ -12,7 +12,7 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class ClassSessionController : BaseController
+    public class ClassSessionController : BaseController<ClassSession>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
@@ -54,16 +54,13 @@ namespace DojoManagmentSystem.Controllers
                     sessions = sessions.OrderBy(m => m.DayOfWeek);
                     break;
             }
-            int totalPages = GetTotalPages(sessions.Count());
-            sessions = sessions.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
 
             ListViewModel<ClassSession> model = new ListViewModel<ClassSession>()
             {
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = sessions.ToList()
+                ObjectList = sessions
             };
 
             return PartialView("List", model);

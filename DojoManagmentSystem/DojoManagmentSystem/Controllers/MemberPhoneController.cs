@@ -12,7 +12,7 @@ using DojoManagmentSystem.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberPhoneController : BaseController
+    public class MemberPhoneController : BaseController<MemberPhone>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 

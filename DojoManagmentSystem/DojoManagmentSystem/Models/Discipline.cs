@@ -14,9 +14,9 @@ namespace DojoManagmentSystem.Models
 
         public string Description { get; set; }
 
-        public virtual ICollection<ClassSession> ClassSessions { get; set; }
+        public virtual ICollection<ClassSession> ClassSessions { get; set; } = new List<ClassSession>();
 
-        public virtual ICollection<DisciplineEnrolledMember> EnrolledMembers { get; set; }
+        public virtual ICollection<DisciplineEnrolledMember> EnrolledMembers { get; set; } = new List<DisciplineEnrolledMember>();
 
         public override void Delete(DojoManagmentContext db)
         {

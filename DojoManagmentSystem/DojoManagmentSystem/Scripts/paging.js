@@ -18,10 +18,12 @@ function search(e) {
 function sort(e) {
     // Get the sort data
     var sort = e.data("sort");
+    var filter = e.data("filter");
     var table = e.closest("#pagingList");
 
     // Set the sort data on the table
     table.data("sort", sort);
+    table.data("filter", filter);
     table.data("page", 1);
 
     // Update the contents of the table.
@@ -44,11 +46,12 @@ function updateTable(table) {
     // Get all of the table information to update.
     var page = table.data("page");
     var sort = table.data("sort");
+    var filter = table.data("filter");
     var search = table.data("search");
     var url = table.data("baseurl");
 
     // Build the url to update the table.
-    var completeurl = buildurl(url, page, sort, search);
+    var completeurl = buildurl(url, page, sort, search, filter);
 
     // Call the function to get table html update.
     $.ajax({
@@ -61,8 +64,8 @@ function updateTable(table) {
     });
 }
 
-function buildurl(baseurl, page, sort, search) {
-    return `${baseurl}?sortOrder=${sort}&searchString=${search}&page=${page}`;
+function buildurl(baseurl, page, sort, search, filter) {
+    return `${baseurl}?filter=${filter}&sortOrder=${sort}&searchString=${search}&page=${page}`;
 }
 
 $('body').on('click', '.sortbutton', function (e) {

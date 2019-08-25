@@ -12,7 +12,7 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class DisciplineEnrolledMemberController : BaseController
+    public class DisciplineEnrolledMemberController : BaseController<DisciplineEnrolledMember>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
@@ -72,73 +72,17 @@ namespace DojoManagmentSystem.Controllers
                     members = members.OrderBy(m => m.EndDate);
                     break;
             }
-            int totalPages = GetTotalPages(members.Count());
-            members = members.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
 
             ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
             {
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = members.ToList()
+                ObjectList = members
             };
             return PartialView("DisciplineList", model);
         }
 
-
-        public ActionResult MembersList(int id, string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ViewBag.DisciplineId = id;
-            ViewBag.FirstNameSortParm = String.IsNullOrEmpty(sortOrder) ? "firstname_desc" : "";
-            ViewBag.LastNameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "lastname_desc" ? "lastname_asc" : "lastname_desc";
-            ViewBag.PaymentRemainingSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "remainingcost_desc" ? "remainingcost_asc" : "remainingcost_desc";
-            ViewBag.EndDateSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "enddate_desc" ? "enddate_asc" : "enddate_desc";
-
-            var members = db.DisciplineEnrolledMembers.Include("Member").Where(m => !m.IsArchived && m.DisciplineId == id);
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "firstname_desc":
-                    members = members.OrderByDescending(m => m.Member.FirstName);
-                    break;
-                case "lastname_desc":
-                    members = members.OrderBy(m => m.Member.LastName);
-                    break;
-                case "lastname_asc":
-                    members = members.OrderByDescending(m => m.Member.LastName);
-                    break;
-                case "remainingcost_asc":
-                    members = members.OrderBy(m => m.RemainingCost);
-                    break;
-                case "remainingcost_desc":
-                    members = members.OrderByDescending(m => m.RemainingCost);
-                    break;
-                case "enddate_asc":
-                    members = members.OrderBy(m => m.EndDate);
-                    break;
-                case "enddate_desc":
-                    members = members.OrderByDescending(m => m.EndDate);
-                    break;
-                default:
-                    members = members.OrderBy(m => m.EndDate);
-                    break;
-            }
-            int totalPages = GetTotalPages(members.Count());
-            members = members.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = members.ToList()
-            };
-            return PartialView("MemberList", model);
-        }
-        
         public ActionResult Create(int id)
         {            
             DisciplineEnrolledMember enrolledMember = new DisciplineEnrolledMember();

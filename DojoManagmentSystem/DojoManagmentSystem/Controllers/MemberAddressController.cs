@@ -12,7 +12,7 @@ using DojoManagmentSystem.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberAddressController : BaseController
+    public class MemberAddressController : BaseController<MemberAddress>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 

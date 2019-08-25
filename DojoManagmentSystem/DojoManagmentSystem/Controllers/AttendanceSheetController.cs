@@ -16,7 +16,7 @@ using DojoManagmentSystem.Infastructure;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class AttendanceSheetController : BaseController
+    public class AttendanceSheetController : BaseController<AttendanceSheet>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
@@ -53,16 +53,13 @@ namespace DojoManagmentSystem.Controllers
                     sheets = sheets.OrderBy(m => m.AttendanceDate);
                     break;
             }
-            int totalPages = GetTotalPages(sheets.Count());
-            sheets = sheets.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
 
             ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
             {
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = sheets.ToList()
+                ObjectList = sheets
             };
 
             return PartialView("List", model);

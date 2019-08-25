@@ -12,7 +12,7 @@ using DojoManagmentSystem.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class ContactController : BaseController
+    public class ContactController : BaseController<Contact>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
@@ -20,46 +20,6 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult Index()
         {
             return View(db.Disciplines.ToList());
-        }
-
-        public ActionResult List(int id, string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ItemsPerPage = 2;
-            ViewBag.MemberId = id;
-            ViewBag.NameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "name_desc" ? "name_asc" : "name_desc";
-
-            // Gets the members from the database
-            var contacts = from mem in db.Contacts.Include("MemberPhones").Include("MemberAddresses").Include("MemberEmails")
-                     where !mem.IsArchived && mem.MemberId == id
-                              select mem;
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    contacts = contacts.OrderByDescending(m => m.Name);
-                    break;
-                case "name_asc":
-                    contacts = contacts.OrderBy(m => m.Name);
-                    break;
-
-                default:
-                    contacts = contacts.OrderByDescending(m => m.IsPrimary);
-                    break;
-            }
-            int totalPages = GetTotalPages(contacts.Count());
-            contacts = contacts.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Contact> model = new ListViewModel<Contact>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = contacts.ToList()
-            };
-
-            return PartialView("List", model);
         }
 
         // GET: Disciplines/Details/5

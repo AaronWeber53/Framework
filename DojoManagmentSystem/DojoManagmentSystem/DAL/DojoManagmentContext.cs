@@ -72,5 +72,13 @@ namespace DojoManagmentSystem.DAL
         public DbSet<AttendanceSheet> AttendanceSheets { get; set; }
 
         public DbSet<Waiver> Waivers { get; set; }
+
+        public IQueryable<T> GetDBList<T>() where T : BaseModel
+        {
+            Type type = typeof(DbSet<T>);
+            var objectList = this.GetType().GetProperties();
+            var newLisrt = objectList.Where(m => m.PropertyType == type).First().GetValue(this);
+            return (IQueryable<T>)newLisrt;
+        }
     }
 }

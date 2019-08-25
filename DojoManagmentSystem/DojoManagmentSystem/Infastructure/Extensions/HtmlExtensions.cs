@@ -10,61 +10,15 @@ namespace DojoManagmentSystem.Infastructure.Extensions
 {
     public static class HtmlExtensions
     {
-        public static IHtmlString BuildList(this HtmlHelper htmlHelper, ListViewModel list)
+        public static bool IsCurrentAction(this HtmlHelper helper, string actionName, string controllerName)
         {
-            return list.BuildList();
-        }
+            string currentControllerName = (string)helper.ViewContext.RouteData.Values["controller"];
+            string currentActionName = (string)helper.ViewContext.RouteData.Values["action"];
 
-        public static IHtmlString GeneratePagingButtons(this HtmlHelper htmlHelper, ListViewModel viewModel)
-        {
-            return new MvcHtmlString(BuildPagingButtons(viewModel.CurrentPage, viewModel.NumberOfPages));
-        }
+            if (currentControllerName.Equals(controllerName, StringComparison.CurrentCultureIgnoreCase) && currentActionName.Equals(actionName, StringComparison.CurrentCultureIgnoreCase))
+                return true;
 
-        public static IHtmlString GeneratePagingButtons(this HtmlHelper htmlHelper, int currentPage, int numberOfPages)
-        {
-            return new MvcHtmlString(BuildPagingButtons(currentPage, numberOfPages));
-        }
-
-        private static string BuildPagingButtons(int currentPage, int numberOfPages)
-        {
-            StringBuilder buttons = new StringBuilder();
-            buttons.Append($"Page: {currentPage} of {numberOfPages}<br />");
-            buttons.Append("<div>" +
-                "<ul class='pagination'>");
-
-            int pageNumber = currentPage <= 1 ? 1 : currentPage - 1;
-
-            if (pageNumber > 1)
-            {
-                buttons.Append(BuildButton(1));
-                buttons.Append("...");
-            }
-
-            int counter = 1;
-
-            while (pageNumber <= numberOfPages && counter <= 3)
-            {
-                buttons.Append(BuildButton(pageNumber, currentPage == pageNumber));
-                pageNumber++;
-                counter++;
-            }
-
-            if (pageNumber <= numberOfPages)
-            {
-                buttons.Append("...");
-                buttons.Append(BuildButton(numberOfPages));
-            }
-
-
-            buttons.Append("</ul>" +
-                "</div>");
-
-            return buttons.ToString();
-        }
-
-        private static string BuildButton(int number, bool isCurrent = false)
-        {
-            return $"<li class='page-item {(isCurrent ? "disabled" : "")}'><a class='page-link'>{number}</a></li>";
+            return false;
         }
     }
 }

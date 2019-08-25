@@ -14,77 +14,18 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class PaymentsController : BaseController
+    public class PaymentsController : BaseController<Payment>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
-        // GET: Payments
-        public ActionResult List(int? id = null, string sortOrder = null, string searchString = null, int page = 1)
+        protected override ListSettings ListSettings => new ListSettings() { ModalOpen = true, AllowDelete = false };
+        protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>
         {
-            ViewBag.BaseUrl = "/Payments/List";
-
-
-            ViewBag.FirstNameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "firstname_desc" ? "firstname_asc" : "firstname_desc";
-            ViewBag.LastNameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "lastname_desc" ? "lastname_asc" : "lastname_desc";
-            ViewBag.DateSortParm = sortOrder == "Date" ? "date_asc" : "Date";
-            ViewBag.PaymentTypeSortParm = sortOrder == "Type" ? "type_desc" : "Type";
-
-            // Gets the payments from the database
-            var payments = from p in db.Payments.Include("Member")
-                           where !p.IsArchived
-                           select p;
-            if (id != null)
-            {
-                ViewBag.BaseUrl += $"/{id}";
-                ItemsPerPage = 3;
-                payments = payments.Where(p => p.MemberID == id);
-            }
-
-            // If the search was not null or empty, return payments that match the search
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                payments = payments.Where(p => p.Member.FirstName.Contains(searchString) || p.Member.LastName.Contains(searchString));
-            }
-
-            // Order the  payments depending on what parameter was passed in. 
-            switch (sortOrder)
-            {
-                case "firstname_desc":
-                    payments = payments.OrderBy(p => p.Member.FirstName);
-                    break;
-                case "lastname_desc":
-                    payments = payments.OrderBy(p => p.Member.LastName);
-                    break;
-                case "firstname_asc":
-                    payments = payments.OrderByDescending(p => p.Member.FirstName);
-                    break;
-                case "lastname_asc":
-                    payments = payments.OrderByDescending(p => p.Member.LastName);
-                    break;
-                case "date_asc":
-                    payments = payments.OrderBy(p => p.Date);
-                    break;
-                case "Type":
-                    payments = payments.OrderByDescending(p => p.PaymentType);
-                    break;
-                default:
-                    payments = payments.OrderByDescending(p => p.Date);
-                    break;
-            }
-            int totalPages = GetTotalPages(payments.Count());
-            payments = payments.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Payment> model = new ListViewModel<Payment>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = payments.ToList()
-            };
-
-            return PartialView("Payments", model);
-        }
+            new FieldDisplay() {FieldName = "Amount" },
+            new FieldDisplay() {FieldName = "Date" },
+            new FieldDisplay() {FieldName = "PaymentType" },
+            new FieldDisplay() {FieldName = "Description" },
+        };
 
         public ActionResult Index()
         {

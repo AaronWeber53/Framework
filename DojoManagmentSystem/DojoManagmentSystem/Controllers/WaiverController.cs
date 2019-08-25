@@ -12,7 +12,7 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class WaiverController : BaseController
+    public class WaiverController : BaseController<Waiver>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
         
@@ -29,32 +29,6 @@ namespace DojoManagmentSystem.Controllers
                 return HttpNotFound();
             }
             return View(waiver);
-        }
-
-        public ActionResult List(int id, string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ItemsPerPage = 3;
-
-            // Gets the waivers from the database
-            var waivers = from wav in db.Waivers
-                              where !wav.IsArchived && wav.MemberId == id
-                              select wav;
-
-            waivers = waivers.OrderByDescending(w => w.DateSigned);
-            int totalPages = GetTotalPages(waivers.Count());
-            waivers = waivers.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Waiver> model = new ListViewModel<Waiver>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = waivers.ToList()
-            };
-
-            ViewBag.MemberId = id;
-            return PartialView("List", model);
         }
 
         // GET: Waiver/Create

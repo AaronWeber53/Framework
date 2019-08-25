@@ -12,7 +12,7 @@ using DojoManagmentSystem.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberEmailController : BaseController
+    public class MemberEmailController : BaseController<MemberEmail>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 

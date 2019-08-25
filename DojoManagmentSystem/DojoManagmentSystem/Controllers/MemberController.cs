@@ -13,107 +13,154 @@ using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberController : BaseController
+    public class MemberController : BaseController<Member>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
-        public ActionResult List(string sortOrder = null, string searchString = null, int page = 1)
+        protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>()
         {
-            ViewBag.ClassName = null;
-            ViewBag.FirstNameSortParm = String.IsNullOrEmpty(sortOrder) ? "firstname_desc" : "";
-            ViewBag.LastNameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "lastname_desc" ? "lastname_asc" : "lastname_desc";
+            new FieldDisplay("HasUser") { AllowSort = false},
+            new FieldDisplay("FirstName"),
+            new FieldDisplay("LastName"),
+            new FieldDisplay("IsInstructor"),
+        };
 
-
-            // Gets the members from the database
-            var members = from mem in db.Members.Include("DisciplineEnrolledMembers").Include("User")
-                          where !mem.IsArchived                          
-                          select mem;
-
-            // If the search is not empty or null, get the members who match the search.
-            if (!String.IsNullOrEmpty(searchString))
+        #region Relation Lists
+        //// GET: Payments
+        public ActionResult Payments(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<Payment> model = new ListViewModel<Payment>()
             {
-                members = members.Where(m => m.FirstName.Contains(searchString) || m.LastName.Contains(searchString));
-            }
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "firstname_desc":
-                    members = members.OrderByDescending(m => m.FirstName);
-                    break;
-                case "lastname_desc":
-                    members = members.OrderBy(m => m.LastName);
-                    break;
-                case "lastname_asc":
-                    members = members.OrderByDescending(m => m.LastName);
-                    break;
-                default:
-                    members = members.OrderBy(m => m.FirstName);
-                    break;
-            }
-            int totalPages = GetTotalPages(members.Count());
-            members = members.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Member> model = new ListViewModel<Member>()
-            {
+                RelationID = id,
+                Action = "Payments",
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = members.ToList(),
+                FilterField = filter,
+                ObjectList = db.Payments,
                 FieldsToDisplay = new List<FieldDisplay>
-                {
-                    new FieldDisplay() { FieldName = "FirstName"},
-                    new FieldDisplay() { FieldName = "LastName"},
-                }
-            };
-            IHtmlString list =  model.BuildList();
-            return PartialView("Members", model);
-        }
-
-        public ActionResult AttendanceList(int id, string sortOrder = null, int page = 1)
-        {
-            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
-            ViewBag.DisciplineSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "discipline_desc" ? "discipline_asc" : "discipline_desc";
-
-            ItemsPerPage = 3;
-
-            // Gets the payments from the database
-            var sheets = from p in db.AttendanceSheets.Include("ClassSession.Discipline")
-                         where p.Member.Id == id && !p.IsArchived
-                         select p;
-
-            // Order the  payments depending on what parameter was passed in. 
-            switch (sortOrder)
             {
-                case "discipline_desc":
-                    sheets = sheets.OrderBy(p => p.ClassSession.Discipline.Name);
-                    break;
-                case "discipline_asc":
-                    sheets = sheets.OrderByDescending(p => p.ClassSession.Discipline.Name);
-                    break;
-                case "date_desc":
-                    sheets = sheets.OrderBy(p => p.AttendanceDate);
-                    break;
-                default:
-                    sheets = sheets.OrderByDescending(p => p.AttendanceDate);
-                    break;
+                new FieldDisplay() {FieldName = "Amount" },
+                new FieldDisplay() {FieldName = "Date" },
+                new FieldDisplay() {FieldName = "PaymentType" },
+                new FieldDisplay() {FieldName = "Description" },
             }
-            int totalPages = GetTotalPages(sheets.Count());
-            sheets = sheets.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ViewBag.MemberId = id;
-
-            ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
+            };
+             
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
             {
+                return PartialView(ListView, model);
+            }
+            return View(ListView, model);
+        }
+        
+        //// GET: Payments
+        public ActionResult Contacts(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<Contact> model = new ListViewModel<Contact>()
+            {
+                RelationID = id,
+                Action = "Contacts",            
                 CurrentPage = page,
                 CurrentSort = sortOrder,
-                NumberOfPages = totalPages,
-                ObjectList = sheets.ToList()
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.Contacts,
+                FieldsToDisplay = new List<FieldDisplay>
+            {
+                new FieldDisplay() {FieldName = "Name" },
+                new FieldDisplay() {FieldName = "RelationShip" },
+                new FieldDisplay() {FieldName = "IsPrimary" },
+            }
+            };
+             
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                return PartialView(ListView, model);
+            }
+            return View(ListView, model);
+        }
+        
+        //// GET: Payments
+        public ActionResult Waivers(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<Waiver> model = new ListViewModel<Waiver>()
+            {
+                RelationID = id,
+                Action = "Waivers",
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.Waivers,
+                FieldsToDisplay = new List<FieldDisplay>
+            {
+                new FieldDisplay() {FieldName = "IsSigned" },
+                new FieldDisplay() {FieldName = "DateSigned" },
+                new FieldDisplay() {FieldName = "Note" },
+            }
+            };
+             
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                return PartialView(ListView, model);
+            }
+            return View(ListView, model);
+        }
+
+        public ActionResult Attendance(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
+            {
+                RelationID = id,
+                Action = "Attendance",
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = new ListSettings() { ItemsPerPage = 3 },
+                ObjectList = db.AttendanceSheets,
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "AttendanceDate" },
+                }
             };
 
-            return PartialView("AttendanceHistory", model);
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                return PartialView(ListView, model);
+            }
+            return View(ListView, model);
         }
+
+        public ActionResult Disciplines(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
+            {
+                RelationID = id,
+                Action = "Disciplines",            
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.DisciplineEnrolledMembers,
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "StartDate" },
+                    new FieldDisplay() {FieldName = "EndDate" },
+                    new FieldDisplay() {FieldName = "MembershipLength" },
+                    new FieldDisplay() {FieldName = "RemainingCost" },
+                    new FieldDisplay() {FieldName = "Cost" },
+                }
+            };
+
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                return PartialView(ListView, model);
+            }
+            return View(ListView, model);
+        }
+        #endregion
 
         public ActionResult Index()
         {
@@ -122,7 +169,7 @@ namespace DojoManagmentSystem.Controllers
 
         // GET: Member/Details/5
         public ActionResult Details(int? id, string tab)
-        {            
+        {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

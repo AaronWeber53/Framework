@@ -1,5 +1,6 @@
 ﻿using DojoManagmentSystem.DAL;
 using DojoManagmentSystem.Infastructure;
+using DojoManagmentSystem.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -10,9 +11,11 @@ using System.Web.Routing;
 
 namespace DojoManagmentSystem
 {
-    public abstract class BaseController : Controller
+    public abstract class BaseController : Controller 
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        protected DojoManagmentContext db = new DojoManagmentContext();
+
+        protected string ListView = "~/Views/Shared/List.cshtml";
 
         /// <summary>
         /// Whenever a action is executed this function will be called first.
@@ -138,5 +141,32 @@ namespace DojoManagmentSystem
             // Set an error.
             public string ErrorMessage { get; set; } = "";
         }
+    }
+
+    public abstract class BaseController<T> : BaseController where T : BaseModel
+    {
+        protected virtual ListSettings ListSettings { get; } = new ListSettings();
+        protected virtual List<FieldDisplay> ListDisplay { get; } = new List<FieldDisplay>();
+
+        public ActionResult List(string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<T> model = new ListViewModel<T>()
+            {
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = ListSettings,
+                ObjectList = db.GetDBList<T>(),
+                FieldsToDisplay = ListDisplay
+            };
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView(ListView, model);
+            }
+            return View(ListView, model);
+        }
+
     }
 }

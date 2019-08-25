@@ -17,7 +17,7 @@ using DojoManagmentSystem.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class UsersController : BaseController
+    public class UsersController : BaseController<User>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 

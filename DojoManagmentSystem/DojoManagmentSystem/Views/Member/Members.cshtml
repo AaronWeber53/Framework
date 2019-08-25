@@ -45,7 +45,7 @@
                     else if (item.DisciplineEnrolledMembers.Any(c => c.ExpiringSoon))
                     {
                         ViewBag.ClassName = "yellowrow";
-                    }
+                    }   
 
                     <tr id="linkRow" data-link="/Member/Details/@item.Id" class=@ViewBag.ClassName>
                         <td scope="row">
@@ -87,10 +87,6 @@
             }
         </tbody>
     </table>
-
-    <div class="pagedList">
-        @Html.GeneratePagingButtons(1, 10)
-    </div>
 </div>
 
 @section Scripts {
