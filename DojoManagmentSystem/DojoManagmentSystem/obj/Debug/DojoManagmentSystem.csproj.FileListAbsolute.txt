@@ -164,3 +164,4 @@ C:\Users\aqwer\Desktop\Framework\DojoManagmentSystem\DojoManagmentSystem\obj\Deb
 C:\Users\aqwer\Desktop\Framework\DojoManagmentSystem\DojoManagmentSystem\obj\Debug\DojoManagmentSystem.csproj.CopyComplete
 C:\Users\aqwer\Desktop\Framework\DojoManagmentSystem\DojoManagmentSystem\obj\Debug\DojoManagmentSystem.dll
 C:\Users\aqwer\Desktop\Framework\DojoManagmentSystem\DojoManagmentSystem\obj\Debug\DojoManagmentSystem.pdb
+C:\Users\aqwer\Desktop\Framework\DojoManagmentSystem\DojoManagmentSystem\obj\Debug\DojoManagmentSystem.Migrations.CreateAdmin.resources

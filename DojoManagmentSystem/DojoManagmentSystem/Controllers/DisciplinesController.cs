@@ -64,6 +64,8 @@ namespace DojoManagmentSystem.Controllers
                 ObjectList = db.DisciplineEnrolledMembers,
                 FieldsToDisplay = new List<FieldDisplay>
                 {
+                    new FieldDisplay() {FieldName = "Member.FirstName" },
+                    new FieldDisplay() {FieldName = "Member.LastName" },
                     new FieldDisplay() {FieldName = "StartDate" },
                     new FieldDisplay() {FieldName = "EndDate" },
                     new FieldDisplay() {FieldName = "RemainingCost" },

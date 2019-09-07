@@ -19,6 +19,8 @@ namespace DojoManagmentSystem.Controllers
         protected override ListSettings ListSettings => new ListSettings() { ModalOpen = true, AllowDelete = false };
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>
         {
+            new FieldDisplay() {FieldName = "Member.FirstName" },
+            new FieldDisplay() {FieldName = "Member.LastName" },
             new FieldDisplay() {FieldName = "Amount" },
             new FieldDisplay() {FieldName = "Date" },
             new FieldDisplay() {FieldName = "PaymentType" },

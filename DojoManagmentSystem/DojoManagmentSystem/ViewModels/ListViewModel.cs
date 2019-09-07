@@ -93,10 +93,10 @@ namespace DojoManagmentSystem.ViewModels
                 html.Append("<th scope='col'>Open</th>");
             }
 
-            foreach(FieldDisplay column in FieldsToDisplay)
+            foreach (FieldDisplay column in FieldsToDisplay)
             {
-                PropertyInfo field = ObjectType.GetProperty(column.FieldName);
-                string headerText = column.HeaderText; 
+                PropertyInfo field = column.GetProperty(ObjectType);
+                string headerText = column.HeaderText;
                 if (headerText == null)
                 {
                     DisplayNameAttribute displayNameAttribute = field.GetCustomAttribute<DisplayNameAttribute>();
@@ -118,7 +118,7 @@ namespace DojoManagmentSystem.ViewModels
 
                     if (currentFilter)
                     {
-                        headerText += CurrentSort == "asc" ? "▼" : "▲" ;
+                        headerText += CurrentSort == "asc" ? "▼" : "▲";
                     }
                     html.Append($"<a href='' class='sortbutton' data-filter='{column.FieldName}' data-sort='{sort}'>{headerText}</a>");
                 }
@@ -159,7 +159,7 @@ namespace DojoManagmentSystem.ViewModels
                 }
             }
             stringBuilder.Append("class='");
-            foreach(string name in classNames)
+            foreach (string name in classNames)
             {
                 stringBuilder.Append(name + " ");
             }
@@ -184,36 +184,25 @@ namespace DojoManagmentSystem.ViewModels
                 stringBuilder.Append("</td>");
             }
 
-            foreach(FieldDisplay column in FieldsToDisplay)
+            foreach (FieldDisplay column in FieldsToDisplay)
             {
-                try
-                {
-                    PropertyInfo field = ObjectType.GetProperty(column.FieldName);
-                    if (field != null)
+                    stringBuilder.Append("<td>");
+
+                    if (column.FieldType(obj) == typeof(bool))
                     {
-                        stringBuilder.Append("<td>");
+                        stringBuilder.Append("<div class='form-group'>");
+                        stringBuilder.Append("<div class='custom-control custom-checkbox'>");
+                        stringBuilder.Append($"<input {((bool)column.GetValue(obj) ? "checked='checked'" : "")} class='custom-control-input' disabled='disabled' id='customCheck1' name='item.HasUser' type='checkbox' value='{column.GetValue(obj)}'>");
+                        stringBuilder.Append("<label class='custom-control-label' for='customCheck'></label>");
+                        stringBuilder.Append("</div></div>");
 
-                        if (field.PropertyType == typeof(bool))
-                        {
-                            stringBuilder.Append("<div class='form-group'>");
-                            stringBuilder.Append("<div class='custom-control custom-checkbox'>");
-                            stringBuilder.Append($"<input {((bool)field.GetValue(obj) ? "checked='checked'" : "")} class='custom-control-input' disabled='disabled' id='customCheck1' name='item.HasUser' type='checkbox' value='{field.GetValue(obj)}'>");
-                            stringBuilder.Append("<label class='custom-control-label' for='customCheck'></label>");
-                            stringBuilder.Append("</div></div>");
-
-                        }
-                        else
-                        {
-                            stringBuilder.Append(field.GetValue(obj));
-                        }
-
-                        stringBuilder.Append("</td>");
                     }
-                }
-                catch
-                {
-                    throw;
-                }
+                    else
+                    {
+                        stringBuilder.Append(column.GetValue(obj));
+                    }
+
+                    stringBuilder.Append("</td>");
             }
 
             if (ListSettings.AllowDelete)
@@ -306,6 +295,19 @@ namespace DojoManagmentSystem.ViewModels
             get
             {
                 IQueryable<T> list = _objectList;
+
+                HashSet<string> included = new HashSet<string>();
+
+                foreach(string s in FieldsToDisplay.Where(x => x.FieldName.Contains(".")).Select(x => x.FieldName))
+                {
+                    string objectPath = s.Substring(0, s.LastIndexOf(".")).Trim();
+                    if (!included.Any(x => x == objectPath))
+                    {
+                        list = list.Include(objectPath);
+                        included.Add(objectPath);
+                    }
+                }
+
                 if (!ShowArchived)
                 {
                     list = list.Where(a => !a.IsArchived);
@@ -390,7 +392,7 @@ namespace DojoManagmentSystem.ViewModels
                 string rowClass = "";
                 if (RowClass != null)
                 {
-                     rowClass = RowClass(obj);
+                    rowClass = RowClass(obj);
                 }
                 html.Append(BuildRow(obj, rowClass));
             }
@@ -399,6 +401,7 @@ namespace DojoManagmentSystem.ViewModels
             html.Append($"</table>");
 
             html.Append(BuildPagingButtons());
+            html.Append("</div>");
 
             return new MvcHtmlString(html.ToString());
         }
@@ -420,11 +423,40 @@ namespace DojoManagmentSystem.ViewModels
         public FieldDisplay(string fieldName)
         {
             FieldName = fieldName;
-        }
+        }    
         public string HeaderText { get; set; }
         public string FieldName { get; set; }
         public bool AllowSort { get; set; } = true;
         public bool IsSearchField { get; set; } = true;
         public int? FieldWidth { get; set; } = null;
+
+        public object GetValue(BaseModel obj)
+        {
+            return obj.GetPropValue(FieldName).Value;
+        }
+
+        private Type _fieldType;
+        public Type FieldType(BaseModel obj)
+        {
+            if (_fieldType == null)
+            {
+                _fieldType = obj.GetPropValue(FieldName).PropertyInfo;
+            }
+            return _fieldType;
+        }
+
+
+        public PropertyInfo GetProperty(Type type)
+        {
+            PropertyInfo property = null;
+            foreach (String part in FieldName.Split('.'))
+            {
+                property = type.GetProperty(part);
+                if (property == null) { return null; }
+
+                type = property.PropertyType;
+            }
+            return property;
+        }
     }
 }

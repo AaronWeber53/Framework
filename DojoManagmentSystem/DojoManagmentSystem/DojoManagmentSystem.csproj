@@ -159,10 +159,16 @@
     <Compile Include="Infastructure\Extensions\DynamicLibrary.cs" />
     <Compile Include="Infastructure\Extensions\HtmlExtensions.cs" />
     <Compile Include="Infastructure\Extensions\HttpRequestExtensions.cs" />
+    <Compile Include="Infastructure\Extensions\ObjectExtensions.cs" />
     <Compile Include="Infastructure\Extensions\Queryable.cs" />
+    <Compile Include="Infastructure\Field.cs" />
     <Compile Include="Migrations\201905160056290_InitialCreate.cs" />
     <Compile Include="Migrations\201905160056290_InitialCreate.Designer.cs">
       <DependentUpon>201905160056290_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201909062347078_CreateAdmin.cs" />
+    <Compile Include="Migrations\201909062347078_CreateAdmin.Designer.cs">
+      <DependentUpon>201909062347078_CreateAdmin.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AttendanceSheet.cs" />
@@ -349,6 +355,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201905160056290_InitialCreate.resx">
       <DependentUpon>201905160056290_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201909062347078_CreateAdmin.resx">
+      <DependentUpon>201909062347078_CreateAdmin.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
