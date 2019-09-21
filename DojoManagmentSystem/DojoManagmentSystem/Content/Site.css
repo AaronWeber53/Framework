@@ -23,8 +23,14 @@ tr#linkRow, tr.modal-row-link {
     box-shadow: 4px 4px 2px -2px gray;
 }
 
-.navbar{
-     min-height: 75px;
+.table-header {
+    margin-bottom: 3em;
+    border-top: 1px solid #DFD7CA;
+    padding-top: 1em;
+}
+
+.navbar {
+    min-height: 75px;
 }
 @media (min-width: 1025px) {
     .details-column .card:not(:first-of-type) {

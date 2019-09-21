@@ -127,15 +127,6 @@
                 <div class="card bg-light col-sm-12">
                     <div class="card-header">
                         <h4 class="float-left">Payments</h4>
-                        <div class="float-right">
-                            <button type="button" class="btn btn-sm mr-2 btn-info modal-link" data-targeturl="/Payments/DateRange/@Model.Id">
-                                Print Payments
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/Payments/Create/@Model.Id">
-                                <i class="fas fa-plus"></i> Add Payment
-                            </button>
-
-                        </div>
                     </div>
                     <div class="card-body">
                         @Html.Action("Payments", new { id = Model.Id })

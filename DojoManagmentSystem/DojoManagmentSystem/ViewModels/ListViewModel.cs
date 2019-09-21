@@ -14,8 +14,16 @@ namespace DojoManagmentSystem.ViewModels
 {
     public abstract class ListViewModel
     {
+        public Type ObjectType { get; set; }
+        public abstract IHtmlString BuildList();
+    }
+
+    public class ListViewModel<T> : ListViewModel where T : BaseModel
+    {
         public ListViewModel()
         {
+            ObjectType = typeof(T);
+
             var routeValues = HttpContext.Current.Request.RequestContext.RouteData.Values;
 
             if (routeValues.ContainsKey("controller"))
@@ -27,14 +35,21 @@ namespace DojoManagmentSystem.ViewModels
 
         public ListSettings ListSettings { get; set; } = new ListSettings();
         public List<FieldDisplay> FieldsToDisplay { get; set; }
-        public Type ObjectType { get; set; }
         public bool ShowArchived { get; set; }
-        public abstract int NumberOfPages { get; }
         public string Controller { get; set; }
         public string Action { get; set; }
         public int? RelationID { get; set; }
         public string RelationField { get; set; }
         public int CurrentPage { get; set; }
+        public Func<T, string> RowClass { get; set; }
+
+        public int NumberOfPages
+        {
+            get
+            {
+                return (int)Math.Ceiling((decimal)ObjectList.Count() / (decimal)ListSettings.ItemsPerPage);
+            }
+        }
 
         private string _currentSort;
         public string CurrentSort
@@ -81,9 +96,115 @@ namespace DojoManagmentSystem.ViewModels
             }
         }
 
-        public abstract IHtmlString BuildList();
+        #region Object List
+        private IQueryable<T> _objectList;
+        public IQueryable<T> ObjectList
+        {
+            get
+            {
+                IQueryable<T> list = _objectList;
 
-        public string BuildRowHeaders()
+                HashSet<string> included = new HashSet<string>();
+
+                foreach (string s in FieldsToDisplay.Where(x => x.FieldName.Contains(".")).Select(x => x.FieldName))
+                {
+                    string objectPath = s.Substring(0, s.LastIndexOf(".")).Trim();
+                    if (!included.Any(x => x == objectPath))
+                    {
+                        list = list.Include(objectPath);
+                        included.Add(objectPath);
+                    }
+                }
+
+                FieldDisplay filterField = FieldsToDisplay.FirstOrDefault(f => f.FieldName == FilterField);
+
+                if ((filterField?.IsSearchField).Value && !string.IsNullOrEmpty(CurrentSearch))
+                {
+                    list = list.Where($"{filterField.FieldName}=\"{CurrentSearch} \"");
+                }
+
+                if (!ShowArchived)
+                {
+                    list = list.Where(a => !a.IsArchived);
+                }
+                if (RelationID != null)
+                {
+                    return list.Where($"{Controller}ID={RelationID}");
+                }
+                return list;
+            }
+            set
+            {
+                _objectList = value;
+            }
+        }
+
+        private IEnumerable<T> _filteredList;
+        public IEnumerable<T> FilteredList
+        {
+            get
+            {
+                if (_filteredList == null)
+                {
+                    IQueryable<T> list = ObjectList;
+
+                    FieldDisplay filterField = FieldsToDisplay.FirstOrDefault(f => f.FieldName == FilterField);
+
+                    if (FilterField != null)
+                    {
+                        if (CurrentSort == "desc") 
+                        {
+                            list = list.OrderBy($"{filterField.FieldName} desc");
+                        }
+                        else
+                        {
+                            list = list.OrderBy(filterField.FieldName);
+                        }
+                    }
+                    else
+                    {
+                        list = list.OrderBy(FieldsToDisplay.FirstOrDefault()?.FieldName ?? "");
+                    }
+
+                    _filteredList = list.Skip(ListSettings.ItemsPerPage * (CurrentPage - 1)).Take(ListSettings.ItemsPerPage);
+                }
+
+                return _filteredList;
+            }
+        }
+        #endregion
+
+        public override IHtmlString BuildList()
+        {
+            StringBuilder html = new StringBuilder();
+            html.Append($"<div id='pagingList' data-filter='{FilterField}' data-page='{CurrentPage}' data-sort='{CurrentSort}' data-search='{CurrentSearch}' data-baseurl='/{Controller}/{Action}{(RelationID != null ? $"/{RelationID}" : "")}'>");
+
+            html.Append(BuildTableHeader());
+            html.Append($"<div class='table-responsive'><table class='table tabled-hover'>");
+            html.Append(BuildRowHeaders());
+            html.Append($"<tbody>");
+
+            foreach (T obj in FilteredList)
+            {
+                string rowClass = "";
+                if (RowClass != null)
+                {
+                    rowClass = RowClass(obj);
+                }
+                html.Append(BuildRow(obj, rowClass));
+            }
+
+            html.Append($"</tbody>");
+            html.Append($"</table></div>");
+
+            html.Append(BuildPagingButtons());
+            html.Append("</div>");
+
+            return new MvcHtmlString(html.ToString());
+        }
+
+        #region Row
+        private string BuildRowHeaders()
         {
             StringBuilder html = new StringBuilder();
             html.Append("<thead><tr>");
@@ -139,7 +260,7 @@ namespace DojoManagmentSystem.ViewModels
             return html.ToString();
         }
 
-        public virtual string BuildRow(BaseModel obj, params string[] classes)
+        private string BuildRow(BaseModel obj, params string[] classes)
         {
             StringBuilder stringBuilder = new StringBuilder();
             List<string> classNames = new List<string>();
@@ -150,12 +271,12 @@ namespace DojoManagmentSystem.ViewModels
             {
                 if (ListSettings.ModalOpen)
                 {
-                    stringBuilder.Append($"dcata-targeturl='{ObjectType.Name}/Details/{obj.Id}'");
+                    stringBuilder.Append($"data-targeturl='/{ObjectType.Name}/Details/{obj.Id}'");
                     classNames.Add("modal-row-link");
                 }
                 else
                 {
-                    stringBuilder.Append($"id='linkRow' data-link='{ObjectType.Name}/Details/{obj.Id}'");
+                    stringBuilder.Append($"id='linkRow' data-link='/{ObjectType.Name}/Details/{obj.Id}'");
                 }
             }
             stringBuilder.Append("class='");
@@ -194,8 +315,7 @@ namespace DojoManagmentSystem.ViewModels
                         stringBuilder.Append("<div class='custom-control custom-checkbox'>");
                         stringBuilder.Append($"<input {((bool)column.GetValue(obj) ? "checked='checked'" : "")} class='custom-control-input' disabled='disabled' id='customCheck1' name='item.HasUser' type='checkbox' value='{column.GetValue(obj)}'>");
                         stringBuilder.Append("<label class='custom-control-label' for='customCheck'></label>");
-                        stringBuilder.Append("</div></div>");
-
+                        stringBuilder.Append("</div></div>");                
                     }
                     else
                     {
@@ -218,8 +338,10 @@ namespace DojoManagmentSystem.ViewModels
 
             return stringBuilder.ToString();
         }
+        #endregion
 
-        public string BuildPagingButtons()
+        #region Paging
+        private string BuildPagingButtons()
         {
             StringBuilder buttons = new StringBuilder();
             buttons.Append("<div class='pagedList'>");
@@ -231,7 +353,7 @@ namespace DojoManagmentSystem.ViewModels
 
             if (pageNumber > 1)
             {
-                buttons.Append(BuildButton(1));
+                buttons.Append(BuildPagingButton(1));
                 buttons.Append("...");
             }
 
@@ -239,7 +361,7 @@ namespace DojoManagmentSystem.ViewModels
 
             while (pageNumber <= NumberOfPages && counter <= 3)
             {
-                buttons.Append(BuildButton(pageNumber, CurrentPage == pageNumber));
+                buttons.Append(BuildPagingButton(pageNumber, CurrentPage == pageNumber));
                 pageNumber++;
                 counter++;
             }
@@ -247,7 +369,7 @@ namespace DojoManagmentSystem.ViewModels
             if (pageNumber <= NumberOfPages)
             {
                 buttons.Append("...");
-                buttons.Append(BuildButton(NumberOfPages));
+                buttons.Append(BuildPagingButton(NumberOfPages));
             }
 
             buttons.Append("</ul>" +
@@ -256,155 +378,85 @@ namespace DojoManagmentSystem.ViewModels
             return buttons.ToString();
         }
 
-        private string BuildButton(int number, bool isCurrent = false)
+        private string BuildPagingButton(int number, bool isCurrent = false)
         {
             return $"<li class='page-item {(isCurrent ? "disabled" : "")}'><a class='page-link'>{number}</a></li>";
         }
+        #endregion
 
-        public string BuildSearch()
+        #region Header Items / Search
+        private string BuildSearch()
         {
             StringBuilder html = new StringBuilder();
 
-            FieldDisplay searchField = FieldsToDisplay.FirstOrDefault(a => a.FieldName == FilterField && a.IsSearchField);
-            if (searchField == null)
-            {
-                searchField = FieldsToDisplay.FirstOrDefault(a => a.IsSearchField);
-            }
+            html.Append("<div class='form-inline my-2 my-lg-0 float-left'><div><div class='input-group'>");
+            FieldDisplay searchField = FieldsToDisplay.FirstOrDefault(f => f.FieldName == FilterField);
 
             if (searchField != null)
             {
+                PropertyInfo field = searchField.GetProperty(ObjectType);
+                string headerText = searchField.HeaderText;
+                if (headerText == null)
+                {
+                    DisplayNameAttribute displayNameAttribute = field.GetCustomAttribute<DisplayNameAttribute>();
+                    if (displayNameAttribute != null && !string.IsNullOrEmpty(displayNameAttribute.DisplayName))
+                    {
+                        headerText = displayNameAttribute.DisplayName;
+                    }
+                    else
+                    {
+                        headerText = searchField.FieldName;
+                    }
+                }
 
+                //TODO: write extension to get field type by only using type instead of entire object. This way don't need to pass in the object in unnessesary places
+                html.Append($"<input type='text' name='searchString' class='form-control table-search' placeholder='Search {headerText}' value='{CurrentSearch}' />");
+            }
+
+            html.Append("<div class='input-group-append'>");
+            html.Append("<button class='btn btn-secondary table-searchbutton' type='button'>");
+            html.Append("<i class='fa fa-search'></i></button></div></div></div>");
+            html.Append($"<button class='btn btn-secondary my-2 ml-1 table-reset'>Reset</button>");
+            html.Append("</div>");
+
+            return html.ToString();
+        }
+
+        private string BuildLinkButtons()
+        {
+            StringBuilder html = new StringBuilder();
+
+            int count = ListSettings.Links.Count;
+            foreach(Link link in ListSettings.Links)
+            {
+                html.Append(link.BuildButton(count <= 1));
+                count--;
             }
 
             return html.ToString();
         }
-    }
 
-    public class ListViewModel<T> : ListViewModel where T : BaseModel
-    {
-        public ListViewModel()
-        {
-            ObjectType = typeof(T);
-        }
-
-        public Func<T, string> RowClass { get; set; }
-
-        private IQueryable<T> _objectList;
-        public IQueryable<T> ObjectList
-        {
-            get
-            {
-                IQueryable<T> list = _objectList;
-
-                HashSet<string> included = new HashSet<string>();
-
-                foreach(string s in FieldsToDisplay.Where(x => x.FieldName.Contains(".")).Select(x => x.FieldName))
-                {
-                    string objectPath = s.Substring(0, s.LastIndexOf(".")).Trim();
-                    if (!included.Any(x => x == objectPath))
-                    {
-                        list = list.Include(objectPath);
-                        included.Add(objectPath);
-                    }
-                }
-
-                if (!ShowArchived)
-                {
-                    list = list.Where(a => !a.IsArchived);
-                }
-                if (RelationID != null)
-                {
-                    return list.Where($"{Controller}ID={RelationID}");
-                }
-                return list;
-            }
-            set
-            {
-                _objectList = value;
-            }
-        }
-
-        private IEnumerable<T> _filteredList;
-        public IEnumerable<T> FilteredList
-        {
-            get
-            {
-                if (_filteredList == null)
-                {
-                    IQueryable<T> list = ObjectList;
-
-                    FieldDisplay filterField = FieldsToDisplay.FirstOrDefault(f => f.FieldName == FilterField);
-
-                    if (FilterField != null)
-                    {
-                        if ((filterField?.IsSearchField).Value && !string.IsNullOrEmpty(CurrentSearch))
-                        {
-                            list = list.Where($"{filterField.FieldName}={CurrentSearch}");
-                        }
-
-                        if (CurrentSort == "desc")
-                        {
-                            list = list.OrderBy($"{filterField.FieldName} desc");
-                        }
-                        else
-                        {
-                            list = list.OrderBy(filterField.FieldName);
-                        }
-                    }
-                    else
-                    {
-                        list = list.OrderBy(FieldsToDisplay.FirstOrDefault()?.FieldName ?? "");
-                    }
-
-                    _filteredList = list.Skip(ListSettings.ItemsPerPage * (CurrentPage - 1)).Take(ListSettings.ItemsPerPage);
-                }
-
-                return _filteredList;
-            }
-        }
-
-        public override int NumberOfPages
-        {
-            get
-            {
-                return (int)Math.Ceiling((decimal)ObjectList.Count() / (decimal)ListSettings.ItemsPerPage);
-            }
-        }
-
-
-        public override IHtmlString BuildList()
+        private string BuildTableHeader()
         {
             StringBuilder html = new StringBuilder();
-            html.Append($"<div class='table-responsive' id='pagingList' data-filter='{FilterField}' data-page='{CurrentPage}' data-sort='{CurrentSort}' data-search='{CurrentSearch}' data-baseurl='/{Controller}/{Action}{(RelationID != null ? $"/{RelationID}" : "")}'>");
 
+            html.Append("<div class='table-header'>");
             if (ListSettings.AllowSearch)
             {
                 html.Append(BuildSearch());
             }
 
-            html.Append($"<table class='table tabled-hover'>");
-
-            html.Append(BuildRowHeaders());
-            html.Append($"<tbody>");
-
-            foreach (T obj in FilteredList)
+            if (ListSettings.Links.Count > 0)
             {
-                string rowClass = "";
-                if (RowClass != null)
-                {
-                    rowClass = RowClass(obj);
-                }
-                html.Append(BuildRow(obj, rowClass));
+                html.Append("<div class='float-right'>");
+                html.Append(BuildLinkButtons());
+                html.Append("</div>");
             }
 
-            html.Append($"</tbody>");
-            html.Append($"</table>");
-
-            html.Append(BuildPagingButtons());
             html.Append("</div>");
-
-            return new MvcHtmlString(html.ToString());
+            return html.ToString();
         }
+        #endregion
     }
 
     public class ListSettings
@@ -413,50 +465,8 @@ namespace DojoManagmentSystem.ViewModels
         public bool AllowOpen { get; set; } = true;
         public bool ModalOpen { get; set; } = false;
         public bool AllowDelete { get; set; } = true;
-        public bool AllowSearch { get; set; } = false;
+        public bool AllowSearch { get; set; } = true;
         public int ItemsPerPage { get; set; } = 5;
-    }
-
-    public class FieldDisplay
-    {
-        public FieldDisplay() { }
-        public FieldDisplay(string fieldName)
-        {
-            FieldName = fieldName;
-        }    
-        public string HeaderText { get; set; }
-        public string FieldName { get; set; }
-        public bool AllowSort { get; set; } = true;
-        public bool IsSearchField { get; set; } = true;
-        public int? FieldWidth { get; set; } = null;
-
-        public object GetValue(BaseModel obj)
-        {
-            return obj.GetPropValue(FieldName).Value;
-        }
-
-        private Type _fieldType;
-        public Type FieldType(BaseModel obj)
-        {
-            if (_fieldType == null)
-            {
-                _fieldType = obj.GetPropValue(FieldName).PropertyInfo;
-            }
-            return _fieldType;
-        }
-
-
-        public PropertyInfo GetProperty(Type type)
-        {
-            PropertyInfo property = null;
-            foreach (String part in FieldName.Split('.'))
-            {
-                property = type.GetProperty(part);
-                if (property == null) { return null; }
-
-                type = property.PropertyType;
-            }
-            return property;
-        }
+        public List<Link> Links { get; set; } = new List<Link>();
     }
 }

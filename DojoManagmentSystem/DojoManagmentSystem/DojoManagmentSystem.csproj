@@ -197,6 +197,8 @@
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\ListViewModel.cs" />
+    <Compile Include="ViewModels\ListViewModelObjects\FieldDisplay.cs" />
+    <Compile Include="ViewModels\ListViewModelObjects\Link.cs" />
     <Compile Include="ViewModels\QuickAttendanceViewModel.cs" />
     <Compile Include="ViewModels\UnlockViewModel.cs" />
   </ItemGroup>

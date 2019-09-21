@@ -16,6 +16,11 @@ namespace DojoManagmentSystem.Controllers
 {
     public class MemberController : BaseController<Member>
     {
+        protected override ListSettings ListSettings => new ListSettings()
+        {
+            AllowSearch = true
+        };
+
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>()
         {
             new FieldDisplay("HasUser") { AllowSort = false},
@@ -37,7 +42,25 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSearch = searchString,
                 FilterField = filter,
                 ObjectList = db.Payments,
-                ListSettings = new ListSettings() { ModalOpen = true },
+                ListSettings = new ListSettings()
+                {
+                    ModalOpen = true,
+                    Links = new List<Link>()
+                    {
+                        new Link()
+                        {
+                            URL = $"/Payments/DateRange/{id}",
+                            Text = "Print Payments",
+                            ButtonColor = Link.Color.Blue,
+                            Icon = Link.Icons.Print
+                        },
+                        new Link()
+                        {
+                            URL = $"/Payments/Create/{id}",
+                            Text = "Add Payment"
+                        }
+                    }
+                },
                 FieldsToDisplay = new List<FieldDisplay>
             {
                 new FieldDisplay() {FieldName = "Amount" },
