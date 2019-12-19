@@ -21,7 +21,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: AttendanceSheet
         public ActionResult Index()
         {
-            var attendanceSheets = db.AttendanceSheets.Include(a => a.ClassSession);
+            var attendanceSheets = db.GetDbSet<AttendanceSheet>().Include(a => a.ClassSession);
             return View(attendanceSheets.ToList());
         }
 
@@ -31,7 +31,7 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.DateSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "date_desc" ? "date_asc" : "date_desc";
 
             // Gets the members from the database
-            var sheets = from mem in db.AttendanceSheets
+            var sheets = from mem in db.GetDbSet<AttendanceSheet>()
                               where !mem.IsArchived && mem.ClassSessionId == id
                               group mem by DbFunctions.TruncateTime(mem.AttendanceDate)
                               into groups
@@ -71,7 +71,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            AttendanceSheet attendanceSheet = db.AttendanceSheets.Include("ClassSession").Include("ClassSession.Discipline").FirstOrDefault(a => a.Id == id);
+            AttendanceSheet attendanceSheet = db.GetDbSet<AttendanceSheet>().Include("ClassSession").Include("ClassSession.Discipline").FirstOrDefault(a => a.Id == id);
             if (attendanceSheet == null)
             {
                 return HttpNotFound();
@@ -95,7 +95,7 @@ namespace DojoManagmentSystem.Controllers
             int dow = (int)DateTime.Now.DayOfWeek;
 
             // Get list of displines today.
-             var disciplines = from dis in db.Disciplines
+             var disciplines = from dis in db.GetDbSet<Discipline>()
                               where dis.ClassSessions.Any(dt => (int)dt.DayOfWeek == dow)
                               group dis by dis.Id
                               into groups
@@ -103,7 +103,7 @@ namespace DojoManagmentSystem.Controllers
             model.Disciplines = disciplines.ToList();
 
             // Get list of members
-            model.Members = db.Members.Where(d => !d.IsArchived).ToList();
+            model.Members = db.GetDbSet<Member>().Where(d => !d.IsArchived).ToList();
             return View(model);
         }
 
@@ -113,12 +113,12 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.IsLocked = ApplicationContext.CurrentApplicationContext.CurrentSession.AttendanceLock;
 
             // Get selected member
-            Member member = db.Members.Where(m => m.Id == memberId).FirstOrDefault();
+            Member member = db.GetDbSet<Member>().Where(m => m.Id == memberId).FirstOrDefault();
 
             // Find the class session going on right now for given discipline.
             DateTime dtNow = DateTime.Now;
             int dow = (int)dtNow.DayOfWeek;
-            var classSessionQuery = from cs in db.ClassSessions.Include("Discipline")
+            var classSessionQuery = from cs in db.GetDbSet<ClassSession>().Include("Discipline")
                                     where cs.DisciplineId == disciplineId &&
                                cs.StartTime <= dtNow && cs.EndTime >= dtNow
                                && (int)cs.DayOfWeek == dow
@@ -130,7 +130,7 @@ namespace DojoManagmentSystem.Controllers
             if (classSession == null)
             {
                 // Find the closest class session to now from the given disipline.
-                classSessionQuery = from cs in db.ClassSessions.Include("Discipline")
+                classSessionQuery = from cs in db.GetDbSet<ClassSession>().Include("Discipline")
                                     where cs.DisciplineId == disciplineId
                                     && (int)cs.DayOfWeek == dow
                                     orderby EntityFunctions.DiffSeconds(cs.StartTime, dtNow), 
@@ -149,7 +149,7 @@ namespace DojoManagmentSystem.Controllers
             else
             {
                 // Check if member is already checked in.
-                bool alreadyCheckedIn = db.AttendanceSheets.Any(a => a.MemberId == member.Id
+                bool alreadyCheckedIn = db.GetDbSet<AttendanceSheet>().Any(a => a.MemberId == member.Id
                 && a.ClassSessionId == classSession.Id
                 && DbFunctions.TruncateTime(a.AttendanceDate) == DbFunctions.TruncateTime(dtNow));   
 
@@ -163,7 +163,7 @@ namespace DojoManagmentSystem.Controllers
                         MemberId = member.Id,
                         ClassSessionId = classSession.Id
                     };
-                    db.AttendanceSheets.Add(sheet);
+                    db.GetDbSet<AttendanceSheet>().Add(sheet);
                     db.SaveChanges();
                 }
 
@@ -180,7 +180,7 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult Create(int id)
         {
             string DropIn = Request.Form["DropInList"];
-            ClassSession classSession = db.ClassSessions.Include("Discipline").Include("Discipline.EnrolledMembers").Include("Discipline.EnrolledMembers.Member").FirstOrDefault(c => c.Id == id);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Include("Discipline").Include("Discipline.EnrolledMembers").Include("Discipline.EnrolledMembers.Member").FirstOrDefault(c => c.Id == id);
             AttendanceSheet attendanceSheet = new AttendanceSheet { ClassSession = classSession };
 
             ViewBag.OutputDropDown = this.OutputFilter(id);
@@ -202,7 +202,7 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult Create([Bind(Include = "Id,AttendanceDate,ClassSessionId")] AttendanceSheet attendanceSheet)
         {
             string DropIn = Request.Form["DropInList"];
-            ClassSession classSession = db.ClassSessions.Include("Discipline").Include("Discipline.EnrolledMembers").Include("Discipline.EnrolledMembers.Member").FirstOrDefault(c => c.Id == attendanceSheet.ClassSessionId);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Include("Discipline").Include("Discipline.EnrolledMembers").Include("Discipline.EnrolledMembers.Member").FirstOrDefault(c => c.Id == attendanceSheet.ClassSessionId);
 
             attendanceSheet.ClassSession = classSession;
             string[] ids = Request.Form.GetValues("present");
@@ -227,7 +227,7 @@ namespace DojoManagmentSystem.Controllers
                             attendance.Add(attendee);
                         }
                     }
-                    db.AttendanceSheets.AddRange(attendance);
+                    db.GetDbSet<AttendanceSheet>().AddRange(attendance);
                     db.SaveChanges();
 
                     return Json(new JsonReturn { RefreshScreen = true });
@@ -257,13 +257,13 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            AttendanceSheet attendanceSheet = db.AttendanceSheets.Include("ClassSession").Include("ClassSession.Discipline").FirstOrDefault(a => a.Id == id);
+            AttendanceSheet attendanceSheet = db.GetDbSet<AttendanceSheet>().Include("ClassSession").Include("ClassSession.Discipline").FirstOrDefault(a => a.Id == id);
             if (attendanceSheet == null)
             {
                 return HttpNotFound();
             }
             List<AttendanceViewModel> modelList = GetAttendance(attendanceSheet);
-            List<AttendanceSheet> sheets = db.AttendanceSheets.Where(x => !x.IsArchived).ToList();
+            List<AttendanceSheet> sheets = db.GetDbSet<AttendanceSheet>().Where(x => !x.IsArchived).ToList();
             foreach(AttendanceSheet A in sheets.Where(a => a.ClassSessionId == attendanceSheet.ClassSessionId && a.AttendanceDate == attendanceSheet.AttendanceDate))
             {
                 bool dropIn = true;
@@ -299,7 +299,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,AttendanceDate,MemberId,Present,ClassSessionId")] AttendanceSheet attendanceSheet)
         {
-            ClassSession classSession = db.ClassSessions.Include("Discipline").FirstOrDefault(c => c.Id == attendanceSheet.ClassSessionId);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Include("Discipline").FirstOrDefault(c => c.Id == attendanceSheet.ClassSessionId);
             attendanceSheet.ClassSession = classSession;
             List<AttendanceViewModel> modelList = GetAttendance(attendanceSheet);
 
@@ -328,7 +328,7 @@ namespace DojoManagmentSystem.Controllers
                 });});
 
                 // Creates a list of members that where already marked present for the selected session
-                List<AttendanceSheet> oldAttendance = (from att in db.AttendanceSheets
+                List<AttendanceSheet> oldAttendance = (from att in db.GetDbSet<AttendanceSheet>()
                                                        where att.ClassSessionId == attendanceSheet.ClassSessionId
                                                        && DbFunctions.TruncateTime(att.AttendanceDate) == DbFunctions.TruncateTime(attendanceSheet.AttendanceDate)
                                                        select att).ToList();
@@ -338,12 +338,12 @@ namespace DojoManagmentSystem.Controllers
                 oldAttendance.ForEach(a => { if (ids.IndexOf(a.MemberId.ToString()) < 0) removeAttendance.Add(a); });
                 
                 // Updates database with selected and unselected members
-                db.AttendanceSheets.AddRange(addAttendance);
-                db.AttendanceSheets.RemoveRange(removeAttendance);
+                db.GetDbSet<AttendanceSheet>().AddRange(addAttendance);
+                db.GetDbSet<AttendanceSheet>().RemoveRange(removeAttendance);
                 db.SaveChanges();
 
                 modelList = GetAttendance(attendanceSheet);
-                List<AttendanceSheet> sheets = db.AttendanceSheets.Where(x => !x.IsArchived).ToList();
+                List<AttendanceSheet> sheets = db.GetDbSet<AttendanceSheet>().Where(x => !x.IsArchived).ToList();
                 foreach (AttendanceSheet A in sheets.Where(a => a.ClassSessionId == attendanceSheet.ClassSessionId && a.AttendanceDate == attendanceSheet.AttendanceDate))
                 {
                     bool dropIn = true;
@@ -377,15 +377,15 @@ namespace DojoManagmentSystem.Controllers
 
             ViewBag.Date = date;
 
-            ClassSession classSession = db.ClassSessions.Find(id);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
 
-            var members = (from mem in db.Members.Include("DisciplineEnrolledMembers")
+            var members = (from mem in db.GetDbSet<Member>().Include("DisciplineEnrolledMembers")
                                  where !mem.IsArchived && 
                                  !mem.DisciplineEnrolledMembers.Any(d => d.DisciplineId == classSession.DisciplineId)
                                  select mem).ToList();
 
             // Get list of currentSheets
-            var curSheets = (from sheet in db.AttendanceSheets
+            var curSheets = (from sheet in db.GetDbSet<AttendanceSheet>()
                             where sheet.ClassSessionId == id &&
                             DbFunctions.TruncateTime(sheet.AttendanceDate) == DbFunctions.TruncateTime(date)
                             select new
@@ -407,9 +407,9 @@ namespace DojoManagmentSystem.Controllers
             string date = Request.Form["Date"];
             DateTime attendanceDate = DateTime.Parse(date);
 
-            AttendanceSheet newAttendanceSheet = new AttendanceSheet { ClassSessionId = int.Parse(ClassSessionId), MemberId = int.Parse(DropInId), Member= db.Members.Find(int.Parse(DropInId)), AttendanceDate = attendanceDate };
+            AttendanceSheet newAttendanceSheet = new AttendanceSheet { ClassSessionId = int.Parse(ClassSessionId), MemberId = int.Parse(DropInId), Member= db.GetDbSet<Member>().Find(int.Parse(DropInId)), AttendanceDate = attendanceDate };
                        
-            db.AttendanceSheets.Add(newAttendanceSheet);
+            db.GetDbSet<AttendanceSheet>().Add(newAttendanceSheet);
             db.SaveChanges();
 
             return Json(new JsonReturn { RefreshScreen = true });
@@ -423,7 +423,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            AttendanceSheet attendanceSheet = db.AttendanceSheets.Find(id);
+            AttendanceSheet attendanceSheet = db.GetDbSet<AttendanceSheet>().Find(id);
             if (attendanceSheet == null)
             {
                 return HttpNotFound();
@@ -436,14 +436,14 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            AttendanceSheet attendanceSheet = db.AttendanceSheets.Find(id);
+            AttendanceSheet attendanceSheet = db.GetDbSet<AttendanceSheet>().Find(id);
 
-            List<AttendanceSheet> attendanceSheets = (from att in db.AttendanceSheets
+            List<AttendanceSheet> attendanceSheets = (from att in db.GetDbSet<AttendanceSheet>()
                                     where att.ClassSessionId == attendanceSheet.ClassSessionId
                                     && DbFunctions.TruncateTime(att.AttendanceDate) == DbFunctions.TruncateTime(attendanceSheet.AttendanceDate)
                                     select att).ToList();
 
-            db.AttendanceSheets.RemoveRange(attendanceSheets);
+            db.GetDbSet<AttendanceSheet>().RemoveRange(attendanceSheets);
             db.SaveChanges();
             return Json(new JsonReturn { RefreshScreen = true });
         }
@@ -460,7 +460,7 @@ namespace DojoManagmentSystem.Controllers
         private List<AttendanceViewModel> GetAttendance(AttendanceSheet attendanceSheet)
         {
             // Gets a list of members from the database for the selected discipline
-            var mems = (from mem in db.Members.Include("DisciplineEnrolledMembers").Include("AttendanceSheets")
+            var mems = (from mem in db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("AttendanceSheets")
                         where (!mem.IsArchived &&
                         mem.DisciplineEnrolledMembers.Any(d => d.DisciplineId == attendanceSheet.ClassSession.DisciplineId))
                         || (mem.AttendanceSheets.Any(a => 
@@ -473,7 +473,7 @@ namespace DojoManagmentSystem.Controllers
                            }).ToList();
 
             // Gets a list of attendance records from the database for the selected discipline
-            var attendanceSheets = (from att in db.AttendanceSheets
+            var attendanceSheets = (from att in db.GetDbSet<AttendanceSheet>()
                                     where !att.IsArchived &&
                                     att.ClassSessionId == attendanceSheet.ClassSessionId
                                     && DbFunctions.TruncateTime(att.AttendanceDate) == DbFunctions.TruncateTime(attendanceSheet.AttendanceDate)
@@ -500,8 +500,8 @@ namespace DojoManagmentSystem.Controllers
 
         private List<Member> OutputFilter(int id)
         {
-            ClassSession classSession = db.ClassSessions.Find(id);
-            var membersList = (from mem in db.Members.Include("DisciplineEnrolledMembers")
+            ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
+            var membersList = (from mem in db.GetDbSet<Member>().Include("DisciplineEnrolledMembers")
                                where !mem.IsArchived &&
                                !mem.DisciplineEnrolledMembers.Any(d => d.DisciplineId == classSession.DisciplineId)
                                select mem);
@@ -510,8 +510,8 @@ namespace DojoManagmentSystem.Controllers
 
         private List<Member> GetDropIns(string[] ids, int id)
         {
-            ClassSession classSession = db.ClassSessions.Find(id);
-            var membersList = (from mem in db.Members.Include("DisciplineEnrolledMembers")
+            ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
+            var membersList = (from mem in db.GetDbSet<Member>().Include("DisciplineEnrolledMembers")
                                where !mem.IsArchived &&
                                !mem.DisciplineEnrolledMembers.Any(d => d.DisciplineId == classSession.DisciplineId) &&
                                ids.Any(i => i == mem.Id.ToString())

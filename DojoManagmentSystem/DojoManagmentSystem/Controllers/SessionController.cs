@@ -42,7 +42,7 @@ namespace DojoManagmentSystem.Controllers
         [HttpPost]
         public ActionResult SignIn(string email, string password, bool rememberMe = false)
         {
-            List<User> users = db.Users.Where(u => !u.IsArchived).ToList();
+            List<User> users = db.GetDbSet<User>().Where(u => !u.IsArchived).ToList();
 
             if (email != null && password != null)
             {
@@ -63,7 +63,7 @@ namespace DojoManagmentSystem.Controllers
                         Response.Cookies.Add(cookie);
 
                         // Add the session to the database.
-                        db.Sessions.Add(newSession);
+                        db.GetDbSet<Session>().Add(newSession);
                         db.SaveChanges();
 
                         // Redirect to home.
@@ -139,7 +139,7 @@ namespace DojoManagmentSystem.Controllers
             string hash = sessionCookie.Value;
 
             // Based on the hash look for the corresponding session.
-            return db.Sessions.Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
+            return db.GetDbSet<Session>().Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Web;
 
 namespace DojoManagmentSystem.Models
 {
-    public class Session
+    public class Session : BaseModel
     {
         public Session() { }
         public Session(int userId, bool rememberMe = false)
@@ -19,8 +19,6 @@ namespace DojoManagmentSystem.Models
                 Expires = DateTime.Now.AddDays(30);
             }
         }
-
-        public int Id { get; set; }
 
         public string SessionHash { get; set; }
 

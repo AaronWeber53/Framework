@@ -21,14 +21,14 @@ namespace DojoManagmentSystem.Controllers
         // GET: ClassSession
         public ActionResult Index()
         {
-            var disciplines = db.Disciplines.Include(d => d.ClassSessions);
+            var disciplines = db.GetDbSet<Discipline>().Include(d => d.ClassSessions);
             return PartialView(disciplines.ToList());
         }
 
         public ActionResult Attendance(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
             // Gets the members from the database
-            var sheets = from mem in db.AttendanceSheets
+            var sheets = from mem in db.GetDbSet<AttendanceSheet>()
                          group mem by DbFunctions.TruncateTime(mem.AttendanceDate)
                               into groups
                          select groups.FirstOrDefault();
@@ -59,7 +59,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ClassSession model = db.ClassSessions.Find(id);
+            ClassSession model = db.GetDbSet<ClassSession>().Find(id);
             if (model == null)
             {
                 return HttpNotFound();
@@ -84,7 +84,7 @@ namespace DojoManagmentSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.ClassSessions.Add(classSession);
+                db.GetDbSet<ClassSession>().Add(classSession);
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
@@ -92,7 +92,7 @@ namespace DojoManagmentSystem.Controllers
                 });
             }
 
-            ViewBag.DisciplineId = new SelectList(db.Disciplines, "Id", "Name", classSession.DisciplineId);
+            ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", classSession.DisciplineId);
             return PartialView(classSession);
         }
 
@@ -103,7 +103,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ClassSession classSession = db.ClassSessions.Find(id);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
             ClassSessionEditViewModel classSessionOutput = new ClassSessionEditViewModel { Id = classSession.Id, DayOfWeek = classSession.DayOfWeek, EndTime = classSession.EndTime, StartTime = classSession.StartTime, DisciplineId = classSession.DisciplineId };
             if (classSession == null)
             {
@@ -137,7 +137,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ClassSession classSession = db.ClassSessions.Find(id);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
             if (classSession == null)
             {
                 return HttpNotFound();
@@ -150,7 +150,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            ClassSession classSession = db.ClassSessions.Include("AttendanceSheets").FirstOrDefault(a => a.Id == id);
+            ClassSession classSession = db.GetDbSet<ClassSession>().Include("AttendanceSheets").FirstOrDefault(a => a.Id == id);
             classSession.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

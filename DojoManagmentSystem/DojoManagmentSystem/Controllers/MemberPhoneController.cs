@@ -33,7 +33,7 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 memberPhone.IsArchived = false;
-                db.MemberPhones.Add(memberPhone);
+                db.GetDbSet<MemberPhone>().Add(memberPhone);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
@@ -48,7 +48,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberPhone phone = db.MemberPhones.Find(id);
+            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
             if (phone == null)
             {
                 return HttpNotFound();
@@ -79,7 +79,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberPhone phone = db.MemberPhones.Find(id);
+            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
             if (phone == null)
             {
                 return HttpNotFound();
@@ -92,7 +92,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            MemberPhone phone = db.MemberPhones.Find(id);
+            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
             phone.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

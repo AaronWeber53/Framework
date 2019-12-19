@@ -38,7 +38,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
-                ObjectList = db.ClassSessions,
+                ObjectList = db.GetDbSet<ClassSession>(),
                 FieldsToDisplay = new List<FieldDisplay>
                 {
                     new FieldDisplay() {FieldName = "StartTime" },
@@ -61,7 +61,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSearch = searchString,
                 FilterField = filter,
                 ListSettings = new ListSettings() { ModalOpen = true },
-                ObjectList = db.DisciplineEnrolledMembers,
+                ObjectList = db.GetDbSet<DisciplineEnrolledMember>(),
                 FieldsToDisplay = new List<FieldDisplay>
                 {
                     new FieldDisplay() {FieldName = "Member.FirstName" },
@@ -79,7 +79,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Disciplines
         public ActionResult Index()
         {
-            return View(db.Disciplines.ToList());
+            return View(db.GetDbSet<Discipline>().ToList());
         }
 
         // GET: Disciplines/Details/5
@@ -89,7 +89,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
         
             if (discipline == null)
             {
@@ -115,7 +115,7 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 discipline.IsArchived = false;
-                db.Disciplines.Add(discipline);
+                db.GetDbSet<Discipline>().Add(discipline);
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
@@ -133,12 +133,13 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
             if (discipline == null)
             {
                 return HttpNotFound();
             }
             ViewBag.IsValid = false;
+
             return PartialView("Edit", discipline);
         }
 
@@ -168,7 +169,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
             if (discipline == null)
             {
                 return HttpNotFound();
@@ -181,7 +182,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
             discipline.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

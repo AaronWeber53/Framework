@@ -10,23 +10,24 @@ namespace DojoManagmentSystem.Migrations
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
+            AutomaticMigrationDataLossAllowed = true;
         }
 
         protected override void Seed(DAL.DojoManagmentContext context)
         {
             //  This method will be called after migrating to the latest version.
-            if (!context.Members.Any(a => a.User.Username == "Admin"))
+            if (!context.GetDbSet<Member>().Any(a => a.User.Username == "Admin"))
             {
                 Member memberAdmin = new Member() { Id = -1, FirstName = "Admin", LastName = "Admin", IsInstructor = true };
-                context.Members.AddOrUpdate(memberAdmin);
+                context.GetDbSet<Member>().AddOrUpdate(memberAdmin);
                 context.SaveChanges();
 
                 User admin = new User() { Id = -1, Username = "Admin", HashPassword = "Password" };
                 memberAdmin.User = admin;
                 admin.Member = memberAdmin;
 
-                context.Users.AddOrUpdate(admin);
+                context.GetDbSet<User>().AddOrUpdate(admin);
                 context.SaveChanges();
             }
             //  You can use the DbSet<T>.AddOrUpdate() helper extension method 

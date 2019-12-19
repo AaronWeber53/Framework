@@ -16,7 +16,7 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult Index()
         {
             // Gets all of the discipline enrolled members from the database and puts them in a list.
-            var memberList = (from mem in db.DisciplineEnrolledMembers
+            var memberList = (from mem in db.GetDbSet<DisciplineEnrolledMember>()
                               where !mem.IsArchived
                               select new
                               {
@@ -31,7 +31,7 @@ namespace DojoManagmentSystem.Controllers
             DayOfWeek today = DateTime.Now.DayOfWeek;
 
             // Gets all of the class sessions from the database and puts them in a list.
-            var classSession = (from cls in db.ClassSessions
+            var classSession = (from cls in db.GetDbSet<ClassSession>()
                                 where cls.DayOfWeek == today 
                                 && !cls.IsArchived
                                 select new

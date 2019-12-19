@@ -39,7 +39,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Payment payment = db.Payments.Find(id);
+            Payment payment = db.GetDbSet<Payment>().Find(id);
             if (payment == null)
             {
                 return HttpNotFound();
@@ -50,7 +50,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Payments/Create
         public ActionResult Create(int id)
         {
-            Member member = db.Members.Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").FirstOrDefault(m => m.Id == id);
+            Member member = db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").FirstOrDefault(m => m.Id == id);
             if (member != null)
             {
                 Payment payment = new Payment() { Member = member, MemberID = id };
@@ -66,7 +66,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Description,Amount,Date,MemberId,PaymentType,Member")] Payment payment, int membershipId)
         {
-            Member member = db.Members.Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").First(m => m.Id == payment.MemberID);
+            Member member = db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").First(m => m.Id == payment.MemberID);
             if (ModelState.IsValid)
             {
                 if (membershipId != 0)
@@ -74,7 +74,7 @@ namespace DojoManagmentSystem.Controllers
                     DisciplineEnrolledMember membership = member.DisciplineEnrolledMembers.First(d => d.Id == membershipId);
                     membership.MakePayment(payment.Amount);
                 }
-                db.Payments.Add(payment);
+                db.GetDbSet<Payment>().Add(payment);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
@@ -89,7 +89,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Payment payment =db.Payments.Include("Member").FirstOrDefault(m => m.Id == id);
+            Payment payment =db.GetDbSet<Payment>().Include("Member").FirstOrDefault(m => m.Id == id);
             if (payment == null)
             {
                 return HttpNotFound();
@@ -106,7 +106,7 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult Edit([Bind(Include = "Id,Description,Amount,Date,MemberId,PaymentType")] Payment payment)
         {
             ViewBag.IsValid = false;
-            payment.Member = db.Members.Find(payment.MemberID);
+            payment.Member = db.GetDbSet<Member>().Find(payment.MemberID);
             if (ModelState.IsValid)
             {
                 db.Entry(payment).State = EntityState.Modified;
@@ -124,7 +124,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Payment payment = db.Payments.Find(id);
+            Payment payment = db.GetDbSet<Payment>().Find(id);
             if (payment == null)
             {
                 return HttpNotFound();
@@ -137,7 +137,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Payment payment =  db.Payments.Find(id);
+            Payment payment =  db.GetDbSet<Payment>().Find(id);
             payment.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }
@@ -145,7 +145,7 @@ namespace DojoManagmentSystem.Controllers
         // Calls the view to load the pdf.
         public ActionResult PrintPaymentSlip(int id)
         {
-            var payment = new Rotativa.PartialViewAsPdf("IndexById", db.Payments.Include("Member").Where(p => p.Id == id).First());
+            var payment = new Rotativa.PartialViewAsPdf("IndexById", db.GetDbSet<Payment>().Include("Member").Where(p => p.Id == id).First());
             ViewBag.DateTime = DateTime.Now;
             return payment;
         }
@@ -153,14 +153,14 @@ namespace DojoManagmentSystem.Controllers
         // The view for individual print slips
         public ActionResult IndexById(int id)
         {
-            var payment = db.Payments.Where(p => p.Id == id).First();
+            var payment = db.GetDbSet<Payment>().Where(p => p.Id == id).First();
             return View(payment);
         }
 
         // The view for payment history receipts.
         public ActionResult PrintView()
         {
-            var payments = db.Payments.ToList();
+            var payments = db.GetDbSet<Payment>().ToList();
             return View(payments);
         }
 
@@ -176,7 +176,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DateRange([Bind(Include = "StartDate,EndDate,MemberId")] DateRangeViewModel viewModel)
         {
-            var payments = db.Payments.Include("Member").Where(p => !p.IsArchived);
+            var payments = db.GetDbSet<Payment>().Include("Member").Where(p => !p.IsArchived);
 
             if (viewModel.StartDate != null)
             {

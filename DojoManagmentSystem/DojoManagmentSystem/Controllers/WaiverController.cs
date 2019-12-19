@@ -21,7 +21,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             if (waiver == null)
             {
                 return HttpNotFound();
@@ -32,7 +32,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Waiver/Create
         public ActionResult Create(int id)
         {
-            ViewBag.LastUserIdModifiedBy = new SelectList(db.Users, "Id", "Username");
+            ViewBag.LastUserIdModifiedBy = new SelectList(db.GetDbSet<User>(), "Id", "Username");
 
             Waiver waiver = new Waiver { DateSigned = DateTime.Today };
 
@@ -49,7 +49,7 @@ namespace DojoManagmentSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Waivers.Add(waiver);
+                db.GetDbSet<Waiver>().Add(waiver);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
@@ -65,7 +65,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             if (waiver == null)
             {
                 return HttpNotFound();
@@ -99,7 +99,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             if (waiver == null)
             {
                 return HttpNotFound();
@@ -112,7 +112,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             waiver.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

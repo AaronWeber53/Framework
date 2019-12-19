@@ -29,6 +29,15 @@ namespace DojoManagmentSystem.Controllers
             new FieldDisplay("IsInstructor"),
         };
 
+        protected override List<string> EditRelationships => new List<string>()
+        {
+            "User",
+            "DisciplineEnrolledMembers",
+            "Payments",
+            "Waivers",
+            "Contact",
+        };
+
         #region Relation Lists
         //// GET: Payments
         public ActionResult Payments(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
@@ -41,7 +50,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
-                ObjectList = db.Payments,
+                ObjectList = db.GetDbSet<Payment>(),
                 ListSettings = new ListSettings()
                 {
                     ModalOpen = true,
@@ -84,7 +93,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
-                ObjectList = db.Contacts,
+                ObjectList = db.GetDbSet<Contact>(),
                 FieldsToDisplay = new List<FieldDisplay>
             {
                 new FieldDisplay() {FieldName = "Name" },
@@ -107,7 +116,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
                 FilterField = filter,
-                ObjectList = db.Waivers,
+                ObjectList = db.GetDbSet<Waiver>(),
                 ListSettings = new ListSettings() { ModalOpen = true },
                 FieldsToDisplay = new List<FieldDisplay>
             {
@@ -131,7 +140,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSearch = searchString,
                 FilterField = filter,
                 ListSettings = new ListSettings() { ItemsPerPage = 3, AllowOpen = false },
-                ObjectList = db.AttendanceSheets,
+                ObjectList = db.GetDbSet<AttendanceSheet>(),
                 FieldsToDisplay = new List<FieldDisplay>
                 {
                     new FieldDisplay() {FieldName = "AttendanceDate" },
@@ -152,7 +161,7 @@ namespace DojoManagmentSystem.Controllers
                 CurrentSearch = searchString,
                 FilterField = filter,
                 ListSettings = new ListSettings() { ModalOpen = true },
-                ObjectList = db.DisciplineEnrolledMembers,
+                ObjectList = db.GetDbSet<DisciplineEnrolledMember>(),
                 FieldsToDisplay = new List<FieldDisplay>
                 {
                     new FieldDisplay() {FieldName = "StartDate" },
@@ -178,7 +187,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Member member = db.Members.Include("User").FirstOrDefault(m => m.Id == id);
+            Member member = db.GetDbSet<Member>().Include("User").FirstOrDefault(m => m.Id == id);
 
             if (member == null)
             {
@@ -192,7 +201,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Member/Create
         public ActionResult Create()
         {
-            ViewBag.Disciplines = db.Disciplines.ToList();
+            ViewBag.Disciplines = db.GetDbSet<Discipline>().ToList();
 
             return PartialView("Create");
         }
@@ -204,13 +213,13 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,FirstName,LastName,IsInstructor")] Member member)
         {
-            ViewBag.Disciplines = db.Disciplines.ToList();
+            ViewBag.Disciplines = db.GetDbSet<Discipline>().ToList();
             string disciplineId = Request.Form["Dropdown"];
 
             if (ModelState.IsValid)
             {
                 member.IsArchived = false;
-                db.Members.Add(member);
+                db.GetDbSet<Member>().Add(member);
                 db.SaveChanges();
                 if (disciplineId == "None")
                 {
@@ -223,9 +232,9 @@ namespace DojoManagmentSystem.Controllers
                 {
                     DisciplineEnrolledMember enrolledMember = new DisciplineEnrolledMember();
                     enrolledMember.MemberId = member.Id;
-                    enrolledMember.Member = db.Members.Find(enrolledMember.MemberId);
+                    enrolledMember.Member = db.GetDbSet<Member>().Find(enrolledMember.MemberId);
                     enrolledMember.DisciplineId = int.Parse(disciplineId);
-                    enrolledMember.Discipline = db.Disciplines.Find(enrolledMember.DisciplineId);
+                    enrolledMember.Discipline = db.GetDbSet<Discipline>().Find(enrolledMember.DisciplineId);
 
                     return PartialView("Enroll", enrolledMember);
                 }
@@ -242,7 +251,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 enrolledMember.RemainingCost = enrolledMember.Cost;
                 enrolledMember.EndDate = enrolledMember.StartDate.AddMonths(enrolledMember.MembershipLength);
-                db.DisciplineEnrolledMembers.Add(enrolledMember);
+                db.GetDbSet<DisciplineEnrolledMember>().Add(enrolledMember);
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
@@ -250,85 +259,9 @@ namespace DojoManagmentSystem.Controllers
                 });
             }
 
-            ViewBag.DisciplineId = new SelectList(db.Disciplines, "Id", "Name", enrolledMember.DisciplineId);
+            ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", enrolledMember.DisciplineId);
             return PartialView(enrolledMember);
         }
 
-        // GET: Member/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Include("User").FirstOrDefault(m => m.Id == id);
-            if (member == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", member);
-        }
-
-        // POST: Member/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,Note,IsInstructor")] Member member)
-        {
-            ViewBag.IsValid = false;
-            if (ModelState.IsValid)
-            {
-                db.Entry(member).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
-            }
-            member.User = db.Users.Include("Member").FirstOrDefault(u => u.Member.Id == member.Id && !u.IsArchived);
-            return PartialView("Edit", member);
-        }
-
-        // GET: Member/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Find(id);
-            if (member == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(member);
-        }
-
-        // POST: Member/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            try
-            {
-                Member member = db.Members.Include("DisciplineEnrolledMembers").Include("Payments")
-                    .Include("Waivers").Include("Contact")
-                    .Include("User").FirstOrDefault(m => m.Id == id);
-                member.Delete(db);
-                return Json(new JsonReturn { RefreshScreen = true });
-            }
-            catch (LastUserExpection ex)
-            {
-                return Json(new JsonReturn { ErrorMessage = ex.Message });
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

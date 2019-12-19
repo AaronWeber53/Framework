@@ -74,7 +74,7 @@ namespace DojoManagmentSystem.Models
         {
             get
             {
-                var attendanceSheets = db.AttendanceSheets.Where(x => x.MemberId == this.MemberId && x.ClassSession.DisciplineId == this.DisciplineId && x.AttendanceDate.Month == DateTime.Now.Month && x.AttendanceDate.Year == DateTime.Now.Year);
+                var attendanceSheets = db.GetDbSet<AttendanceSheet>().Where(x => x.MemberId == this.MemberId && x.ClassSession.DisciplineId == this.DisciplineId && x.AttendanceDate.Month == DateTime.Now.Month && x.AttendanceDate.Year == DateTime.Now.Year);
 
                 return attendanceSheets.Count();
             }
@@ -84,7 +84,7 @@ namespace DojoManagmentSystem.Models
         {
             get
             {
-                var attendanceSheets = db.AttendanceSheets.Where(x => x.MemberId == this.MemberId && x.ClassSession.DisciplineId == this.DisciplineId);
+                var attendanceSheets = db.GetDbSet<AttendanceSheet>().Where(x => x.MemberId == this.MemberId && x.ClassSession.DisciplineId == this.DisciplineId);
 
                 return attendanceSheets.Count();
             }

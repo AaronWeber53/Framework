@@ -18,9 +18,31 @@ namespace DojoManagmentSystem.DAL
             Configuration.LazyLoadingEnabled = false;
         }
 
-        #region DBSets
 
-        #endregion
+        public static List<T> GetGenericList<T>() where T : BaseModel
+        {
+            List<T> myDynamicList;
+
+            using (DojoManagmentContext db = new DojoManagmentContext())
+            {
+                // consider using exception handling here as GetDbSet might get an invalid type
+                IQueryable<T> dbSet = db.GetDbSet<T>();
+                myDynamicList = dbSet.ToList();
+
+            }
+
+            if (myDynamicList != null && myDynamicList.Count() > 0)
+            {
+                return myDynamicList;
+            }
+            return new List<T>();
+        }
+
+        public DbSet<T> GetDbSet<T>() where T : BaseModel
+        {
+            return this.Set<T>();
+        }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
@@ -47,38 +69,13 @@ namespace DojoManagmentSystem.DAL
             return base.SaveChanges();
         }
 
-        public DbSet<User> Users { get; set; }
-
-        public DbSet<Member> Members { get; set; }
-
-        public DbSet<Payment> Payments { get; set; }
-
-        public DbSet<Session> Sessions { get; set; }
-
-        public DbSet<Contact> Contacts { get; set; }
-
-        public DbSet<MemberPhone> MemberPhones { get; set; }
-
-        public DbSet<MemberEmail> MemberEmail { get; set; }
-
-        public DbSet<MemberAddress> MemberAddresses { get; set; }
-
-        public DbSet<Discipline> Disciplines { get; set; }
-
-        public DbSet<ClassSession> ClassSessions { get; set; }
-
-        public DbSet<DisciplineEnrolledMember> DisciplineEnrolledMembers { get; set; }
-
-        public DbSet<AttendanceSheet> AttendanceSheets { get; set; }
-
-        public DbSet<Waiver> Waivers { get; set; }
 
         public IQueryable<T> GetDBList<T>() where T : BaseModel
         {
             Type type = typeof(DbSet<T>);
             var objectList = this.GetType().GetProperties();
-            var newLisrt = objectList.Where(m => m.PropertyType == type).First().GetValue(this);
-            return (IQueryable<T>)newLisrt;
+            var newList = objectList.Where(m => m.PropertyType == type).First().GetValue(this);
+            return (IQueryable<T>)newList;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Disciplines
         public ActionResult Index()
         {
-            return View(db.Disciplines.ToList());
+            return View(db.GetDbSet<Discipline>().ToList());
         }
 
         // GET: Disciplines/Details/5
@@ -27,7 +27,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Contact contact = db.Contacts.Find(id);
+            Contact contact = db.GetDbSet<Contact>().Find(id);
         
             if (contact == null)
             {
@@ -38,7 +38,7 @@ namespace DojoManagmentSystem.Controllers
             model.MemberPhones = new List<MemberPhone>();
             model.MemberEmails = new List<MemberEmail>();
             model.MemberAddresses = new List<MemberAddress>();
-            List<MemberPhone> phones = db.MemberPhones.ToList();
+            List<MemberPhone> phones = DojoManagmentContext.GetGenericList<MemberPhone>();
             foreach (MemberPhone mp in phones)
             {
                 if (mp.ContactID == contact.Id)
@@ -46,7 +46,7 @@ namespace DojoManagmentSystem.Controllers
                     model.MemberPhones.Add(mp);
                 }
             }
-            List<MemberEmail> emails = db.MemberEmail.ToList();
+            List<MemberEmail> emails = DojoManagmentContext.GetGenericList<MemberEmail>();
             foreach (MemberEmail me in emails)
             {
                 if (me.ContactID == contact.Id)
@@ -54,7 +54,7 @@ namespace DojoManagmentSystem.Controllers
                     model.MemberEmails.Add(me);
                 }
             }
-            List<MemberAddress> addresses = db.MemberAddresses.ToList();
+            List<MemberAddress> addresses = DojoManagmentContext.GetGenericList<MemberAddress>();
             foreach (MemberAddress ma in addresses)
             {
                 if (ma.ContactID == contact.Id)
@@ -73,7 +73,7 @@ namespace DojoManagmentSystem.Controllers
             contact.MemberPhone = new MemberPhone();
             contact.MemberEmail = new MemberEmail();
             contact.MemberAddress = new MemberAddress();
-            bool hasPrimary = db.Members.First(m => m.Id == id).Contact.Any(c => !c.IsArchived);
+            bool hasPrimary = DojoManagmentContext.GetGenericList<Member>().First(m => m.Id == id).Contact.Any(c => !c.IsArchived);
             contact.Contact.MemberId = id;
 
             // If the member doesn't have a contact default to primary.
@@ -96,7 +96,7 @@ namespace DojoManagmentSystem.Controllers
                 model.MemberEmail.IsArchived = false;
                 model.MemberAddress.IsArchived = false;
 
-                db.Contacts.Add(model.Contact);
+                db.GetDbSet<Contact>().Add(model.Contact);
                 db.SaveChanges();
 
                 model.MemberPhone.ContactID = model.Contact.Id;
@@ -104,13 +104,13 @@ namespace DojoManagmentSystem.Controllers
                 model.MemberAddress.ContactID = model.Contact.Id;   
 
                 if(model.MemberPhone.PhoneNumber != null) {
-                db.MemberPhones.Add(model.MemberPhone);
+                db.GetDbSet<MemberPhone>().Add(model.MemberPhone);
                 }
                 if (model.MemberEmail.Email != null) {
-                    db.MemberEmail.Add(model.MemberEmail);
+                    db.GetDbSet<MemberEmail>().Add(model.MemberEmail);
                 }
                 if (model.MemberAddress.Street != null) {
-                    db.MemberAddresses.Add(model.MemberAddress);
+                    db.GetDbSet<MemberAddress>().Add(model.MemberAddress);
                 }
                 db.SaveChanges();
 
@@ -127,7 +127,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Contact contact = db.Contacts.Find(id);
+            Contact contact = db.GetDbSet<Contact>().Find(id);
             if (contact == null)
             {
                 return HttpNotFound();
@@ -162,7 +162,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Contact contact = db.Contacts.Find(id);
+            Contact contact = db.GetDbSet<Contact>().Find(id);
             if (contact == null)
             {
                 return HttpNotFound();
@@ -171,38 +171,6 @@ namespace DojoManagmentSystem.Controllers
         }
 
         // POST: Payments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Contact contact = db.Contacts.Find(id);
-            List<MemberPhone> phones = db.MemberPhones.ToList();
-            foreach(MemberPhone mp in phones)
-            {
-                if(mp.ContactID == contact.Id)
-                {
-                    mp.Delete(db);
-                }
-            }
-            List<MemberEmail> emails = db.MemberEmail.ToList();
-            foreach (MemberEmail me in emails)
-            {
-                if (me.ContactID == contact.Id)
-                {
-                    me.Delete(db);
-                }
-            }
-            List<MemberAddress> addresses = db.MemberAddresses.ToList();
-            foreach (MemberAddress ma in addresses)
-            {
-                if (ma.ContactID == contact.Id)
-                {
-                    ma.Delete(db);
-                }
-            }
-            contact.Delete(db);
-            return Json(new JsonReturn { RefreshScreen = true });
-        }
 
         protected override void Dispose(bool disposing)
         {

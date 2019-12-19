@@ -18,7 +18,7 @@ namespace DojoManagmentSystem.Controllers
         {
             ViewBag.DisciplineId = id;
 
-            return PartialView(db.Members.ToList());
+            return PartialView(db.GetDbSet<Member>().ToList());
         }
 
         public ActionResult Details(int? id)
@@ -27,7 +27,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
             if (enrolledMember == null)
             {
                 return HttpNotFound();
@@ -43,7 +43,7 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.PaymentRemainingSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "remainingcost_desc" ? "remainingcost_asc" : "remainingcost_desc";
             ViewBag.EndDateSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "enddate_desc" ? "enddate_asc" : "enddate_desc";
 
-            var members = db.DisciplineEnrolledMembers.Include("Discipline").Where(m => !m.IsArchived && m.MemberId == id);
+            var members = db.GetDbSet<DisciplineEnrolledMember>().Include("Discipline").Where(m => !m.IsArchived && m.MemberId == id);
 
             // Order the  members depending on what parameter was passed in.
             switch (sortOrder)
@@ -86,7 +86,7 @@ namespace DojoManagmentSystem.Controllers
             DisciplineEnrolledMember enrolledMember = new DisciplineEnrolledMember();
             enrolledMember.DisciplineId = id;
             enrolledMember.StartDate = DateTime.Today;
-            ViewBag.Members = db.Members.Where(a => !a.IsArchived).ToList();
+            ViewBag.Members = db.GetDbSet<Member>().Where(a => !a.IsArchived).ToList();
 
             return PartialView(enrolledMember);
         }
@@ -104,24 +104,24 @@ namespace DojoManagmentSystem.Controllers
                 if (ModelState.IsValid)
                 {
                     enrolledMember.MemberId = int.Parse(Request.Form["students"]);
-                    enrolledMember.Member = db.Members.Find(enrolledMember.MemberId);
+                    enrolledMember.Member = db.GetDbSet<Member>().Find(enrolledMember.MemberId);
                     enrolledMember.RemainingCost = enrolledMember.Cost;
                     enrolledMember.EndDate = enrolledMember.StartDate.AddMonths(enrolledMember.MembershipLength);
-                    db.DisciplineEnrolledMembers.Add(enrolledMember);
+                    db.GetDbSet<DisciplineEnrolledMember>().Add(enrolledMember);
                     db.SaveChanges();
                     return Json(new JsonReturn { RefreshScreen = true });
                 }
             }
 
-            ViewBag.Members = db.Members.ToList();
-            ViewBag.DisciplineId = new SelectList(db.Disciplines, "Id", "Name", enrolledMember.DisciplineId);
+            ViewBag.Members = db.GetDbSet<Member>().ToList();
+            ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", enrolledMember.DisciplineId);
             return PartialView(enrolledMember);
         }
         
 
         public ActionResult Edit(int? id)
         {
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
 
             // If opened from the member page, generates a link to the discipline page
             //if (origin == "member")
@@ -181,7 +181,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Include("Member").FirstOrDefault(m => m.Id == id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Include("Member").FirstOrDefault(m => m.Id == id);
             if (enrolledMember == null)
             {
                 return HttpNotFound();
@@ -193,7 +193,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
             enrolledMember.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

@@ -29,7 +29,7 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 memberEmail.IsArchived = false;
-                db.MemberEmail.Add(memberEmail);
+                db.GetDbSet<MemberEmail>().Add(memberEmail);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
@@ -43,7 +43,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberEmail email = db.MemberEmail.Find(id);
+            MemberEmail email = db.GetDbSet<MemberEmail>().Find(id);
             if (email == null)
             {
                 return HttpNotFound();
@@ -74,7 +74,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberEmail email = db.MemberEmail.Find(id);
+            MemberEmail email = db.GetDbSet<MemberEmail>().Find(id);
             if (email == null)
             {
                 return HttpNotFound();
@@ -87,7 +87,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            MemberEmail email = db.MemberEmail.Find(id);
+            MemberEmail email = db.GetDbSet<MemberEmail>().Find(id);
             email.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }
