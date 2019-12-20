@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -30,6 +31,7 @@ namespace DojoManagmentSystem.Models
 
         public virtual User User { get; set; }
 
+        [DataType(DataType.DateTime)]
         public DateTime Expires { get; set; } = DateTime.Now.Add(new TimeSpan(1, 10, 0));
     }
 }

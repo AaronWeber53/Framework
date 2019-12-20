@@ -233,13 +233,18 @@ namespace DojoManagmentSystem.Migrations
                         UserId = c.Int(nullable: false),
                         AttendanceLock = c.Boolean(nullable: false),
                         Expires = c.DateTime(nullable: false),
-                    })
+                        LastModified = c.DateTime(),
+                        LastUserIdModifiedBy = c.Int(),
+                        IsArchived = c.Boolean(nullable: false),
+                })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.User", t => t.UserId, cascadeDelete: true)
-                .Index(t => t.UserId);
-            
+                .Index(t => t.UserId)
+                .Index(t => t.LastUserIdModifiedBy, name: "ModifiedById");
+
+
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.Session", "UserId", "dbo.User");

@@ -22,6 +22,8 @@ namespace DojoManagmentSystem.Models
 
         public virtual Member Member { get; set; }
 
+        public virtual ICollection<Session> Sesssion { get; set; }
+
         public string HashPassword
         {
             set
