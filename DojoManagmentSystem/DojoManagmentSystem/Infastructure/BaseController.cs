@@ -1,7 +1,7 @@
-﻿using DojoManagmentSystem.DAL;
+﻿using Business;
+using Business.DAL;
 using DojoManagmentSystem.Infastructure;
-using DojoManagmentSystem.Infastructure.Exceptions;
-using DojoManagmentSystem.Models;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Business.Infastructure.Exceptions;
 
 namespace DojoManagmentSystem
 {
@@ -36,7 +37,7 @@ namespace DojoManagmentSystem
                 string hash = sessionCookie.Value;
 
                 // Based on the hash look for the corresponding session.
-                Models.Session curSession = db.GetDbSet<Session>().Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
+                Session curSession = db.GetDbSet<Session>().Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
 
                 // Set variables for layout data.
                 bool isValidSession = true;
@@ -193,14 +194,18 @@ namespace DojoManagmentSystem
             {
                 return HttpNotFound();
             }
-            ViewBag.IsValid = false;
-            if (ModelState.IsValid)
+            using (DojoManagmentContext db = new DojoManagmentContext())
             {
+                ViewBag.IsValid = false;
+                if (ModelState.IsValid)
+                {
 
-                var test = db.Entry(obj);
-                var test2 = test.State;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
+                    var test = db.Entry(obj);
+                    var test2 = test.State;
+                    db.SaveChanges();
+                    ViewBag.IsValid = true;
+                }
+
             }
 
             return PartialView("Edit", obj);
@@ -238,7 +243,7 @@ namespace DojoManagmentSystem
         
         private T GetObj(long? id)
         {
-            IQueryable<T> list = db.GetDbSet<T>().Include("User").Where(a => a.Id == id);
+            IQueryable<T> list = db.GetDbSet<T>().Where(a => a.Id == id);
             list = IncludeRelationshipsInSearch(list);
             return list.FirstOrDefault();
         }

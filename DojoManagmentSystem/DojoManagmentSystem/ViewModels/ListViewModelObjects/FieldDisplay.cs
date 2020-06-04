@@ -1,4 +1,5 @@
-﻿using DojoManagmentSystem.Infastructure.Extensions;
+﻿using Business;
+using DojoManagmentSystem.Infastructure.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

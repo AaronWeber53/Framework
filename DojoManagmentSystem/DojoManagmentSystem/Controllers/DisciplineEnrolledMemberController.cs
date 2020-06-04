@@ -6,8 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
@@ -117,34 +117,7 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", enrolledMember.DisciplineId);
             return PartialView(enrolledMember);
         }
-        
-
-        public ActionResult Edit(int? id)
-        {
-            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
-
-            // If opened from the member page, generates a link to the discipline page
-            //if (origin == "member")
-            //{
-            //    ViewBag.LinkValue = "Go to Discipline";
-            //    ViewBag.LinkUrl = $"/Disciplines/Detail/{enrolledMember.DisciplineId}";
-            //}
-            //// If opened from the discipline page, generates a link to the member page
-            //else if (origin == "discipline")
-            //{
-            //    ViewBag.LinkValue = "Go to Member";
-            //    ViewBag.LinkUrl = $"/Member/Details/{enrolledMember.MemberId}";
-            //}
-
-            if (enrolledMember == null)
-            {
-                return HttpNotFound();
-            }
-
-            //ViewBag.Origin = origin;
-            return PartialView(enrolledMember);
-        }
-        
+              
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(DisciplineEnrolledMember enrolledMember)

@@ -1,5 +1,5 @@
-﻿using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+﻿using Business.DAL;
+using Business.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

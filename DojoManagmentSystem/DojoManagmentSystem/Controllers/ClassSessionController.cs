@@ -7,10 +7,10 @@ using System.Net;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
 using DojoManagmentSystem.ViewModels;
 using DojoManagmentSystem.Infastructure.Extensions;
+using Business.DAL;
+using Business.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -94,23 +94,6 @@ namespace DojoManagmentSystem.Controllers
 
             ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", classSession.DisciplineId);
             return PartialView(classSession);
-        }
-
-        // GET: ClassSession/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
-            ClassSessionEditViewModel classSessionOutput = new ClassSessionEditViewModel { Id = classSession.Id, DayOfWeek = classSession.DayOfWeek, EndTime = classSession.EndTime, StartTime = classSession.StartTime, DisciplineId = classSession.DisciplineId };
-            if (classSession == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", classSessionOutput);
         }
 
         [HttpPost]

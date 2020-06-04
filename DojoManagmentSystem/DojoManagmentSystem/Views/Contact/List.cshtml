@@ -1,4 +1,4 @@
-﻿@model DojoManagmentSystem.ViewModels.ListViewModel<DojoManagmentSystem.Models.Contact>
+﻿@model DojoManagmentSystem.ViewModels.ListViewModel<Business.Models.Contact>
 @using DojoManagmentSystem.Infastructure.Extensions
 
 <div class="table-responsive" id="pagingList" data-page="@Model.CurrentPage" data-sort="@Model.CurrentSort" data-search="@Model.CurrentSearch" data-baseurl="/Contact/List/@ViewBag.MemberId">
@@ -45,7 +45,7 @@
                     <td scope="row">
                         @{
                             string output = null;
-                            foreach (DojoManagmentSystem.Models.MemberPhone phone in item.MemberPhones)
+                            foreach (Business.Models.MemberPhone phone in item.MemberPhones)
                             {
                                 if (phone.IsArchived == false)
                                 {
@@ -73,7 +73,7 @@
 
                         @{
                             output = null;
-                            foreach (DojoManagmentSystem.Models.MemberEmail email in item.MemberEmails)
+                            foreach (Business.Models.MemberEmail email in item.MemberEmails)
                             {
                                 if (email.IsArchived == false)
                                 {
@@ -101,7 +101,7 @@
 
                         @{
                             output = null;
-                            foreach (DojoManagmentSystem.Models.MemberAddress address in item.MemberAddresses)
+                            foreach (Business.Models.MemberAddress address in item.MemberAddresses)
                             {
                                 if (address.IsArchived == false)
                                 {

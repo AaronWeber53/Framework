@@ -6,9 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
+using Business.DAL;
 using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Models;
+using Business.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -40,22 +40,6 @@ namespace DojoManagmentSystem.Controllers
 
             return PartialView("Create", memberPhone);
         }       
-
-        // GET: Disciplines/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
-            if (phone == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", phone);
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]

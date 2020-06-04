@@ -6,8 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
@@ -56,22 +56,6 @@ namespace DojoManagmentSystem.Controllers
             
             ViewBag.MemberId = waiver.MemberId;
             return PartialView(waiver);
-        }
-
-        // GET: Waiver/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
-            if (waiver == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.MemberId = waiver.MemberId;
-            return PartialView("Edit", waiver);
         }
 
         // POST: Waiver/Edit/5

@@ -7,9 +7,8 @@ using System.Net;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Infastructure.Exceptions;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
@@ -58,7 +57,7 @@ namespace DojoManagmentSystem.Controllers
                     {
                         new Link()
                         {
-                            URL = $"/Payments/DateRange/{id}",
+                            URL = $"/Payment/DateRange/{id}",
                             Text = "Print Payments",
                             ButtonColor = Link.Color.Blue,
                             Icon = Link.Icons.Print

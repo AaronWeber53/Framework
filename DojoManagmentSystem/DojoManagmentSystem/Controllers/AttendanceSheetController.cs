@@ -6,13 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 using DojoManagmentSystem.Infastructure.Extensions;
 using System.Data.Entity.SqlServer;
 using System.Data.Entity.Core.Objects;
 using DojoManagmentSystem.Infastructure;
+using Business;
 
 namespace DojoManagmentSystem.Controllers
 {

@@ -10,10 +10,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Infastructure;
-using DojoManagmentSystem.Infastructure.Exceptions;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using DojoManagmentSystem.Infastructure; 
+using Business.Models;
+using Business.Infastructure.Exceptions;
+using Business.Infastructure;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -90,20 +91,6 @@ namespace DojoManagmentSystem.Controllers
             }
 
             return PartialView(user);
-        }
-
-        // GET: Users/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.GetDbSet<User>().Find(id);
-            if (user == null)
-            {
-            }
-            return View(user);
         }
 
         // POST: Users/Edit/5

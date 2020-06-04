@@ -6,9 +6,9 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
+using Business.DAL;
 using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Models;
+using Business.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -35,21 +35,6 @@ namespace DojoManagmentSystem.Controllers
             }
 
             return PartialView("Create", memberEmail);
-        }
-
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberEmail email = db.GetDbSet<MemberEmail>().Find(id);
-            if (email == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", email);
         }
 
         [HttpPost]

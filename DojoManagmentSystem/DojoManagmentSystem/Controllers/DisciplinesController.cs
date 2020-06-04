@@ -7,8 +7,8 @@ using System.Net;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
@@ -126,29 +126,12 @@ namespace DojoManagmentSystem.Controllers
             return PartialView("Create", discipline);
         }
 
-        // GET: Disciplines/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
-            if (discipline == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-
-            return PartialView("Edit", discipline);
-        }
-
         // POST: Disciplines/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description")] Discipline discipline)
+        public override ActionResult Edit([Bind(Include = "Id,Name,Description")] Discipline discipline)
         {
             ViewBag.IsValid = false;
 
