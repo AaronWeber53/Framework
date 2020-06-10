@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using DojoManagmentSystem.Models;
+using Business.Models;
 using System.Linq;
 using System.Web;
 

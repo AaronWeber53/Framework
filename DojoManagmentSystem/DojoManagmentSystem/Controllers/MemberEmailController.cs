@@ -6,16 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
+using Business.DAL;
 using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Models;
+using Business.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberEmailController : BaseController
+    public class MemberEmailController : BaseController<MemberEmail>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Create(int id)
         {
             MemberEmail memberEmail = new MemberEmail();
@@ -31,27 +29,12 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 memberEmail.IsArchived = false;
-                db.MemberEmail.Add(memberEmail);
+                db.GetDbSet<MemberEmail>().Add(memberEmail);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
 
             return PartialView("Create", memberEmail);
-        }
-
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberEmail email = db.MemberEmail.Find(id);
-            if (email == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", email);
         }
 
         [HttpPost]
@@ -76,7 +59,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberEmail email = db.MemberEmail.Find(id);
+            MemberEmail email = db.GetDbSet<MemberEmail>().Find(id);
             if (email == null)
             {
                 return HttpNotFound();
@@ -89,7 +72,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            MemberEmail email = db.MemberEmail.Find(id);
+            MemberEmail email = db.GetDbSet<MemberEmail>().Find(id);
             email.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

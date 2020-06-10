@@ -6,16 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
+using Business.DAL;
 using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Models;
+using Business.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberPhoneController : BaseController
+    public class MemberPhoneController : BaseController<MemberPhone>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         // GET: Disciplines/Create
         public ActionResult Create(int id)
         {
@@ -35,29 +33,13 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 memberPhone.IsArchived = false;
-                db.MemberPhones.Add(memberPhone);
+                db.GetDbSet<MemberPhone>().Add(memberPhone);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
 
             return PartialView("Create", memberPhone);
         }       
-
-        // GET: Disciplines/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberPhone phone = db.MemberPhones.Find(id);
-            if (phone == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", phone);
-        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -81,7 +63,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberPhone phone = db.MemberPhones.Find(id);
+            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
             if (phone == null)
             {
                 return HttpNotFound();
@@ -94,7 +76,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            MemberPhone phone = db.MemberPhones.Find(id);
+            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
             phone.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

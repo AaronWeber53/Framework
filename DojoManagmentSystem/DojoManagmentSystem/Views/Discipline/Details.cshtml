@@ -1,0 +1,67 @@
+﻿@model Business.Models.Discipline
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div>
+    <div class="row col-sm-12">
+        <p class="col-lg-8 mt-2">
+            <a href="@Url.Action("Index")" class="h4">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </p>
+    </div>
+    <div class="row details">
+
+        @* Left column for cards *@
+        <div class="col-xl-7 details-column">
+
+            <div class="card bg-light col-sm-12">
+                    @* Implement the details/edit for the discipline *@
+                    <div class="card-body">
+                        @Html.Action("Edit", new { id = Model.Id })
+                    </div>
+             </div>
+
+                    @* Card displaying class sessions  *@
+                    <div class="card bg-light col-sm-12">
+                        <div class="card-header">
+                            <h4 class="float-left">Weekly Class Sessions</h4>
+                            <div class="float-right">
+                                <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/ClassSession/Create/@Model.Id">
+                                    <i class="fas fa-plus"></i> Create Session
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            @Html.Action("ClassSessions", new { id = Model.Id })
+                        </div>
+                    </div>
+                </div>
+
+                @* Right Section *@
+                <div class="col-xl-5 details-column">
+
+                    @* Card displaying enrolled members *@
+                    <div class="card bg-light col-sm-12">
+                        <div class="card-header">
+                            <h4 class="float-left">Members</h4>
+                            <div class="float-right">
+                                <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/DisciplineEnrolledMember/Create/@Model.Id">
+                                    <i class="fas fa-plus"></i> Enroll Member
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @Html.Action("Members", new { id = Model.Id })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Modal.js")
+}

@@ -1,18 +1,25 @@
-﻿using DojoManagmentSystem.DAL;
+﻿using Business;
+using Business.DAL;
 using DojoManagmentSystem.Infastructure;
+using Business.Models;
+using DojoManagmentSystem.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using Business.Infastructure.Exceptions;
 
 namespace DojoManagmentSystem
 {
-    public abstract class BaseController : Controller
+    public abstract class BaseController : Controller 
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        protected DojoManagmentContext db = new DojoManagmentContext();
+
+        protected string ListViewPath = "~/Views/Shared/List.cshtml";
 
         /// <summary>
         /// Whenever a action is executed this function will be called first.
@@ -30,7 +37,7 @@ namespace DojoManagmentSystem
                 string hash = sessionCookie.Value;
 
                 // Based on the hash look for the corresponding session.
-                Models.Session curSession = db.Sessions.Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
+                Session curSession = db.GetDbSet<Session>().Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
 
                 // Set variables for layout data.
                 bool isValidSession = true;
@@ -114,6 +121,15 @@ namespace DojoManagmentSystem
             return (int)Math.Ceiling((decimal)numberOfItems / (decimal)ItemsPerPage);
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         public class JsonReturn
         {
             // Refreshing the screen on return.
@@ -137,6 +153,133 @@ namespace DojoManagmentSystem
 
             // Set an error.
             public string ErrorMessage { get; set; } = "";
+        }
+    }
+
+    public abstract class BaseController<T> : BaseController where T : BaseModel
+    {
+        protected virtual ListSettings ListSettings { get; } = new ListSettings();
+        protected virtual List<FieldDisplay> ListDisplay { get; } = new List<FieldDisplay>();
+        protected virtual List<string> EditRelationships { get; } = new List<string>();
+
+        public virtual ActionResult Edit(long? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            ViewBag.IsValid = false;
+            T obj = GetObj(id);
+            if (obj == null)
+            {
+                return HttpNotFound();
+            }
+
+            var properties = typeof(T).GetProperties()
+                    .Where(prop => prop.CanWrite);
+
+            //foreach(var prop in properties)
+            //{
+            //    prop.SetValue(obj, null); 
+            //}
+
+            return PartialView("Edit", obj);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public virtual ActionResult Edit([Bind()]T obj)
+        {
+            if (obj == null)
+            {
+                return HttpNotFound();
+            }
+            using (DojoManagmentContext db = new DojoManagmentContext())
+            {
+                ViewBag.IsValid = false;
+                if (ModelState.IsValid)
+                {
+
+                    var test = db.Entry(obj);
+                    var test2 = test.State;
+                    db.SaveChanges();
+                    ViewBag.IsValid = true;
+                }
+
+            }
+
+            return PartialView("Edit", obj);
+        }
+
+        public ActionResult Delete(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            T obj = GetObj(id);
+            if (obj == null)
+            {
+                return HttpNotFound();
+            }
+            return PartialView(obj);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public ActionResult DeleteConfirmed(int id)
+        {
+            try
+            {
+                T obj = GetObj(id);
+                obj.Delete(db);
+                return Json(new JsonReturn { RefreshScreen = true });
+            }
+            catch (LastUserExpection ex)
+            {
+                return Json(new JsonReturn { ErrorMessage = ex.Message });
+            }
+        }
+        
+        private T GetObj(long? id)
+        {
+            IQueryable<T> list = db.GetDbSet<T>().Where(a => a.Id == id);
+            list = IncludeRelationshipsInSearch(list);
+            return list.FirstOrDefault();
+        }
+
+        private IQueryable<T> IncludeRelationshipsInSearch(IQueryable<T> query)
+        {
+            foreach(string s in EditRelationships)
+            {
+                query.Include(s);
+            }
+            return query;
+        }
+
+        public ActionResult List(string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<T> model = new ListViewModel<T>()
+            {
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = ListSettings,
+                ObjectList = db.GetDbSet<T>(),
+                FieldsToDisplay = ListDisplay
+            };
+
+            return ListView(model);
+        }
+
+        protected ActionResult ListView(ListViewModel model)
+        {
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                return PartialView(ListViewPath, model);
+            }
+            return View(ListViewPath, model);
         }
     }
 }

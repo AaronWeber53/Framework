@@ -10,14 +10,15 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Infastructure;
-using DojoManagmentSystem.Infastructure.Exceptions;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using DojoManagmentSystem.Infastructure; 
+using Business.Models;
+using Business.Infastructure.Exceptions;
+using Business.Infastructure;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class UsersController : BaseController
+    public class UsersController : BaseController<User>
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
@@ -34,7 +35,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+            User user = db.GetDbSet<User>().Find(id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -45,7 +46,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Users/Create
         public ActionResult Create(int id)
         {
-            if (db.Members.ToList().Exists(m => m.Id == id))
+            if (db.GetDbSet<Member>().ToList().Exists(m => m.Id == id))
             {
                 CreateUserModel obj = new CreateUserModel() { MemberId = id };
                 return PartialView(obj);
@@ -60,7 +61,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "MemberId,Username,Password,ConfirmPassword")] CreateUserModel user)
         {
-            if (db.Users.Where(a => !a.IsArchived).Any(u => u.Username.ToLower() == user.Username.ToLower()))
+            if (db.GetDbSet<User>().Where(a => !a.IsArchived).Any(u => u.Username.ToLower() == user.Username.ToLower()))
             {
                 ModelState.AddModelError("Username", "A user with this Username already exists");
             }
@@ -76,12 +77,12 @@ namespace DojoManagmentSystem.Controllers
                 User newUser = new User() { Username = user.Username, HashPassword = user.Password };
 
                 // Sets the users member
-                var member = db.Members.First(m => m.Id == user.MemberId);
+                var member = db.GetDbSet<Member>().First(m => m.Id == user.MemberId);
 
                 newUser.Member = member;
                 member.User = newUser;
 
-                db.Users.Add(newUser);
+                db.GetDbSet<User>().Add(newUser);
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
@@ -92,20 +93,6 @@ namespace DojoManagmentSystem.Controllers
             return PartialView(user);
         }
 
-        // GET: Users/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.Users.Find(id);
-            if (user == null)
-            {
-            }
-            return View(user);
-        }
-
         // POST: Users/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
@@ -113,7 +100,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Username,Password")] User user)
         {
-            if (db.Users.ToList().Exists(u => u.Username == user.Username))
+            if (db.GetDbSet<User>().ToList().Exists(u => u.Username == user.Username))
             {
                 ModelState.AddModelError("Email", "A user with this email already exists");
             }
@@ -135,7 +122,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Include("Member").FirstOrDefault(m => m.Id == id);
+            User user = db.GetDbSet<User>().Include("Member").FirstOrDefault(m => m.Id == id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -150,7 +137,7 @@ namespace DojoManagmentSystem.Controllers
         {
             try
             {
-                User user = db.Users.Include("Member").FirstOrDefault(m => m.Id == id);
+                User user = db.GetDbSet<User>().Include("Member").FirstOrDefault(m => m.Id == id);
                 user.Delete(db);
                 user.Member.User = null;
                 db.Entry(user.Member).State = System.Data.Entity.EntityState.Modified;
@@ -182,7 +169,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            User user = db.Users.Find(id);
+            User user = db.GetDbSet<User>().Find(id);
             if (user == null)
             {
                 return HttpNotFound();
@@ -196,7 +183,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ChangePassword([Bind(Include = "Id,CurrentPassword,NewPassword,ConfirmPassword")] ChangePasswordModel obj)
         {
-            User user = db.Users.Find(obj.Id);
+            User user = db.GetDbSet<User>().Find(obj.Id);
 
             if (!string.IsNullOrEmpty(obj.CurrentPassword) && EncryptionHelper.EncryptText(obj.CurrentPassword) != user.Password)
             {

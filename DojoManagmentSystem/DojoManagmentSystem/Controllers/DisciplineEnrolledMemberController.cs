@@ -6,21 +6,19 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class DisciplineEnrolledMemberController : BaseController
+    public class DisciplineEnrolledMemberController : BaseController<DisciplineEnrolledMember>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Index(int id)
         {
             ViewBag.DisciplineId = id;
 
-            return PartialView(db.Members.ToList());
+            return PartialView(db.GetDbSet<Member>().ToList());
         }
 
         public ActionResult Details(int? id)
@@ -29,7 +27,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
             if (enrolledMember == null)
             {
                 return HttpNotFound();
@@ -45,7 +43,7 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.PaymentRemainingSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "remainingcost_desc" ? "remainingcost_asc" : "remainingcost_desc";
             ViewBag.EndDateSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "enddate_desc" ? "enddate_asc" : "enddate_desc";
 
-            var members = db.DisciplineEnrolledMembers.Include("Discipline").Where(m => !m.IsArchived && m.MemberId == id);
+            var members = db.GetDbSet<DisciplineEnrolledMember>().Include("Discipline").Where(m => !m.IsArchived && m.MemberId == id);
 
             // Order the  members depending on what parameter was passed in.
             switch (sortOrder)
@@ -72,79 +70,23 @@ namespace DojoManagmentSystem.Controllers
                     members = members.OrderBy(m => m.EndDate);
                     break;
             }
-            int totalPages = GetTotalPages(members.Count());
-            members = members.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
 
             ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
             {
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = members.ToList()
+                ObjectList = members
             };
             return PartialView("DisciplineList", model);
         }
 
-
-        public ActionResult MembersList(int id, string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ViewBag.DisciplineId = id;
-            ViewBag.FirstNameSortParm = String.IsNullOrEmpty(sortOrder) ? "firstname_desc" : "";
-            ViewBag.LastNameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "lastname_desc" ? "lastname_asc" : "lastname_desc";
-            ViewBag.PaymentRemainingSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "remainingcost_desc" ? "remainingcost_asc" : "remainingcost_desc";
-            ViewBag.EndDateSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "enddate_desc" ? "enddate_asc" : "enddate_desc";
-
-            var members = db.DisciplineEnrolledMembers.Include("Member").Where(m => !m.IsArchived && m.DisciplineId == id);
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "firstname_desc":
-                    members = members.OrderByDescending(m => m.Member.FirstName);
-                    break;
-                case "lastname_desc":
-                    members = members.OrderBy(m => m.Member.LastName);
-                    break;
-                case "lastname_asc":
-                    members = members.OrderByDescending(m => m.Member.LastName);
-                    break;
-                case "remainingcost_asc":
-                    members = members.OrderBy(m => m.RemainingCost);
-                    break;
-                case "remainingcost_desc":
-                    members = members.OrderByDescending(m => m.RemainingCost);
-                    break;
-                case "enddate_asc":
-                    members = members.OrderBy(m => m.EndDate);
-                    break;
-                case "enddate_desc":
-                    members = members.OrderByDescending(m => m.EndDate);
-                    break;
-                default:
-                    members = members.OrderBy(m => m.EndDate);
-                    break;
-            }
-            int totalPages = GetTotalPages(members.Count());
-            members = members.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = members.ToList()
-            };
-            return PartialView("MemberList", model);
-        }
-        
         public ActionResult Create(int id)
         {            
             DisciplineEnrolledMember enrolledMember = new DisciplineEnrolledMember();
             enrolledMember.DisciplineId = id;
             enrolledMember.StartDate = DateTime.Today;
-            ViewBag.Members = db.Members.Where(a => !a.IsArchived).ToList();
+            ViewBag.Members = db.GetDbSet<Member>().Where(a => !a.IsArchived).ToList();
 
             return PartialView(enrolledMember);
         }
@@ -162,47 +104,20 @@ namespace DojoManagmentSystem.Controllers
                 if (ModelState.IsValid)
                 {
                     enrolledMember.MemberId = int.Parse(Request.Form["students"]);
-                    enrolledMember.Member = db.Members.Find(enrolledMember.MemberId);
+                    enrolledMember.Member = db.GetDbSet<Member>().Find(enrolledMember.MemberId);
                     enrolledMember.RemainingCost = enrolledMember.Cost;
                     enrolledMember.EndDate = enrolledMember.StartDate.AddMonths(enrolledMember.MembershipLength);
-                    db.DisciplineEnrolledMembers.Add(enrolledMember);
+                    db.GetDbSet<DisciplineEnrolledMember>().Add(enrolledMember);
                     db.SaveChanges();
                     return Json(new JsonReturn { RefreshScreen = true });
                 }
             }
 
-            ViewBag.Members = db.Members.ToList();
-            ViewBag.DisciplineId = new SelectList(db.Disciplines, "Id", "Name", enrolledMember.DisciplineId);
+            ViewBag.Members = db.GetDbSet<Member>().ToList();
+            ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", enrolledMember.DisciplineId);
             return PartialView(enrolledMember);
         }
-        
-
-        public ActionResult Edit(int? id, string origin)
-        {
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
-
-            // If opened from the member page, generates a link to the discipline page
-            if (origin == "member")
-            {
-                ViewBag.LinkValue = "Go to Discipline";
-                ViewBag.LinkUrl = $"/Disciplines/Details/{enrolledMember.DisciplineId}";
-            }
-            // If opened from the discipline page, generates a link to the member page
-            else if (origin == "discipline")
-            {
-                ViewBag.LinkValue = "Go to Member";
-                ViewBag.LinkUrl = $"/Member/Details/{enrolledMember.MemberId}";
-            }
-
-            if (enrolledMember == null)
-            {
-                return HttpNotFound();
-            }
-
-            ViewBag.Origin = origin;
-            return PartialView(enrolledMember);
-        }
-        
+              
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(DisciplineEnrolledMember enrolledMember)
@@ -221,7 +136,7 @@ namespace DojoManagmentSystem.Controllers
             if (origin[0] == "member")
             {
                 ViewBag.LinkValue = "Go to Discipline";
-                ViewBag.LinkUrl = $"/Disciplines/Details/{enrolledMember.DisciplineId}";
+                ViewBag.LinkUrl = $"/Discipline/Details/{enrolledMember.DisciplineId}";
             }
             // If opened from the discipline page, generates a link to the member page
             else if (origin[0] == "discipline")
@@ -239,7 +154,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Include("Member").FirstOrDefault(m => m.Id == id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Include("Member").FirstOrDefault(m => m.Id == id);
             if (enrolledMember == null)
             {
                 return HttpNotFound();
@@ -251,7 +166,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            DisciplineEnrolledMember enrolledMember = db.DisciplineEnrolledMembers.Find(id);
+            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
             enrolledMember.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

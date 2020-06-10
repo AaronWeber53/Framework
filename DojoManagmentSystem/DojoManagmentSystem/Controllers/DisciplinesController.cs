@@ -4,60 +4,82 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class DisciplinesController : BaseController
+    public class DisciplineController : BaseController<Discipline>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        protected override ListSettings ListSettings => new ListSettings() { AllowDelete = false };
+
+        protected override List<FieldDisplay> ListDisplay
+        {
+            get
+            {
+                return new List<FieldDisplay>()
+                {
+                    new FieldDisplay(){ FieldName = "Name" },
+                    new FieldDisplay(){ FieldName = "Description" },
+                };
+            }
+        }
+        public ActionResult ClassSessions(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<ClassSession> model = new ListViewModel<ClassSession>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.GetDbSet<ClassSession>(),
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "StartTime" },
+                    new FieldDisplay() {FieldName = "EndTime" },
+                    new FieldDisplay() {FieldName = "DayOfWeek" },
+                }
+            };
+
+            return ListView(model);
+        }
+
+        public ActionResult Members(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = new ListSettings() { ModalOpen = true },
+                ObjectList = db.GetDbSet<DisciplineEnrolledMember>(),
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "Member.FirstName" },
+                    new FieldDisplay() {FieldName = "Member.LastName" },
+                    new FieldDisplay() {FieldName = "StartDate" },
+                    new FieldDisplay() {FieldName = "EndDate" },
+                    new FieldDisplay() {FieldName = "RemainingCost" },
+                    new FieldDisplay() {FieldName = "Cost" },
+                }
+            };
+
+            return ListView(model);
+        }
 
         // GET: Disciplines
         public ActionResult Index()
         {
-            return View(db.Disciplines.ToList());
-        }
-
-        public ActionResult List(string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ViewBag.NameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "name_desc" ? "name_asc" : "name_desc";
-
-            // Gets the members from the database
-            var disciplines = from mem in db.Disciplines
-                          where !mem.IsArchived
-                          select mem;
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "name_desc":
-                    disciplines = disciplines.OrderByDescending(m => m.Name);
-                    break;
-                case "name_asc":
-                    disciplines = disciplines.OrderBy(m => m.Name);
-                    break;
-
-                default:
-                    disciplines = disciplines.OrderBy(m => m.Name);
-                    break;
-            }
-            int totalPages = GetTotalPages(disciplines.Count());
-            disciplines = disciplines.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Discipline> model = new ListViewModel<Discipline>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = disciplines.ToList()
-            };
-
-            return PartialView("List", model);
+            return View(db.GetDbSet<Discipline>().ToList());
         }
 
         // GET: Disciplines/Details/5
@@ -67,7 +89,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
         
             if (discipline == null)
             {
@@ -93,7 +115,7 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 discipline.IsArchived = false;
-                db.Disciplines.Add(discipline);
+                db.GetDbSet<Discipline>().Add(discipline);
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
@@ -104,28 +126,12 @@ namespace DojoManagmentSystem.Controllers
             return PartialView("Create", discipline);
         }
 
-        // GET: Disciplines/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Discipline discipline = db.Disciplines.Find(id);
-            if (discipline == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", discipline);
-        }
-
         // POST: Disciplines/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Description")] Discipline discipline)
+        public override ActionResult Edit([Bind(Include = "Id,Name,Description")] Discipline discipline)
         {
             ViewBag.IsValid = false;
 
@@ -146,7 +152,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
             if (discipline == null)
             {
                 return HttpNotFound();
@@ -159,7 +165,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Discipline discipline = db.Disciplines.Find(id);
+            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
             discipline.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

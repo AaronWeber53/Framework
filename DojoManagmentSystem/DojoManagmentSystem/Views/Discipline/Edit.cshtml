@@ -1,0 +1,57 @@
+﻿@model Business.Models.Discipline
+
+
+<div id="form">
+    <div class="row">
+        <h4 class="col-sm-2">Discipline</h4>
+    </div>
+    <hr/>
+
+        @using (Ajax.BeginForm("Edit", new AjaxOptions
+        {
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "Post",
+            UpdateTargetId = "form"
+        }))
+        {
+            @Html.AntiForgeryToken()
+        <div class="form-horizontal">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+            <div class="form-group row">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.Description, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-offset-2 col-md-1">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+                @if (ViewBag.IsValid)
+                {
+
+                    <div id="successTag" class="alert alert-dismissible alert-success mb-0" style="padding: .4em 1em;">
+                        <strong>The discipline has been succesfully saved.</strong>
+                        <script>
+                            displaySaveMessage();
+                        </script>
+                    </div>
+                }
+
+            </div>
+        </div>
+        }
+    </div>
+
+        @section Scripts {
+            @Scripts.Render("~/bundles/jqueryval")
+        }

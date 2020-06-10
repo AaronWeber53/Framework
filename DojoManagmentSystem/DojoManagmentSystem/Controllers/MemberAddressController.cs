@@ -6,16 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
+using Business.DAL;
 using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Models;
+using Business.Models;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberAddressController : BaseController
+    public class MemberAddressController : BaseController<MemberAddress>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
         public ActionResult Create(int id)
         {
             MemberAddress memberAddress = new MemberAddress();
@@ -31,27 +29,12 @@ namespace DojoManagmentSystem.Controllers
             if (ModelState.IsValid)
             {
                 memberAddress.IsArchived = false;
-                db.MemberAddresses.Add(memberAddress);
+                db.GetDbSet<MemberAddress>().Add(memberAddress);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
 
             return PartialView("Create", memberAddress);
-        }
-
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberAddress memberAddress = db.MemberAddresses.Find(id);
-            if (memberAddress == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", memberAddress);
         }
 
         [HttpPost]
@@ -76,7 +59,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            MemberAddress memberAddress = db.MemberAddresses.Find(id);
+            MemberAddress memberAddress = db.GetDbSet<MemberAddress>().Find(id);
             if (memberAddress == null)
             {
                 return HttpNotFound();
@@ -89,7 +72,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            MemberAddress memberAddress = db.MemberAddresses.Find(id);
+            MemberAddress memberAddress = db.GetDbSet<MemberAddress>().Find(id);
             memberAddress.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

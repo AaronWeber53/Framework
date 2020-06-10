@@ -6,16 +6,14 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class WaiverController : BaseController
-    {
-        private DojoManagmentContext db = new DojoManagmentContext();
-        
+    public class WaiverController : BaseController<Waiver>
+    {        
         // GET: Waiver/Details/5
         public ActionResult Details(int? id)
         {
@@ -23,7 +21,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             if (waiver == null)
             {
                 return HttpNotFound();
@@ -31,36 +29,10 @@ namespace DojoManagmentSystem.Controllers
             return View(waiver);
         }
 
-        public ActionResult List(int id, string sortOrder = null, string searchString = null, int page = 1)
-        {
-            ItemsPerPage = 3;
-
-            // Gets the waivers from the database
-            var waivers = from wav in db.Waivers
-                              where !wav.IsArchived && wav.MemberId == id
-                              select wav;
-
-            waivers = waivers.OrderByDescending(w => w.DateSigned);
-            int totalPages = GetTotalPages(waivers.Count());
-            waivers = waivers.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Waiver> model = new ListViewModel<Waiver>()
-            {
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = waivers.ToList()
-            };
-
-            ViewBag.MemberId = id;
-            return PartialView("List", model);
-        }
-
         // GET: Waiver/Create
         public ActionResult Create(int id)
         {
-            ViewBag.LastUserIdModifiedBy = new SelectList(db.Users, "Id", "Username");
+            ViewBag.LastUserIdModifiedBy = new SelectList(db.GetDbSet<User>(), "Id", "Username");
 
             Waiver waiver = new Waiver { DateSigned = DateTime.Today };
 
@@ -77,29 +49,13 @@ namespace DojoManagmentSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Waivers.Add(waiver);
+                db.GetDbSet<Waiver>().Add(waiver);
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
             
             ViewBag.MemberId = waiver.MemberId;
             return PartialView(waiver);
-        }
-
-        // GET: Waiver/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Waiver waiver = db.Waivers.Find(id);
-            if (waiver == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.MemberId = waiver.MemberId;
-            return PartialView("Edit", waiver);
         }
 
         // POST: Waiver/Edit/5
@@ -127,7 +83,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             if (waiver == null)
             {
                 return HttpNotFound();
@@ -140,7 +96,7 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Waiver waiver = db.Waivers.Find(id);
+            Waiver waiver = db.GetDbSet<Waiver>().Find(id);
             waiver.Delete(db);
             return Json(new JsonReturn { RefreshScreen = true });
         }

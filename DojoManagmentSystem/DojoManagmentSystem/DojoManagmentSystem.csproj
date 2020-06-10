@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DojoManagmentSystem</RootNamespace>
     <AssemblyName>DojoManagmentSystem</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <Use64BitIISExpress />
@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -57,16 +58,14 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
@@ -111,6 +110,7 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
@@ -137,7 +137,6 @@
     <Compile Include="Controllers\MemberPhoneController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\WaiverController.cs" />
-    <Compile Include="Infastructure\ApplicationContext.cs" />
     <Compile Include="Infastructure\BaseController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -147,37 +146,19 @@
     <Compile Include="Controllers\ClassSessionController.cs" />
     <Compile Include="Controllers\DisciplinesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PaymentsController.cs" />
+    <Compile Include="Controllers\PaymentController.cs" />
     <Compile Include="Controllers\SessionController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="DAL\DojoManagmentContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infastructure\Exceptions\LastUserExpection.cs" />
     <Compile Include="Infastructure\Extensions\DateTimeExtensions.cs" />
+    <Compile Include="Infastructure\Extensions\DynamicLibrary.cs" />
     <Compile Include="Infastructure\Extensions\HtmlExtensions.cs" />
-    <Compile Include="Migrations\201905160056290_InitialCreate.cs" />
-    <Compile Include="Migrations\201905160056290_InitialCreate.Designer.cs">
-      <DependentUpon>201905160056290_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AttendanceSheet.cs" />
-    <Compile Include="Infastructure\BaseModel.cs" />
-    <Compile Include="Infastructure\EncryptionHelper.cs" />
-    <Compile Include="Models\ClassSession.cs" />
-    <Compile Include="Models\MemberAddress.cs" />
-    <Compile Include="Models\MemberEmail.cs" />
-    <Compile Include="Models\MemberPhone.cs" />
-    <Compile Include="Models\Contact.cs" />
-    <Compile Include="Models\Discipline.cs" />
-    <Compile Include="Models\DisciplineEnrolledMember.cs" />
-    <Compile Include="Models\Member.cs" />
-    <Compile Include="Models\Payment.cs" />
-    <Compile Include="Models\PaymentType.cs" />
-    <Compile Include="Models\Session.cs" />
-    <Compile Include="Models\User.cs" />
-    <Compile Include="Models\Waiver.cs" />
+    <Compile Include="Infastructure\Extensions\HttpRequestExtensions.cs" />
+    <Compile Include="Infastructure\Extensions\ObjectExtensions.cs" />
+    <Compile Include="Infastructure\Extensions\Queryable.cs" />
+    <Compile Include="Infastructure\Field.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\MemberController.cs" />
     <Compile Include="ViewModels\ClassSessionEditViewModel.cs" />
@@ -188,6 +169,8 @@
     <Compile Include="ViewModels\DateRangeViewModel.cs" />
     <Compile Include="ViewModels\HomeViewModel.cs" />
     <Compile Include="ViewModels\ListViewModel.cs" />
+    <Compile Include="ViewModels\ListViewModelObjects\FieldDisplay.cs" />
+    <Compile Include="ViewModels\ListViewModelObjects\Link.cs" />
     <Compile Include="ViewModels\QuickAttendanceViewModel.cs" />
     <Compile Include="ViewModels\UnlockViewModel.cs" />
   </ItemGroup>
@@ -260,16 +243,16 @@
     <Content Include="Views\Member\Details.cshtml" />
     <Content Include="Views\Member\Edit.cshtml" />
     <Content Include="Views\Member\Index.cshtml" />
-    <Content Include="Views\Payments\Create.cshtml" />
-    <Content Include="Views\Payments\Delete.cshtml" />
-    <Content Include="Views\Payments\Details.cshtml" />
-    <Content Include="Views\Payments\Edit.cshtml" />
-    <Content Include="Views\Payments\Index.cshtml" />
-    <Content Include="Views\Disciplines\Create.cshtml" />
-    <Content Include="Views\Disciplines\Delete.cshtml" />
-    <Content Include="Views\Disciplines\Details.cshtml" />
-    <Content Include="Views\Disciplines\Edit.cshtml" />
-    <Content Include="Views\Disciplines\Index.cshtml" />
+    <Content Include="Views\Payment\Create.cshtml" />
+    <Content Include="Views\Payment\Delete.cshtml" />
+    <Content Include="Views\Payment\Details.cshtml" />
+    <Content Include="Views\Payment\Edit.cshtml" />
+    <Content Include="Views\Payment\Index.cshtml" />
+    <Content Include="Views\Discipline\Create.cshtml" />
+    <Content Include="Views\Discipline\Delete.cshtml" />
+    <Content Include="Views\Discipline\Details.cshtml" />
+    <Content Include="Views\Discipline\Edit.cshtml" />
+    <Content Include="Views\Discipline\Index.cshtml" />
     <Content Include="Views\ClassSession\Create.cshtml" />
     <Content Include="Views\ClassSession\Delete.cshtml" />
     <Content Include="Views\ClassSession\Details.cshtml" />
@@ -295,9 +278,9 @@
     <Content Include="Views\MemberAddress\Create.cshtml" />
     <Content Include="Views\MemberAddress\Delete.cshtml" />
     <Content Include="Views\MemberAddress\Edit.cshtml" />
-    <Content Include="Views\Payments\DateRange.cshtml" />
-    <Content Include="Views\Payments\PrintView.cshtml" />
-    <Content Include="Views\Payments\IndexById.cshtml" />
+    <Content Include="Views\Payment\DateRange.cshtml" />
+    <Content Include="Views\Payment\PrintView.cshtml" />
+    <Content Include="Views\Payment\IndexById.cshtml" />
     <Content Include="Views\Waiver\Create.cshtml" />
     <Content Include="Views\Waiver\Delete.cshtml" />
     <Content Include="Views\Waiver\Details.cshtml" />
@@ -305,10 +288,7 @@
     <Content Include="Views\Member\Enroll.cshtml" />
     <Content Include="Views\AttendanceSheet\QuickAttendance.cshtml" />
     <Content Include="Views\Member\Members.cshtml" />
-    <Content Include="Views\Member\AttendanceHistory.cshtml" />
-    <Content Include="Views\Payments\Payments.cshtml" />
-    <Content Include="Views\DisciplineEnrolledMember\MemberList.cshtml" />
-    <Content Include="Views\Disciplines\List.cshtml" />
+    <Content Include="Views\Shared\List.cshtml" />
     <Content Include="Views\DisciplineEnrolledMember\DisciplineList.cshtml" />
     <Content Include="Views\ClassSession\List.cshtml" />
     <Content Include="Views\AttendanceSheet\List.cshtml" />
@@ -317,7 +297,6 @@
     <Content Include="Views\AttendanceSheet\Details.cshtml" />
     <Content Include="Views\DisciplineEnrolledMember\Edit.cshtml" />
     <Content Include="Views\Session\UnlockSession.cshtml" />
-    <Content Include="Views\Waiver\List.cshtml" />
     <Content Include="webfonts\fa-brands-400.eot" />
     <Content Include="webfonts\fa-brands-400.ttf" />
     <Content Include="webfonts\fa-brands-400.woff" />
@@ -348,9 +327,10 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201905160056290_InitialCreate.resx">
-      <DependentUpon>201905160056290_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
+    <ProjectReference Include="..\Business\Business.csproj">
+      <Project>{e8caa665-b299-49cb-97da-b0e9dfa4f9bb}</Project>
+      <Name>Business</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

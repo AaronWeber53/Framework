@@ -4,111 +4,175 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.DAL;
-using DojoManagmentSystem.Infastructure.Exceptions;
-using DojoManagmentSystem.Models;
+using Business.DAL;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class MemberController : BaseController
+    public class MemberController : BaseController<Member>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
-
-        public ActionResult List(string sortOrder = null, string searchString = null, int page = 1)
+        protected override ListSettings ListSettings => new ListSettings()
         {
-            ViewBag.ClassName = null;
-            ViewBag.FirstNameSortParm = String.IsNullOrEmpty(sortOrder) ? "firstname_desc" : "";
-            ViewBag.LastNameSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "lastname_desc" ? "lastname_asc" : "lastname_desc";
+            AllowSearch = true
+        };
 
+        protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>()
+        {
+            new FieldDisplay("HasUser") { AllowSort = false},
+            new FieldDisplay("FirstName"),
+            new FieldDisplay("LastName"),
+            new FieldDisplay("IsInstructor"),
+        };
 
-            // Gets the members from the database
-            var members = from mem in db.Members.Include("DisciplineEnrolledMembers").Include("User")
-                          where !mem.IsArchived                          
-                          select mem;
+        protected override List<string> EditRelationships => new List<string>()
+        {
+            "User",
+            "DisciplineEnrolledMembers",
+            "Payments",
+            "Waivers",
+            "Contact",
+        };
 
-            // If the search is not empty or null, get the members who match the search.
-            if (!String.IsNullOrEmpty(searchString))
+        #region Relation Lists
+        //// GET: Payments
+        public ActionResult Payments(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<Payment> model = new ListViewModel<Payment>()
             {
-                members = members.Where(m => m.FirstName.Contains(searchString) || m.LastName.Contains(searchString));
-            }
-
-            // Order the  members depending on what parameter was passed in.
-            switch (sortOrder)
-            {
-                case "firstname_desc":
-                    members = members.OrderByDescending(m => m.FirstName);
-                    break;
-                case "lastname_desc":
-                    members = members.OrderBy(m => m.LastName);
-                    break;
-                case "lastname_asc":
-                    members = members.OrderByDescending(m => m.LastName);
-                    break;
-                default:
-                    members = members.OrderBy(m => m.FirstName);
-                    break;
-            }
-            int totalPages = GetTotalPages(members.Count());
-            members = members.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ListViewModel<Member> model = new ListViewModel<Member>()
-            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
                 CurrentSearch = searchString,
-                NumberOfPages = totalPages,
-                ObjectList = members.ToList()
+                FilterField = filter,
+                ObjectList = db.GetDbSet<Payment>(),
+                ListSettings = new ListSettings()
+                {
+                    ModalOpen = true,
+                    Links = new List<Link>()
+                    {
+                        new Link()
+                        {
+                            URL = $"/Payment/DateRange/{id}",
+                            Text = "Print Payments",
+                            ButtonColor = Link.Color.Blue,
+                            Icon = Link.Icons.Print
+                        },
+                        new Link()
+                        {
+                            URL = $"/Payments/Create/{id}",
+                            Text = "Add Payment"
+                        }
+                    }
+                },
+                FieldsToDisplay = new List<FieldDisplay>
+            {
+                new FieldDisplay() {FieldName = "Amount" },
+                new FieldDisplay() {FieldName = "Date" },
+                new FieldDisplay() {FieldName = "PaymentType" },
+                new FieldDisplay() {FieldName = "Description" },
+            }
             };
 
-            return PartialView("Members", model);
+            return ListView(model);
         }
 
-        public ActionResult AttendanceList(int id, string sortOrder = null, int page = 1)
+        //// GET: Payments
+        public ActionResult Contacts(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
-            ViewBag.DateSortParm = sortOrder == "Date" ? "date_desc" : "Date";
-            ViewBag.DisciplineSortParm = !String.IsNullOrEmpty(sortOrder) && sortOrder == "discipline_desc" ? "discipline_asc" : "discipline_desc";
-
-            ItemsPerPage = 3;
-
-            // Gets the payments from the database
-            var sheets = from p in db.AttendanceSheets.Include("ClassSession.Discipline")
-                         where p.Member.Id == id && !p.IsArchived
-                         select p;
-
-            // Order the  payments depending on what parameter was passed in. 
-            switch (sortOrder)
+            ListViewModel<Contact> model = new ListViewModel<Contact>()
             {
-                case "discipline_desc":
-                    sheets = sheets.OrderBy(p => p.ClassSession.Discipline.Name);
-                    break;
-                case "discipline_asc":
-                    sheets = sheets.OrderByDescending(p => p.ClassSession.Discipline.Name);
-                    break;
-                case "date_desc":
-                    sheets = sheets.OrderBy(p => p.AttendanceDate);
-                    break;
-                default:
-                    sheets = sheets.OrderByDescending(p => p.AttendanceDate);
-                    break;
-            }
-            int totalPages = GetTotalPages(sheets.Count());
-            sheets = sheets.Skip(ItemsPerPage * (page - 1)).Take(ItemsPerPage);
-
-            ViewBag.MemberId = id;
-
-            ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
-            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
                 CurrentPage = page,
                 CurrentSort = sortOrder,
-                NumberOfPages = totalPages,
-                ObjectList = sheets.ToList()
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.GetDbSet<Contact>(),
+                FieldsToDisplay = new List<FieldDisplay>
+            {
+                new FieldDisplay() {FieldName = "Name" },
+                new FieldDisplay() {FieldName = "RelationShip" },
+                new FieldDisplay() {FieldName = "IsPrimary" },
+            }
             };
 
-            return PartialView("AttendanceHistory", model);
+            return ListView(model);
         }
+
+        //// GET: Payments
+        public ActionResult Waivers(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<Waiver> model = new ListViewModel<Waiver>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ObjectList = db.GetDbSet<Waiver>(),
+                ListSettings = new ListSettings() { ModalOpen = true },
+                FieldsToDisplay = new List<FieldDisplay>
+            {
+                new FieldDisplay() {FieldName = "IsSigned" },
+                new FieldDisplay() {FieldName = "DateSigned" },
+                new FieldDisplay() {FieldName = "Note" },
+            }
+            };
+
+            return ListView(model);
+        }
+
+        public ActionResult Attendance(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<AttendanceSheet> model = new ListViewModel<AttendanceSheet>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = new ListSettings() { ItemsPerPage = 3, AllowOpen = false },
+                ObjectList = db.GetDbSet<AttendanceSheet>(),
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "AttendanceDate" },
+                }
+            };
+
+            return ListView(model);
+        }
+
+        public ActionResult Disciplines(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
+        {
+            ListViewModel<DisciplineEnrolledMember> model = new ListViewModel<DisciplineEnrolledMember>()
+            {
+                RelationID = id,
+                Action = MethodBase.GetCurrentMethod().Name,
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = new ListSettings() { ModalOpen = true },
+                ObjectList = db.GetDbSet<DisciplineEnrolledMember>(),
+                FieldsToDisplay = new List<FieldDisplay>
+                {
+                    new FieldDisplay() {FieldName = "StartDate" },
+                    new FieldDisplay() {FieldName = "EndDate" },
+                    new FieldDisplay() {FieldName = "RemainingCost" },
+                    new FieldDisplay() {FieldName = "Cost" },
+                }
+            };
+
+            return ListView(model);
+        }
+        #endregion
 
         public ActionResult Index()
         {
@@ -117,12 +181,12 @@ namespace DojoManagmentSystem.Controllers
 
         // GET: Member/Details/5
         public ActionResult Details(int? id, string tab)
-        {            
+        {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Member member = db.Members.Include("User").FirstOrDefault(m => m.Id == id);
+            Member member = db.GetDbSet<Member>().Include("User").FirstOrDefault(m => m.Id == id);
 
             if (member == null)
             {
@@ -136,7 +200,7 @@ namespace DojoManagmentSystem.Controllers
         // GET: Member/Create
         public ActionResult Create()
         {
-            ViewBag.Disciplines = db.Disciplines.ToList();
+            ViewBag.Disciplines = db.GetDbSet<Discipline>().ToList();
 
             return PartialView("Create");
         }
@@ -148,13 +212,13 @@ namespace DojoManagmentSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,FirstName,LastName,IsInstructor")] Member member)
         {
-            ViewBag.Disciplines = db.Disciplines.ToList();
+            ViewBag.Disciplines = db.GetDbSet<Discipline>().ToList();
             string disciplineId = Request.Form["Dropdown"];
 
             if (ModelState.IsValid)
             {
                 member.IsArchived = false;
-                db.Members.Add(member);
+                db.GetDbSet<Member>().Add(member);
                 db.SaveChanges();
                 if (disciplineId == "None")
                 {
@@ -167,9 +231,9 @@ namespace DojoManagmentSystem.Controllers
                 {
                     DisciplineEnrolledMember enrolledMember = new DisciplineEnrolledMember();
                     enrolledMember.MemberId = member.Id;
-                    enrolledMember.Member = db.Members.Find(enrolledMember.MemberId);
+                    enrolledMember.Member = db.GetDbSet<Member>().Find(enrolledMember.MemberId);
                     enrolledMember.DisciplineId = int.Parse(disciplineId);
-                    enrolledMember.Discipline = db.Disciplines.Find(enrolledMember.DisciplineId);
+                    enrolledMember.Discipline = db.GetDbSet<Discipline>().Find(enrolledMember.DisciplineId);
 
                     return PartialView("Enroll", enrolledMember);
                 }
@@ -186,7 +250,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 enrolledMember.RemainingCost = enrolledMember.Cost;
                 enrolledMember.EndDate = enrolledMember.StartDate.AddMonths(enrolledMember.MembershipLength);
-                db.DisciplineEnrolledMembers.Add(enrolledMember);
+                db.GetDbSet<DisciplineEnrolledMember>().Add(enrolledMember);
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
@@ -194,85 +258,9 @@ namespace DojoManagmentSystem.Controllers
                 });
             }
 
-            ViewBag.DisciplineId = new SelectList(db.Disciplines, "Id", "Name", enrolledMember.DisciplineId);
+            ViewBag.DisciplineId = new SelectList(db.GetDbSet<Discipline>(), "Id", "Name", enrolledMember.DisciplineId);
             return PartialView(enrolledMember);
         }
 
-        // GET: Member/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Include("User").FirstOrDefault(m => m.Id == id);
-            if (member == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.IsValid = false;
-            return PartialView("Edit", member);
-        }
-
-        // POST: Member/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,FirstName,LastName,Note,IsInstructor")] Member member)
-        {
-            ViewBag.IsValid = false;
-            if (ModelState.IsValid)
-            {
-                db.Entry(member).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
-            }
-            member.User = db.Users.Include("Member").FirstOrDefault(u => u.Member.Id == member.Id && !u.IsArchived);
-            return PartialView("Edit", member);
-        }
-
-        // GET: Member/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Member member = db.Members.Find(id);
-            if (member == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(member);
-        }
-
-        // POST: Member/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            try
-            {
-                Member member = db.Members.Include("DisciplineEnrolledMembers").Include("Payments")
-                    .Include("Waivers").Include("Contact")
-                    .Include("User").FirstOrDefault(m => m.Id == id);
-                member.Delete(db);
-                return Json(new JsonReturn { RefreshScreen = true });
-            }
-            catch (LastUserExpection ex)
-            {
-                return Json(new JsonReturn { ErrorMessage = ex.Message });
-            }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

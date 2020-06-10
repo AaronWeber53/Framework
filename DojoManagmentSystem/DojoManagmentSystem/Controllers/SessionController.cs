@@ -1,6 +1,6 @@
-﻿using DojoManagmentSystem.DAL;
+﻿using Business.DAL;
 using DojoManagmentSystem.Infastructure;
-using DojoManagmentSystem.Models;
+using Business.Models;
 using DojoManagmentSystem.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Business.Infastructure;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -42,32 +43,35 @@ namespace DojoManagmentSystem.Controllers
         [HttpPost]
         public ActionResult SignIn(string email, string password, bool rememberMe = false)
         {
-            List<User> users = db.Users.Where(u => !u.IsArchived).ToList();
-
-            if (email != null && password != null)
+            using (DojoManagmentContext db = new DojoManagmentContext())
             {
-                // Hashes password input to compare to stored password.
-                string hashPassword = EncryptionHelper.EncryptText(password);
+                List<User> users = db.GetDbSet<User>().Where(u => !u.IsArchived).ToList();
 
-                foreach (User u in users)
+                if (email != null && password != null)
                 {
-                    // Check if username is in database and if password matches.
-                    if (u.Username.ToLower() == email.ToLower() && u.Password == hashPassword)
+                    // Hashes password input to compare to stored password.
+                    string hashPassword = EncryptionHelper.EncryptText(password);
+
+                    foreach (User u in users)
                     {
-                        // Create a session for this user.
-                        Session newSession = new Session(u.Id, rememberMe);
+                        // Check if username is in database and if password matches.
+                        if (u.Username.ToLower() == email.ToLower() && u.Password == hashPassword)
+                        {
+                            // Create a session for this user.
+                            Session newSession = new Session(u.Id, rememberMe);
 
-                        // Create a cookie holding the sessions hash and add it.
-                        HttpCookie cookie = new HttpCookie("SessionGuid", newSession.SessionHash);
-                        cookie.Expires = newSession.Expires;
-                        Response.Cookies.Add(cookie);
+                            // Create a cookie holding the sessions hash and add it.
+                            HttpCookie cookie = new HttpCookie("SessionGuid", newSession.SessionHash);
+                            cookie.Expires = newSession.Expires;
+                            Response.Cookies.Add(cookie);
 
-                        // Add the session to the database.
-                        db.Sessions.Add(newSession);
-                        db.SaveChanges();
+                            // Add the session to the database.
+                            db.GetDbSet<Session>().Add(newSession);
+                            db.SaveChanges();
 
-                        // Redirect to home.
-                        return RedirectToAction("Index", "Home");
+                            // Redirect to home.
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
             }
@@ -139,7 +143,7 @@ namespace DojoManagmentSystem.Controllers
             string hash = sessionCookie.Value;
 
             // Based on the hash look for the corresponding session.
-            return db.Sessions.Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
+            return db.GetDbSet<Session>().Include("User").Include("User.Member").FirstOrDefault(s => s.SessionHash == hash);
         }
     }
 }

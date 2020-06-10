@@ -1,4 +1,4 @@
-﻿@model DojoManagmentSystem.Models.AttendanceSheet
+﻿@model Business.Models.AttendanceSheet
 
 @{
     ViewBag.Title = "Create";
@@ -82,7 +82,7 @@
                     }
                     @if (ViewBag.DropIns != null && ViewBag.DropIns.Count > 0)
                     {
-                        foreach (DojoManagmentSystem.Models.Member item in ViewBag.DropIns)
+                        foreach (Business.Models.Member item in ViewBag.DropIns)
                         {
                             <tr>
                                 <td scope="row">
@@ -119,7 +119,7 @@
             <td class="col-sm-8">
                 <div class="col-sm-12">
                     <select name="DropDown" class="attendanceAddDropDown customSelect mr-0" style="min-height: 42px;">
-                        @foreach (DojoManagmentSystem.Models.Member item in ViewBag.OutputDropDown)
+                        @foreach (Business.Models.Member item in ViewBag.OutputDropDown)
                         {
                             <option value="@item.Id">@item.FullName</option>
                         }
