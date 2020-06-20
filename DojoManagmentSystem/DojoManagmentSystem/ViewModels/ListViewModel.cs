@@ -35,11 +35,11 @@ namespace DojoManagmentSystem.ViewModels
         }
 
         public ListSettings ListSettings { get; set; } = new ListSettings();
-        public List<FieldDisplay> FieldsToDisplay { get; set; }
+        public IEnumerable<FieldDisplay> FieldsToDisplay { get; set; }
         public bool ShowArchived { get; set; }
         public string Controller { get; set; }
         public string Action { get; set; }
-        public int? RelationID { get; set; }
+        public long? RelationID { get; set; }
         public string RelationField { get; set; }
         public int CurrentPage { get; set; }
         public Func<T, string> RowClass { get; set; }
@@ -119,7 +119,7 @@ namespace DojoManagmentSystem.ViewModels
 
                 FieldDisplay filterField = FieldsToDisplay.FirstOrDefault(f => f.FieldName == FilterField);
 
-                if ((filterField?.IsSearchField).Value && !string.IsNullOrEmpty(CurrentSearch))
+                if ((filterField?.IsSearchField ?? false) && !string.IsNullOrEmpty(CurrentSearch))
                 {
                     list = list.Where($"{filterField.FieldName}=\"{CurrentSearch} \"");
                 }

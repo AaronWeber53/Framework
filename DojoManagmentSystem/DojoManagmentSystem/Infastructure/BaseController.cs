@@ -1,6 +1,6 @@
 ﻿using Business;
 using Business.DAL;
-using DojoManagmentSystem.Infastructure;
+using Business.Infastructure.Exceptions;
 using Business.Models;
 using DojoManagmentSystem.ViewModels;
 using System;
@@ -8,10 +8,10 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
-using Business.Infastructure.Exceptions;
+using System.Web.UI.WebControls;
 
 namespace DojoManagmentSystem
 {
@@ -32,7 +32,7 @@ namespace DojoManagmentSystem
             {
                 // Get the session cookie.
                 HttpCookie sessionCookie = Request.Cookies["SessionGuid"];
-
+                
                 // Get the hash value from the cookies.
                 string hash = sessionCookie.Value;
 
@@ -175,43 +175,40 @@ namespace DojoManagmentSystem
                 return HttpNotFound();
             }
 
-            var properties = typeof(T).GetProperties()
-                    .Where(prop => prop.CanWrite);
-
-            //foreach(var prop in properties)
-            //{
-            //    prop.SetValue(obj, null); 
-            //}
-
             return PartialView("Edit", obj);
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public virtual ActionResult Edit([Bind()]T obj)
+        public virtual ActionResult EditValidation(long? id)
         {
-            if (obj == null)
+            using (db)
             {
-                return HttpNotFound();
-            }
-            using (DojoManagmentContext db = new DojoManagmentContext())
-            {
-                ViewBag.IsValid = false;
-                if (ModelState.IsValid)
+                bool isValid = false;
+                T obj = db.GetDbSet<T>().FirstOrDefault(o => o.Id == id);
+                if(obj == null)
                 {
-
-                    var test = db.Entry(obj);
-                    var test2 = test.State;
-                    db.SaveChanges();
-                    ViewBag.IsValid = true;
+                    return HttpNotFound();
                 }
 
+                if (TryUpdateModel(obj))
+                {
+                    db.SaveChanges();
+                    isValid = true;
+                }
+                SetAdditionalEditValues(obj);
+                ViewBag.IsValid = isValid;
+                return PartialView("Edit", obj);
             }
-
-            return PartialView("Edit", obj);
         }
 
-        public ActionResult Delete(int? id)
+        protected virtual void SetAdditionalEditValues(T obj)
+        {
+
+        }
+
+
+        public ActionResult Delete(long? id)
         {
             if (id == null)
             {
@@ -227,7 +224,7 @@ namespace DojoManagmentSystem
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public virtual ActionResult DeleteConfirmed(long id)
         {
             try
             {
@@ -241,7 +238,7 @@ namespace DojoManagmentSystem
             }
         }
         
-        private T GetObj(long? id)
+        protected T GetObj(long? id)
         {
             IQueryable<T> list = db.GetDbSet<T>().Where(a => a.Id == id);
             list = IncludeRelationshipsInSearch(list);
@@ -255,6 +252,29 @@ namespace DojoManagmentSystem
                 query.Include(s);
             }
             return query;
+        }
+
+        protected ListViewModel<TRel> RelationshipList<TRel>(long? id, string filter, string sortOrder, string searchString, int page = 1) where TRel : BaseModel
+        {
+            Assembly asm = Assembly.GetExecutingAssembly();
+            BaseController<TRel> baseController = asm.GetTypes()
+                .Where(type => typeof(BaseController<TRel>).IsAssignableFrom(type))
+                .Select(t => (BaseController<TRel>)Activator.CreateInstance(t)).FirstOrDefault();
+
+            ListViewModel<TRel> model = new ListViewModel<TRel>()
+            {
+                RelationID = id,
+                Action = this.ControllerContext.RouteData.Values["action"].ToString(),
+                CurrentPage = page,
+                CurrentSort = sortOrder,
+                CurrentSearch = searchString,
+                FilterField = filter,
+                ListSettings = baseController.ListSettings,
+                ObjectList = db.GetDbSet<TRel>(),
+                FieldsToDisplay = baseController.ListDisplay.Where(f => f.DisplayInRelationships)
+            };
+
+            return model;
         }
 
         public ActionResult List(string filter = null, string sortOrder = null, string searchString = null, int page = 1)

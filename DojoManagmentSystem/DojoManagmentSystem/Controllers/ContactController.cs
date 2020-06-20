@@ -14,13 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class ContactController : BaseController<Contact>
     {
-        // GET: Disciplines
-        public ActionResult Index()
-        {
-            return View(db.GetDbSet<Discipline>().ToList());
-        }
-
-        // GET: Disciplines/Details/5
         public ActionResult Details(int? id)
         {            
             if (id == null)
@@ -118,51 +111,6 @@ namespace DojoManagmentSystem.Controllers
             }
 
             return PartialView("Create", model);
-        }
-
-        // POST: Disciplines/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,RelationShip,IsPrimary,MemberId")] Contact contact)
-        {
-            ViewBag.IsValid = false;
-
-            if (ModelState.IsValid)
-            {
-                db.Entry(contact).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
-                return PartialView("Edit", contact);
-            }
-            return View("Edit", contact);
-        }
-
-        // GET: Payments/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Contact contact = db.GetDbSet<Contact>().Find(id);
-            if (contact == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(contact);
-        }
-
-        // POST: Payments/Delete/5
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

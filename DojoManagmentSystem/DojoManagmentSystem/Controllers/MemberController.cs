@@ -41,19 +41,11 @@ namespace DojoManagmentSystem.Controllers
         //// GET: Payments
         public ActionResult Payments(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
-            ListViewModel<Payment> model = new ListViewModel<Payment>()
+            ListViewModel<Payment> test = RelationshipList<Payment>(id, filter, sortOrder, searchString, page);
+            test.ListSettings = new ListSettings()
             {
-                RelationID = id,
-                Action = MethodBase.GetCurrentMethod().Name,
-                CurrentPage = page,
-                CurrentSort = sortOrder,
-                CurrentSearch = searchString,
-                FilterField = filter,
-                ObjectList = db.GetDbSet<Payment>(),
-                ListSettings = new ListSettings()
-                {
-                    ModalOpen = true,
-                    Links = new List<Link>()
+                ModalOpen = true,
+                Links = new List<Link>()
                     {
                         new Link()
                         {
@@ -68,17 +60,9 @@ namespace DojoManagmentSystem.Controllers
                             Text = "Add Payment"
                         }
                     }
-                },
-                FieldsToDisplay = new List<FieldDisplay>
-            {
-                new FieldDisplay() {FieldName = "Amount" },
-                new FieldDisplay() {FieldName = "Date" },
-                new FieldDisplay() {FieldName = "PaymentType" },
-                new FieldDisplay() {FieldName = "Description" },
-            }
             };
 
-            return ListView(model);
+            return ListView(test);
         }
 
         //// GET: Payments
@@ -174,12 +158,6 @@ namespace DojoManagmentSystem.Controllers
         }
         #endregion
 
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        // GET: Member/Details/5
         public ActionResult Details(int? id, string tab)
         {
             if (id == null)
@@ -214,7 +192,6 @@ namespace DojoManagmentSystem.Controllers
         {
             ViewBag.Disciplines = db.GetDbSet<Discipline>().ToList();
             string disciplineId = Request.Form["Dropdown"];
-
             if (ModelState.IsValid)
             {
                 member.IsArchived = false;
