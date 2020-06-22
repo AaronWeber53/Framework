@@ -14,9 +14,14 @@ namespace DojoManagmentSystem
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Site Default",
+                url: "{controller}/{action}",
+                defaults: new { controller = "Session", action = "Index" });
+
+            routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Session", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Member", action = "List", id = UrlParameter.Optional }
             );
         }
     }

@@ -40,54 +40,5 @@ namespace DojoManagmentSystem.Controllers
 
             return PartialView("Create", memberPhone);
         }       
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,PhoneNumber,ContactID")] MemberPhone phone)
-        {
-            ViewBag.IsValid = false;
-
-            if (ModelState.IsValid)
-            {
-                db.Entry(phone).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
-                return Json(new JsonReturn { RefreshScreen = true });
-            }
-            return PartialView("Edit", phone);
-        }
-
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
-            if (phone == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(phone);
-        }
-
-        // POST: Disciplines/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            MemberPhone phone = db.GetDbSet<MemberPhone>().Find(id);
-            phone.Delete(db);
-            return Json(new JsonReturn { RefreshScreen = true });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

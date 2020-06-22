@@ -252,7 +252,7 @@ namespace DojoManagmentSystem.Controllers
 
         #region Edit
         // GET: AttendanceSheet/Edit/5
-        public ActionResult Edit(int? id)
+        public override ActionResult Edit(long? id)
         {
             if (id == null)
             {

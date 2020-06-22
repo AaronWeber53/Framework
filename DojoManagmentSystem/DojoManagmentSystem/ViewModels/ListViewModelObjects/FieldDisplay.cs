@@ -20,6 +20,7 @@ namespace DojoManagmentSystem.ViewModels
         public bool AllowSort { get; set; } = true;
         public bool IsSearchField { get; set; } = true;
         public int? FieldWidth { get; set; } = null;
+        public bool DisplayInRelationships { get; set; } = true;
 
         public object GetValue(BaseModel obj)
         {

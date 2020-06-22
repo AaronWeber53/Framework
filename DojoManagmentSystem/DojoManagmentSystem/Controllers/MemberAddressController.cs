@@ -36,54 +36,5 @@ namespace DojoManagmentSystem.Controllers
 
             return PartialView("Create", memberAddress);
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Street,City,ZipCode,State,ContactID")] MemberAddress memberAddress)
-        {
-            ViewBag.IsValid = false;
-
-            if (ModelState.IsValid)
-            {
-                db.Entry(memberAddress).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
-                return Json(new JsonReturn { RefreshScreen = true });
-            }
-            return PartialView("Edit", memberAddress);
-        }
-
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            MemberAddress memberAddress = db.GetDbSet<MemberAddress>().Find(id);
-            if (memberAddress == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(memberAddress);
-        }
-
-        // POST: Disciplines/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            MemberAddress memberAddress = db.GetDbSet<MemberAddress>().Find(id);
-            memberAddress.Delete(db);
-            return Json(new JsonReturn { RefreshScreen = true });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }

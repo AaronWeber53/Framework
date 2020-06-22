@@ -16,7 +16,7 @@
     </div>
     <hr />
 
-    @using (Html.BeginForm("Edit", "Payments", FormMethod.Post, new { id = "ModalForm" }))
+    @using (Html.BeginForm("Edit", "Payment", FormMethod.Post, new { id = "ModalForm" }))
     {
         @Html.AntiForgeryToken()
 
@@ -24,7 +24,6 @@
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             @Html.HiddenFor(model => model.Id)
             @Html.HiddenFor(model => model.MemberID)
-            @Html.HiddenFor(model => model.Member)
             @Html.HiddenFor(model => model.Amount)
             <div class="form-group">
                 @Html.LabelFor(model => model.Member.FullName, htmlAttributes: new { @class = "control-label col-md-8" })

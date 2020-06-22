@@ -37,7 +37,7 @@
                     // Replace form with updated form
                     $("#modal-data").html(data);
                     registerComboBoxes();
-                    registerTableCheckBoxes();                
+                    //registerTableCheckBoxes();                
                 }
             }
         });

@@ -19,17 +19,22 @@ namespace DojoManagmentSystem.Controllers
         protected override ListSettings ListSettings => new ListSettings() { ModalOpen = true, AllowDelete = false };
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>
         {
-            new FieldDisplay() {FieldName = "Member.FirstName" },
-            new FieldDisplay() {FieldName = "Member.LastName" },
+            new FieldDisplay() {FieldName = "Member.FirstName", DisplayInRelationships = false },
+            new FieldDisplay() {FieldName = "Member.LastName", DisplayInRelationships = false },
             new FieldDisplay() {FieldName = "Amount" },
             new FieldDisplay() {FieldName = "Date" },
             new FieldDisplay() {FieldName = "PaymentType" },
             new FieldDisplay() {FieldName = "Description" },
         };
 
-        public ActionResult Index()
+        protected override List<string> EditRelationships => new List<string>()
         {
-            return View();
+            "Member"
+        };
+
+        protected override string[] GetEditExcludeProperties()
+        {
+            return new string[] { "Member" };
         }
 
         // GET: Payments/Details/5
@@ -80,50 +85,6 @@ namespace DojoManagmentSystem.Controllers
             }
             payment.Member = member;
             return PartialView("Create", payment);
-        }
-
-        // POST: Payments/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Description,Amount,Date,MemberId,PaymentType")] Payment payment)
-        {
-            ViewBag.IsValid = false;
-            payment.Member = db.GetDbSet<Member>().Find(payment.MemberID);
-            if (ModelState.IsValid)
-            {
-                db.Entry(payment).State = EntityState.Modified;
-                 db.SaveChanges();
-                ViewBag.IsValid = true;
-                return Json(new JsonReturn { RefreshScreen = true });
-            }
-            return PartialView("Edit", payment);
-        }
-
-        // GET: Payments/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Payment payment = db.GetDbSet<Payment>().Find(id);
-            if (payment == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(payment);
-        }
-
-        // POST: Payments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Payment payment =  db.GetDbSet<Payment>().Find(id);
-            payment.Delete(db);
-            return Json(new JsonReturn { RefreshScreen = true });
         }
 
         // Calls the view to load the pdf.
@@ -182,15 +143,6 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.EndDate = string.Format("{0:MM/dd/yyyy}", viewModel.EndDate);
 
             return new Rotativa.PartialViewAsPdf("PrintView", payments);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

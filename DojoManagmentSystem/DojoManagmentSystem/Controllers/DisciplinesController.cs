@@ -28,6 +28,7 @@ namespace DojoManagmentSystem.Controllers
                 };
             }
         }
+
         public ActionResult ClassSessions(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
             ListViewModel<ClassSession> model = new ListViewModel<ClassSession>()
@@ -76,29 +77,6 @@ namespace DojoManagmentSystem.Controllers
             return ListView(model);
         }
 
-        // GET: Disciplines
-        public ActionResult Index()
-        {
-            return View(db.GetDbSet<Discipline>().ToList());
-        }
-
-        // GET: Disciplines/Details/5
-        public ActionResult Details(int? id)
-        {            
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
-        
-            if (discipline == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.ClassName = null;
-            return View(discipline);
-        }
-
         // GET: Disciplines/Create
         public ActionResult Create()
         {
@@ -124,59 +102,6 @@ namespace DojoManagmentSystem.Controllers
             }
 
             return PartialView("Create", discipline);
-        }
-
-        // POST: Disciplines/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public override ActionResult Edit([Bind(Include = "Id,Name,Description")] Discipline discipline)
-        {
-            ViewBag.IsValid = false;
-
-            if (ModelState.IsValid)
-            {
-                db.Entry(discipline).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.IsValid = true;
-                return PartialView("Edit", discipline);
-            }
-            return View("Edit", discipline);
-        }
-
-        // GET: Disciplines/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
-            if (discipline == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(discipline);
-        }
-
-        // POST: Disciplines/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Discipline discipline = db.GetDbSet<Discipline>().Find(id);
-            discipline.Delete(db);
-            return Json(new JsonReturn { RefreshScreen = true });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

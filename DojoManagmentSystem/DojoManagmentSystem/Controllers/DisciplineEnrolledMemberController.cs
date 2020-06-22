@@ -14,27 +14,6 @@ namespace DojoManagmentSystem.Controllers
 {
     public class DisciplineEnrolledMemberController : BaseController<DisciplineEnrolledMember>
     {
-        public ActionResult Index(int id)
-        {
-            ViewBag.DisciplineId = id;
-
-            return PartialView(db.GetDbSet<Member>().ToList());
-        }
-
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
-            if (enrolledMember == null)
-            {
-                return HttpNotFound();
-            }
-            return View(enrolledMember);
-        }
-
         public ActionResult DisciplineList(int id, string sortOrder = null, string searchString = null, int page = 1)
         {
             ItemsPerPage = 3;
@@ -118,66 +97,23 @@ namespace DojoManagmentSystem.Controllers
             return PartialView(enrolledMember);
         }
               
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(DisciplineEnrolledMember enrolledMember)
+        protected override void SetAdditionalEditValues(DisciplineEnrolledMember obj)
         {
-
-            if (ModelState.IsValid)
-            {
-                db.Entry(enrolledMember).State = EntityState.Modified;
-                db.SaveChanges();
-                return Json(new JsonReturn { RefreshScreen = true });
-            }
-
+            base.SetAdditionalEditValues(obj);
             string[] origin = Request.Form.GetValues("origin");
 
             // If opened from the member page, generates a link to the discipline page
             if (origin[0] == "member")
             {
                 ViewBag.LinkValue = "Go to Discipline";
-                ViewBag.LinkUrl = $"/Discipline/Details/{enrolledMember.DisciplineId}";
+                ViewBag.LinkUrl = $"/Discipline/Details/{obj.DisciplineId}";
             }
             // If opened from the discipline page, generates a link to the member page
             else if (origin[0] == "discipline")
             {
                 ViewBag.LinkValue = "Go to Member";
-                ViewBag.LinkUrl = $"/Member/Details/{enrolledMember.MemberId}";
+                ViewBag.LinkUrl = $"/Member/Details/{obj.MemberId}";
             }
-
-            return PartialView(enrolledMember);
-        }
-        
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Include("Member").FirstOrDefault(m => m.Id == id);
-            if (enrolledMember == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(enrolledMember);
-        }
-        
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            DisciplineEnrolledMember enrolledMember = db.GetDbSet<DisciplineEnrolledMember>().Find(id);
-            enrolledMember.Delete(db);
-            return Json(new JsonReturn { RefreshScreen = true });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

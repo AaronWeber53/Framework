@@ -22,6 +22,11 @@ namespace DojoManagmentSystem.Controllers
     {
         private DojoManagmentContext db = new DojoManagmentContext();
 
+        protected override List<string> EditRelationships => new List<string>()
+        {
+            "Member"
+        };
+
         // GET: Users
         public ActionResult Index()
         {
@@ -115,32 +120,16 @@ namespace DojoManagmentSystem.Controllers
             return View(user);
         }
 
-        // GET: Users/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            User user = db.GetDbSet<User>().Include("Member").FirstOrDefault(m => m.Id == id);
-            if (user == null)
-            {
-                return HttpNotFound();
-            }
-            return PartialView(user);
-        }
-
-        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public override ActionResult DeleteConfirmed(long id)
         {
             try
             {
-                User user = db.GetDbSet<User>().Include("Member").FirstOrDefault(m => m.Id == id);
+                User user = GetObj(id);
                 user.Delete(db);
                 user.Member.User = null;
-                db.Entry(user.Member).State = System.Data.Entity.EntityState.Modified;
+                db.Entry(user.Member).State = EntityState.Modified;
                 db.SaveChanges();
                 return Json(new JsonReturn { RefreshScreen = true });
             }
@@ -151,16 +140,6 @@ namespace DojoManagmentSystem.Controllers
                     ErrorMessage = ex.Message
                 });
             }
-
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         public ActionResult ChangePassword(int? id)
