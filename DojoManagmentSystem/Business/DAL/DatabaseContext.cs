@@ -8,11 +8,11 @@ using System.Web;
 
 namespace Business.DAL
 {
-    public class DojoManagmentContext : DbContext
+    public class DatabaseContext : DbContext
     {
-        public DojoManagmentContext() : base()
+        public DatabaseContext() : base()
         {
-            Database.SetInitializer<DojoManagmentContext>(new MigrateDatabaseToLatestVersion<DojoManagmentContext, Configuration>());
+            Database.SetInitializer<DatabaseContext>(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
             Configuration.LazyLoadingEnabled = false;
         }
 
@@ -20,7 +20,7 @@ namespace Business.DAL
         {
             List<T> myDynamicList;
 
-            using (DojoManagmentContext db = new DojoManagmentContext())
+            using (DatabaseContext db = new DatabaseContext())
             {
                 // consider using exception handling here as GetDbSet might get an invalid type
                 IQueryable<T> dbSet = db.GetDbSet<T>();
@@ -39,6 +39,10 @@ namespace Business.DAL
         {
             return this.Set<T>();
         }
+        public DbSet GetDbSet(Type type)
+        {
+            return this.Set(type);
+        }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -48,9 +52,10 @@ namespace Business.DAL
             // Create a relationship where a member may exist without a user 
             // but a user must exist with a member.
             modelBuilder.Entity<Member>()
-                .HasOptional(q => q.User);
-            modelBuilder.Entity<User>()
-                .HasRequired(q => q.Member);
+                .HasOptional(q => q.User)
+                .WithRequired(u => u.Member);
+            //modelBuilder.Entity<User>()
+            //    .HasRequired(q => q.Member);
         }
 
         public override int SaveChanges()

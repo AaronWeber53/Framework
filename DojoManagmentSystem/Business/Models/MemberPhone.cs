@@ -14,7 +14,7 @@ namespace Business.Models
         [DisplayName("Phone Number")]
         public string PhoneNumber { get; set; }
 
-        public int ContactID { get; set; }
+        public long ContactID { get; set; }
 
         public virtual Contact Contact { get; set; }
     }

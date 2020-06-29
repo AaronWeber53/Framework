@@ -6,7 +6,7 @@ namespace Business.DAL
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<DAL.DojoManagmentContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<DAL.DatabaseContext>
     {
         public Configuration()
         {
@@ -14,7 +14,7 @@ namespace Business.DAL
             AutomaticMigrationDataLossAllowed = true;
         }
 
-        protected override void Seed(DAL.DojoManagmentContext context)
+        protected override void Seed(DAL.DatabaseContext context)
         {
             //  This method will be called after migrating to the latest version.
             if (!context.GetDbSet<Member>().Any(a => a.User.Username == "Admin"))
@@ -27,6 +27,7 @@ namespace Business.DAL
                 memberAdmin.User = admin;
                 admin.Member = memberAdmin;
 
+                context.GetDbSet<Member>().AddOrUpdate(memberAdmin);
                 context.GetDbSet<User>().AddOrUpdate(admin);
                 context.SaveChanges();
             }

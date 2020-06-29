@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using Web.Infastructure.Extensions
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -16,11 +17,16 @@
             </div>
             <div style="font-size: 1rem;" class="sidebar-heading-text">Wisconsin Budokai <br /> Martial Arts</div>
             <div class="list-group list-group-flush">
-                @Html.ActionLink("Home", "Index", "Home", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
-                @Html.ActionLink("Disciplines", "List", "Discipline", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
-                @Html.ActionLink("Members", "List", "Member", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
-                @Html.ActionLink("Payments", "List", "Payment", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
-                @Html.ActionLink("Quick Attendance", "QuickAttendance", "AttendanceSheet", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Home", "Index", "Home", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Discipline", "List", "Disciplines", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Member", "List", "Members", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Payment", "List", "Payments", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("AttendanceSheet", "QuickAttendance", "Quick Attendance", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+
+                @Html.GenerateLinkWithSecurity("Member", "TestOwner", "Owner", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Member", "TestAdmin", "Admin", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Member", "TestUser", "User", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
+                @Html.GenerateLinkWithSecurity("Member", "TestNormal", "Normal", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
             </div>
             <div class="list-group list-group-flush navBottom">
                 <a class="list-group-item list-group-item-action bg-primary text-white" href="/Member/Details/@ViewBag.UserId">

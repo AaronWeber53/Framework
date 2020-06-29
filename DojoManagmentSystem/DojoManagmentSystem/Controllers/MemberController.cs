@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using Business.DAL;
+using Business.Infastructure.Enums;
 using Business.Models;
+using DojoManagmentSystem.Infastructure.Attributes;
 using DojoManagmentSystem.ViewModels;
 
 namespace DojoManagmentSystem.Controllers
@@ -23,22 +26,24 @@ namespace DojoManagmentSystem.Controllers
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>()
         {
             new FieldDisplay("HasUser") { AllowSort = false},
-            new FieldDisplay("FirstName"),
+            new FieldDisplay("User.SecurityLevel"),
+            new FieldDisplay<Member>(m => m.FirstName),
             new FieldDisplay("LastName"),
             new FieldDisplay("IsInstructor"),
         };
 
-        protected override List<string> EditRelationships => new List<string>()
+        protected override List<Expression<Func<Member, object>>> EditRelationships => new List<Expression<Func<Member, object>>>()
         {
-            "User",
-            "DisciplineEnrolledMembers",
-            "Payments",
-            "Waivers",
-            "Contact",
+            m => m.User,
+            m => m.DisciplineEnrolledMembers,
+            m => m.Payments,
+            m => m.Waivers,
+            m => m.Contacts
         };
 
         #region Relation Lists
         //// GET: Payments
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Owner)]
         public ActionResult Payments(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
             ListViewModel<Payment> test = RelationshipList<Payment>(id, filter, sortOrder, searchString, page);
@@ -102,11 +107,11 @@ namespace DojoManagmentSystem.Controllers
                 ObjectList = db.GetDbSet<Waiver>(),
                 ListSettings = new ListSettings() { ModalOpen = true },
                 FieldsToDisplay = new List<FieldDisplay>
-            {
-                new FieldDisplay() {FieldName = "IsSigned" },
-                new FieldDisplay() {FieldName = "DateSigned" },
-                new FieldDisplay() {FieldName = "Note" },
-            }
+                {
+                    new FieldDisplay() {FieldName = "IsSigned" },
+                    new FieldDisplay() {FieldName = "DateSigned" },
+                    new FieldDisplay() {FieldName = "Note" },
+                }
             };
 
             return ListView(model);
@@ -158,6 +163,29 @@ namespace DojoManagmentSystem.Controllers
         }
         #endregion
 
+        [PageSecurity(SecurityLevel.Owner)]
+        public ActionResult TestOwner()
+        {
+            return HttpNotFound();
+        }
+
+        [PageSecurity(SecurityLevel.Admin)]
+        public ActionResult TestAdmin()
+        {
+            return HttpNotFound();
+        }
+
+        [PageSecurity(SecurityLevel.User)]
+        public ActionResult TestUser()
+        {
+            return HttpNotFound();
+        }
+
+        [PageSecurity(SecurityLevel.Normal)]
+        public ActionResult TestNormal()
+        {
+            return HttpNotFound();
+        }
         public ActionResult Details(int? id, string tab)
         {
             if (id == null)
@@ -173,6 +201,12 @@ namespace DojoManagmentSystem.Controllers
             ViewBag.ClassName = null;
             ViewBag.TabName = tab ?? "general";
             return View(member);
+        }
+
+        protected override void SetAdditionalEditValues(Member obj)
+        {
+            base.SetAdditionalEditValues(obj);
+            ViewBag.DisabledSecurityChange = obj.User.SecurityLevel < Business.Infastructure.Enums.SecurityLevel.Admin;
         }
 
         // GET: Member/Create

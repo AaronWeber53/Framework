@@ -13,7 +13,7 @@ namespace Business.Models
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
-        public int ContactID { get; set; }
+        public long ContactID { get; set; }
 
         public virtual Contact Contact { get; set; }
     }

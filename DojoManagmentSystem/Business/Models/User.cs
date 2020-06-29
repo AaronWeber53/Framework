@@ -1,8 +1,10 @@
 ﻿using Business.DAL;
 using Business.Infastructure;
+using Business.Infastructure.Enums;
 using Business.Infastructure.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -20,6 +22,9 @@ namespace Business.Models
 
         public string Password { get; set; }
 
+        [DisplayName("Security Level")]
+        public SecurityLevel SecurityLevel { get; set; } = SecurityLevel.User;
+
         public virtual Member Member { get; set; }
 
         public virtual ICollection<Session> Sesssion { get; set; }
@@ -32,7 +37,7 @@ namespace Business.Models
             }
         }
 
-        public override void Delete(DojoManagmentContext db)
+        public override void Delete(DatabaseContext db)
         {
             int userCount = db.GetDbSet<User>().Count(u => !u.IsArchived);
             if (userCount <= 1)

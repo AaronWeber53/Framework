@@ -15,16 +15,17 @@ using DojoManagmentSystem.Infastructure;
 using Business.Models;
 using Business.Infastructure.Exceptions;
 using Business.Infastructure;
+using System.Linq.Expressions;
 
 namespace DojoManagmentSystem.Controllers
 {
     public class UsersController : BaseController<User>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        private DatabaseContext db = new DatabaseContext();
 
-        protected override List<string> EditRelationships => new List<string>()
+        protected override List<Expression<Func<User, object>>> EditRelationships => new List<Expression<Func<User, object>>>()
         {
-            "Member"
+            u => u.Member
         };
 
         // GET: Users

@@ -25,13 +25,13 @@ namespace Business.Models
         [DisplayName("Day of Week")]
         public DayOfWeek DayOfWeek { get; set; }
 
-        public int DisciplineId { get; set; }
+        public long DisciplineId { get; set; }
 
         public virtual Discipline Discipline { get; set; }
 
         public virtual ICollection<AttendanceSheet> AttendanceSheets { get; set; }
 
-        public override void Delete(DojoManagmentContext db)
+        public override void Delete(DatabaseContext db)
         {
             AttendanceSheets.ToList().ForEach(a => a.IsArchived = true);
             base.Delete(db);

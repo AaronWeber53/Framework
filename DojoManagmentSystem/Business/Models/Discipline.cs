@@ -18,7 +18,7 @@ namespace Business.Models
 
         public virtual ICollection<DisciplineEnrolledMember> EnrolledMembers { get; set; } = new List<DisciplineEnrolledMember>();
 
-        public override void Delete(DojoManagmentContext db)
+        public override void Delete(DatabaseContext db)
         {
             ClassSessions.ToList().ForEach(a => a.Delete(db));
             EnrolledMembers.ToList().ForEach(a => a.IsArchived = true);

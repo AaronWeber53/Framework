@@ -11,6 +11,8 @@ using Business.DAL;
 using Business.Models;
 using Rotativa;
 using DojoManagmentSystem.ViewModels;
+using System.Linq.Expressions;
+using Business;
 
 namespace DojoManagmentSystem.Controllers
 {
@@ -27,15 +29,10 @@ namespace DojoManagmentSystem.Controllers
             new FieldDisplay() {FieldName = "Description" },
         };
 
-        protected override List<string> EditRelationships => new List<string>()
+        protected override List<Expression<Func<Payment, object>>> EditRelationships => new List<Expression<Func<Payment, object>>>()
         {
-            "Member"
+            p => p.Member
         };
-
-        protected override string[] GetEditExcludeProperties()
-        {
-            return new string[] { "Member" };
-        }
 
         // GET: Payments/Details/5
         public ActionResult Details(int? id)

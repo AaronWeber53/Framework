@@ -71,6 +71,18 @@
                             <button type="button" class="btn btn-danger btn-sm modal-link" data-targeturl="/Users/Delete/@Model.User.Id">Remove User</button>
                         </div>
                     </div>
+                    <div class="form-group row">
+                        @Html.LabelFor(model => model.User.SecurityLevel, htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-6">
+                            <fieldset disabled="@ViewBag.DisabledSecurityChange">
+                                @Html.EnumDropDownListFor(model => model.User.SecurityLevel, new { @class = "" })
+                                @Html.ValidationMessageFor(model => model.User.SecurityLevel, "", new { @class = "text-danger" })
+                            </fieldset>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-danger btn-sm modal-link" data-targeturl="/Users/Delete/@Model.User.Id">Remove User</button>
+                        </div>
+                    </div>
                 }
 
                     <div class="form-group row">

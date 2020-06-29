@@ -499,7 +499,7 @@ namespace DojoManagmentSystem.Controllers
             return modelList;
         }
 
-        private List<Member> OutputFilter(int id)
+        private List<Member> OutputFilter(long id)
         {
             ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
             var membersList = (from mem in db.GetDbSet<Member>().Include("DisciplineEnrolledMembers")
@@ -509,7 +509,7 @@ namespace DojoManagmentSystem.Controllers
             return membersList.ToList();
         }
 
-        private List<Member> GetDropIns(string[] ids, int id)
+        private List<Member> GetDropIns(string[] ids, long id)
         {
             ClassSession classSession = db.GetDbSet<ClassSession>().Find(id);
             var membersList = (from mem in db.GetDbSet<Member>().Include("DisciplineEnrolledMembers")

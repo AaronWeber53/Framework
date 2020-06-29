@@ -31,7 +31,7 @@ namespace DojoManagmentSystem.Controllers
             model.MemberPhones = new List<MemberPhone>();
             model.MemberEmails = new List<MemberEmail>();
             model.MemberAddresses = new List<MemberAddress>();
-            List<MemberPhone> phones = DojoManagmentContext.GetGenericList<MemberPhone>();
+            List<MemberPhone> phones = DatabaseContext.GetGenericList<MemberPhone>();
             foreach (MemberPhone mp in phones)
             {
                 if (mp.ContactID == contact.Id)
@@ -39,7 +39,7 @@ namespace DojoManagmentSystem.Controllers
                     model.MemberPhones.Add(mp);
                 }
             }
-            List<MemberEmail> emails = DojoManagmentContext.GetGenericList<MemberEmail>();
+            List<MemberEmail> emails = DatabaseContext.GetGenericList<MemberEmail>();
             foreach (MemberEmail me in emails)
             {
                 if (me.ContactID == contact.Id)
@@ -47,7 +47,7 @@ namespace DojoManagmentSystem.Controllers
                     model.MemberEmails.Add(me);
                 }
             }
-            List<MemberAddress> addresses = DojoManagmentContext.GetGenericList<MemberAddress>();
+            List<MemberAddress> addresses = DatabaseContext.GetGenericList<MemberAddress>();
             foreach (MemberAddress ma in addresses)
             {
                 if (ma.ContactID == contact.Id)
@@ -66,7 +66,7 @@ namespace DojoManagmentSystem.Controllers
             contact.MemberPhone = new MemberPhone();
             contact.MemberEmail = new MemberEmail();
             contact.MemberAddress = new MemberAddress();
-            bool hasPrimary = DojoManagmentContext.GetGenericList<Member>().First(m => m.Id == id).Contact.Any(c => !c.IsArchived);
+            bool hasPrimary = DatabaseContext.GetGenericList<Member>().First(m => m.Id == id).Contacts.Any(c => !c.IsArchived);
             contact.Contact.MemberId = id;
 
             // If the member doesn't have a contact default to primary.

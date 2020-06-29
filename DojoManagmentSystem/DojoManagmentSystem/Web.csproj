@@ -137,6 +137,7 @@
     <Compile Include="Controllers\MemberPhoneController.cs" />
     <Compile Include="Controllers\ContactController.cs" />
     <Compile Include="Controllers\WaiverController.cs" />
+    <Compile Include="Infastructure\Attributes\PageSecurityAttribute.cs" />
     <Compile Include="Infastructure\BaseController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="Infastructure\Extensions\DynamicLibrary.cs" />
     <Compile Include="Infastructure\Extensions\HtmlExtensions.cs" />
     <Compile Include="Infastructure\Extensions\HttpRequestExtensions.cs" />
+    <Compile Include="Infastructure\Extensions\MarkerAttributeExtensions.cs" />
     <Compile Include="Infastructure\Extensions\ObjectExtensions.cs" />
     <Compile Include="Infastructure\Extensions\Queryable.cs" />
     <Compile Include="Infastructure\Field.cs" />

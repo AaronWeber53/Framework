@@ -9,12 +9,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Business.Infastructure;
+using DojoManagmentSystem.Infastructure.Attributes;
+using Business;
 
 namespace DojoManagmentSystem.Controllers
 {
-    public class SessionController : Controller
+    [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Normal)]
+    public class SessionController : BaseController
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        private DatabaseContext db = new DatabaseContext();
 
         // GET: Session
         public ActionResult Index()
@@ -26,7 +29,7 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult SignIn(bool timeout = false)
         {
             // Check if there is a current session...
-            if (Request.Cookies["SessionGuid"] != null)
+            if (ApplicationContext.CurrentApplicationContext?.CurrentSession.UserId != null)
             {
                 // If there is a session redirect to home.
                 return RedirectToAction("Index", "Home", null);
@@ -43,7 +46,7 @@ namespace DojoManagmentSystem.Controllers
         [HttpPost]
         public ActionResult SignIn(string email, string password, bool rememberMe = false)
         {
-            using (DojoManagmentContext db = new DojoManagmentContext())
+            using (DatabaseContext db = new DatabaseContext())
             {
                 List<User> users = db.GetDbSet<User>().Where(u => !u.IsArchived).ToList();
 
@@ -57,18 +60,21 @@ namespace DojoManagmentSystem.Controllers
                         // Check if username is in database and if password matches.
                         if (u.Username.ToLower() == email.ToLower() && u.Password == hashPassword)
                         {
+                            string hash = ApplicationContext.CurrentApplicationContext.CurrentSession?.SessionHash;
+                            Session newSession = null;
+
+                            if (hash == null)
+                            {
+                                newSession = GetCurrentSession(db);
+                            }
+                            else
+                            {
+                                newSession = db.GetDbSet<Session>().FirstOrDefault(s => s.SessionHash == hash);
+                            }
                             // Create a session for this user.
-                            Session newSession = new Session(u.Id, rememberMe);
-
-                            // Create a cookie holding the sessions hash and add it.
-                            HttpCookie cookie = new HttpCookie("SessionGuid", newSession.SessionHash);
-                            cookie.Expires = newSession.Expires;
-                            Response.Cookies.Add(cookie);
-
+                            newSession.UserId = u.Id;
                             // Add the session to the database.
-                            db.GetDbSet<Session>().Add(newSession);
-                            db.SaveChanges();
-
+                            newSession.Save(db);
                             // Redirect to home.
                             return RedirectToAction("Index", "Home");
                         }
@@ -83,14 +89,22 @@ namespace DojoManagmentSystem.Controllers
         public ActionResult SignOut()
         {
             // Kill the cookie that holds the session.
-            Response.Cookies["SessionGuid"].Expires = DateTime.Now.AddDays(-1);
+            //Response.Cookies["SessionGuid"].Expires = DateTime.Now.AddDays(-1);
+
+            string hash = ApplicationContext.CurrentApplicationContext.CurrentSession.SessionHash;
+            Session newSession = db.GetDbSet<Session>().FirstOrDefault(s => s.SessionHash == hash);
+            newSession.UserId = null;
+            // Add the session to the database.
+            newSession.Save(db);
+
             return RedirectToAction("SignIn");
         }
 
         [HttpGet]
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult LockSession()
         {
-            Session curSession = GetCurrentSession();
+            Session curSession = GetCurrentSession(db);
 
             // Update the current session to be locked to the attendance screen
             curSession.AttendanceLock = true;
@@ -104,9 +118,10 @@ namespace DojoManagmentSystem.Controllers
         /// </summary>
         /// <param name="password"></param>
         /// <returns></returns>
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult UnlockSession()
         {
-            Session curSession = GetCurrentSession();
+            Session curSession = GetCurrentSession(db);
             UnlockViewModel model = new UnlockViewModel() { Username = curSession.User.Username };
             return PartialView("UnlockSession", model);
         }
@@ -117,9 +132,10 @@ namespace DojoManagmentSystem.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [HttpPost]
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult UnlockSession([Bind(Include = "Password,Username")] UnlockViewModel model)
         {
-            Session curSession = GetCurrentSession();
+            Session curSession = GetCurrentSession(db);
 
             // If the given password is the users password. 
             if (curSession.User.Password == EncryptionHelper.EncryptText(model.Password))
@@ -135,7 +151,7 @@ namespace DojoManagmentSystem.Controllers
             return PartialView("UnlockSession", model);
         }
 
-        private Session GetCurrentSession()
+        private Session GetCurrentSession(DatabaseContext db)
         {
             HttpCookie sessionCookie = Request.Cookies["SessionGuid"];
 

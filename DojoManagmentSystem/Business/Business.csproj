@@ -50,10 +50,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\Configuration.cs" />
-    <Compile Include="DAL\DojoManagmentContext.cs" />
+    <Compile Include="DAL\DatabaseContext.cs" />
     <Compile Include="Infastructure\ApplicationContext.cs" />
     <Compile Include="Infastructure\BaseModel.cs" />
     <Compile Include="Infastructure\EncryptionHelper.cs" />
+    <Compile Include="Infastructure\Enums\SecurityLevel.cs" />
     <Compile Include="Infastructure\Exceptions\LastUserExpection.cs" />
     <Compile Include="Models\AttendanceSheet.cs" />
     <Compile Include="Models\ClassSession.cs" />

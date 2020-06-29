@@ -101,9 +101,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DojoManagmentSystem\DojoManagmentSystem.csproj">
+    <ProjectReference Include="..\DojoManagmentSystem\Web.csproj">
       <Project>{5EB54D85-42ED-4F31-9B7D-AF64F221FEFF}</Project>
-      <Name>DojoManagmentSystem</Name>
+      <Name>Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

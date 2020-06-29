@@ -11,12 +11,12 @@ namespace Migrations
                 "dbo.AttendanceSheet",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         AttendanceDate = c.DateTime(nullable: false),
-                        ClassSessionId = c.Int(nullable: false),
-                        MemberId = c.Int(nullable: false),
+                        ClassSessionId = c.Long(nullable: false),
+                        MemberId = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -30,13 +30,13 @@ namespace Migrations
                 "dbo.ClassSession",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         StartTime = c.DateTime(nullable: false),
                         EndTime = c.DateTime(nullable: false),
-                        DayOfWeek = c.Int(nullable: false),
-                        DisciplineId = c.Int(nullable: false),
+                        DayOfWeek = c.Long(nullable: false),
+                        DisciplineId = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -48,11 +48,11 @@ namespace Migrations
                 "dbo.Discipline",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Name = c.String(nullable: false),
                         Description = c.String(),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -62,16 +62,16 @@ namespace Migrations
                 "dbo.DisciplineEnrolledMember",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Cost = c.Decimal(nullable: false, precision: 18, scale: 2),
                         RemainingCost = c.Decimal(nullable: false, precision: 18, scale: 2),
                         MembershipLength = c.Int(nullable: false),
                         StartDate = c.DateTime(nullable: false),
                         EndDate = c.DateTime(nullable: false),
-                        DisciplineId = c.Int(nullable: false),
-                        MemberId = c.Int(nullable: false),
+                        DisciplineId = c.Long(nullable: false),
+                        MemberId = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -85,13 +85,13 @@ namespace Migrations
                 "dbo.Member",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         FirstName = c.String(nullable: false),
                         LastName = c.String(nullable: false),
                         IsInstructor = c.Boolean(nullable: false),
                         Note = c.String(),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -101,15 +101,15 @@ namespace Migrations
                 "dbo.Contact",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Name = c.String(nullable: false),
                         RelationShip = c.String(),
                         IsPrimary = c.Boolean(nullable: false),
-                        MemberId = c.Int(nullable: false),
+                        MemberId = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
-                        User_Id = c.Int(),
+                        User_Id = c.Long(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Member", t => t.MemberId, cascadeDelete: true)
@@ -122,14 +122,14 @@ namespace Migrations
                 "dbo.MemberAddress",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Street = c.String(),
                         City = c.String(),
                         State = c.String(),
                         ZipCode = c.Int(nullable: false),
-                        ContactID = c.Int(nullable: false),
+                        ContactID = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -141,11 +141,11 @@ namespace Migrations
                 "dbo.MemberEmail",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Email = c.String(),
-                        ContactID = c.Int(nullable: false),
+                        ContactID = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -157,11 +157,11 @@ namespace Migrations
                 "dbo.MemberPhone",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         PhoneNumber = c.String(),
-                        ContactID = c.Int(nullable: false),
+                        ContactID = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -173,11 +173,12 @@ namespace Migrations
                 "dbo.User",
                 c => new
                     {
-                        Id = c.Int(nullable: false),
+                        Id = c.Long(nullable: false),
                         Username = c.String(maxLength: 100),
                         Password = c.String(),
+                        SecurityLevel = c.Short(nullable: false, defaultValue: 1),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -190,14 +191,14 @@ namespace Migrations
                 "dbo.Payment",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Description = c.String(maxLength: 100),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Date = c.DateTime(nullable: false),
-                        PaymentType = c.Int(nullable: false),
-                        MemberID = c.Int(nullable: false),
+                        PaymentType = c.Long(nullable: false),
+                        MemberID = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -209,13 +210,13 @@ namespace Migrations
                 "dbo.Waiver",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         Note = c.String(),
                         DateSigned = c.DateTime(nullable: false),
                         IsSigned = c.Boolean(nullable: false),
-                        MemberId = c.Int(nullable: false),
+                        MemberId = c.Long(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
@@ -227,18 +228,17 @@ namespace Migrations
                 "dbo.Session",
                 c => new
                     {
-                        Id = c.Int(nullable: false, identity: true),
+                        Id = c.Long(nullable: false, identity: true),
                         SessionHash = c.String(),
                         RememberMe = c.Boolean(nullable: false),
-                        UserId = c.Int(nullable: false),
+                        UserId = c.Long(nullable: true),
                         AttendanceLock = c.Boolean(nullable: false),
                         Expires = c.DateTime(nullable: false),
                         LastModified = c.DateTime(),
-                        LastUserIdModifiedBy = c.Int(),
+                        LastUserIdModifiedBy = c.Long(),
                         IsArchived = c.Boolean(nullable: false),
                 })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.User", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId)
                 .Index(t => t.LastUserIdModifiedBy, name: "ModifiedById");
 

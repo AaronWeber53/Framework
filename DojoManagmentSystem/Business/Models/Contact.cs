@@ -20,7 +20,7 @@ namespace Business.Models
         [DisplayName("Is Primary")]
         public bool IsPrimary { get; set; }
 
-        public int MemberId { get; set; }
+        public long MemberId { get; set; }
 
         public virtual Member Member { get; set; }
 

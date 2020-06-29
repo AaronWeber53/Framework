@@ -16,7 +16,7 @@ namespace DojoManagmentSystem.Controllers
 {
     public class ClassSessionController : BaseController<ClassSession>
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        private DatabaseContext db = new DatabaseContext();
 
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>
                 {

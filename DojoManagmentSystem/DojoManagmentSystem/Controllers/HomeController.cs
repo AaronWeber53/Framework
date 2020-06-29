@@ -8,11 +8,13 @@ using System.Web.Mvc;
 using System.Security.Cryptography;
 using System.Text;
 using DojoManagmentSystem.ViewModels;
+using DojoManagmentSystem.Infastructure.Attributes;
 
 namespace DojoManagmentSystem.Controllers
 {
     public class HomeController : BaseController
     {
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult Index()
         {
             // Gets all of the discipline enrolled members from the database and puts them in a list.

@@ -29,7 +29,7 @@ namespace Business.Models
             }
         }
 
-        public int ContactID { get; set; }
+        public long ContactID { get; set; }
 
         public virtual Contact Contact { get; set; }
     }
