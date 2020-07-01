@@ -3,9 +3,9 @@ using Business.DAL;
 using Business.Infastructure.Enums;
 using Business.Infastructure.Exceptions;
 using Business.Models;
-using DojoManagmentSystem.Infastructure.Attributes;
-using DojoManagmentSystem.Infastructure.Extensions;
-using DojoManagmentSystem.ViewModels;
+using Web.Infastructure.Attributes;
+using Web.Infastructure.Extensions;
+using Web.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -16,8 +16,9 @@ using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
+using System.Web.Routing;
 
-namespace DojoManagmentSystem
+namespace Web
 {
     [PageSecurity(SecurityLevel.User)]
     public abstract class BaseController : Controller
@@ -178,9 +179,18 @@ namespace DojoManagmentSystem
         {
             if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
             {
-                filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                filterContext.Result = new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        public ActionResult RedirectToAccessForbidden()
+        {
+            if (Request.IsAjaxRequest() || ControllerContext.IsChildAction)
+            {
+                ViewBag.Layout = "_layout";
+            }
+
+            return View("~/Views/Shared/AccessForbidden.cshtml", "");
         }
 
         protected int ItemsPerPage = 5;
@@ -231,6 +241,12 @@ namespace DojoManagmentSystem
         protected virtual List<FieldDisplay> ListDisplay { get; } = new List<FieldDisplay>();
         protected virtual List<Expression<Func<T, object>>> EditRelationships { get; } = new List<Expression<Func<T, object>>>();
 
+        public ActionResult Index()
+        {
+            return RedirectToAction("List");
+        }
+
+
         [PageSecurity(SecurityLevel.User)]
         public virtual ActionResult Edit(long? id)
         {
@@ -277,6 +293,10 @@ namespace DojoManagmentSystem
 
         }
 
+        protected void AddErrorMessage(string fieldName, string message)
+        {
+            ModelState.AddModelError(fieldName, message);
+        }
 
         public ActionResult Delete(long? id)
         {

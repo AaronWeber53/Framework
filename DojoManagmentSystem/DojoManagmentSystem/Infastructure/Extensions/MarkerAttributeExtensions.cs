@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace DojoManagmentSystem.Infastructure.Extensions
+namespace Web.Infastructure.Extensions
 {
     public static class MarkerAttributeExtensions
     {
@@ -55,7 +55,7 @@ namespace DojoManagmentSystem.Infastructure.Extensions
             test = default;
             if (that.HasMarkerAttribute<T>())
             {
-                test = that.ActionDescriptor.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();  
+                test = that.ActionDescriptor.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
                 if (test == null)
                 {
                     test = that.Controller.GetType().GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
@@ -69,13 +69,32 @@ namespace DojoManagmentSystem.Infastructure.Extensions
             test = default;
             if (controller.HasMarkerAttribute<T>())
             {
-                test = controller.GetMethod(action).GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();  
+                test = controller.GetMethods().FirstOrDefault(a => a.Name.ToLower() == action.ToLower()).GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
                 if (test == null)
                 {
                     test = controller.GetCustomAttributes(typeof(T), inherit).Cast<T>().FirstOrDefault();
                 }
             }
             return test != null;
+        }
+
+        public static object ConvertStringToType(this Type type, string value)
+        {
+            if (type.IsEnum)
+            {
+                object obj = default;
+                try
+                {
+                    obj = Enum.Parse(type, value);
+                }
+                catch { }
+                return obj;
+            }
+            else if (type == typeof(DateTime))
+            {
+                return DateTime.Parse(value);
+            }
+            return Convert.ChangeType(value, type);
         }
     }
 }

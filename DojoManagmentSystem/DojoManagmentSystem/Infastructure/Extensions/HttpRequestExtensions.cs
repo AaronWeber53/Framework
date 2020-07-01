@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DojoManagmentSystem.Infastructure.Extensions
+namespace Web.Infastructure.Extensions
 {
     public static class HttpRequestExtensions
     {

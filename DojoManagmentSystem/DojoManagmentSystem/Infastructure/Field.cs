@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 
-namespace DojoManagmentSystem.Infastructure
+namespace Web.Infastructure
 {
     public class Field
     {

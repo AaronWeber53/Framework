@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace DojoManagmentSystem.Infastructure.Attributes
+namespace Web.Infastructure.Attributes
 {
     [AttributeUsage(System.AttributeTargets.Class |
                        System.AttributeTargets.Method,

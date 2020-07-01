@@ -10,11 +10,12 @@ using System.Web.Mvc;
 using Business.DAL;
 using Business.Models;
 using Rotativa;
-using DojoManagmentSystem.ViewModels;
+using Web.ViewModels;
 using System.Linq.Expressions;
 using Business;
+using Web.Infastructure.Attributes;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class PaymentController : BaseController<Payment>
     {
@@ -50,6 +51,7 @@ namespace DojoManagmentSystem.Controllers
         }
 
         // GET: Payments/Create
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Admin)]
         public ActionResult Create(int id)
         {
             Member member = db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").FirstOrDefault(m => m.Id == id);
@@ -66,6 +68,7 @@ namespace DojoManagmentSystem.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Admin)]
         public ActionResult Create([Bind(Include = "Id,Description,Amount,Date,MemberId,PaymentType,Member")] Payment payment, int membershipId)
         {
             Member member = db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").First(m => m.Id == payment.MemberID);

@@ -7,10 +7,10 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Business.DAL;
-using DojoManagmentSystem.ViewModels;
+using Web.ViewModels;
 using Business.Models;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class ContactController : BaseController<Contact>
     {

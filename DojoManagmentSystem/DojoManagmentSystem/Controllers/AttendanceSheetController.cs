@@ -8,14 +8,14 @@ using System.Web;
 using System.Web.Mvc;
 using Business.DAL;
 using Business.Models;
-using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Infastructure.Extensions;
+using Web.ViewModels;
+using Web.Infastructure.Extensions;
 using System.Data.Entity.SqlServer;
 using System.Data.Entity.Core.Objects;
-using DojoManagmentSystem.Infastructure;
+using Web.Infastructure;
 using Business;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class AttendanceSheetController : BaseController<AttendanceSheet>
     {

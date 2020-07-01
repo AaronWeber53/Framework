@@ -1,7 +1,7 @@
 ﻿using Business.DAL;
-using DojoManagmentSystem.Infastructure;
+using Web.Infastructure;
 using Business.Models;
-using DojoManagmentSystem.ViewModels;
+using Web.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,15 +9,15 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Business.Infastructure;
-using DojoManagmentSystem.Infastructure.Attributes;
+using Web.Infastructure.Attributes;
 using Business;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Normal)]
     public class SessionController : BaseController
     {
-        private DatabaseContext db = new DatabaseContext();
+        private DatabaseContext db = new DatabaseContext();        
 
         // GET: Session
         public ActionResult Index()

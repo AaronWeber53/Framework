@@ -1,5 +1,5 @@
 ﻿using Business;
-using DojoManagmentSystem.Infastructure.Extensions;
+using Web.Infastructure.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Web;
 
-namespace DojoManagmentSystem.ViewModels
+namespace Web.ViewModels
 {
     public class FieldDisplay
     {

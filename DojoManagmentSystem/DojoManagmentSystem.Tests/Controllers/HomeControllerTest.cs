@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DojoManagmentSystem;
-using DojoManagmentSystem.Controllers;
+using Web;
+using Web.Controllers;
 
 namespace DojoManagmentSystem.Tests.Controllers
 {

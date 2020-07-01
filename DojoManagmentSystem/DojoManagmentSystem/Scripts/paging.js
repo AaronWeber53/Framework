@@ -24,6 +24,7 @@ function sort(e) {
     // Set the sort data on the table
     table.data("sort", sort);
     table.data("filter", filter);
+    table.data("search", "");
     table.data("page", 1);
 
     // Update the contents of the table.

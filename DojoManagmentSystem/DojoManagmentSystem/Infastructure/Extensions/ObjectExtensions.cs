@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 
-namespace DojoManagmentSystem.Infastructure.Extensions
+namespace Web.Infastructure.Extensions
 {
     public static class ObjectExtensions
     {

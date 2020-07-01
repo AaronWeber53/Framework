@@ -7,6 +7,9 @@ using System.Web;
 
 namespace Business.Models
 {
+    /// <summary>
+    /// This object represents the cookie stored for the user information
+    /// </summary>
     public class Session : BaseModel
     {
         public Session() { }

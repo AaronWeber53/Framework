@@ -30,6 +30,12 @@ namespace System.Linq.Dynamic
                     source.Expression, Expression.Quote(lambda)));
         }
 
+
+        public static IQueryable<T> Contains<T>(this IQueryable<T> source, string predicate, params object[] values)
+        {
+            return (IQueryable<T>)Contains((IQueryable)source, predicate, values);
+        }
+
         public static IQueryable Contains(this IQueryable source, string predicate, params object[] values)
         {
             if (source == null) throw new ArgumentNullException("source");

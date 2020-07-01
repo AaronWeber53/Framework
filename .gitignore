@@ -257,3 +257,5 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/DojoManagmentSystem/packages/EntityFramework.6.4.0
+/DojoManagmentSystem/packages

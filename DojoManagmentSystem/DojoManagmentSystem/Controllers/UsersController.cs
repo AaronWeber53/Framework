@@ -11,13 +11,13 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Business.DAL;
-using DojoManagmentSystem.Infastructure; 
+using Web.Infastructure; 
 using Business.Models;
 using Business.Infastructure.Exceptions;
 using Business.Infastructure;
 using System.Linq.Expressions;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class UsersController : BaseController<User>
     {

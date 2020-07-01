@@ -1,6 +1,6 @@
-﻿using DojoManagmentSystem;
-using DojoManagmentSystem.Infastructure.Attributes;
-using DojoManagmentSystem.Infastructure.Extensions;
+﻿using Web;
+using Web.Infastructure.Attributes;
+using Web.Infastructure.Extensions;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Linq;
@@ -9,6 +9,8 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using System.Security.Policy;
+using System.Collections.Generic;
 //using System.Web.Mvc.Html.LabelExtensions;
 
 namespace Web.Infastructure.Extensions
@@ -55,6 +57,59 @@ namespace Web.Infastructure.Extensions
             return new HtmlString("");
         }
 
+
+        public static IHtmlString ActionWithSecurity(this HtmlHelper helper, string controllerName, string actionName, object routeValues = null)
+        {
+            if(helper.CheckHasSecurityPermission(controllerName, actionName))
+            {
+                return helper.Action(actionName, controllerName, routeValues);
+                //tag = new TagBuilder("a");
+                //tag.SetInnerText(linkText);
+                //tag.Attributes.Add("href", $"/{controllerName}/{actionName}");
+                //if (htmlAttributes != null)
+                //{
+                //    var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+                //    tag.MergeAttributes(attributes);
+                //}
+            }
+            return helper.Action("RedirectToAccessForbidden", "Session");
+        }
+
+        public static IHtmlString GetInputByType(this Type type, string placeholder, string value, object htmlAttributes = null)
+        {
+            //object trueValue = type.ConvertStringToType(value);
+            //HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+            //var attributes = new StringBuilder();
+            //if (htmlAttributes != null)
+            //{
+            //    foreach (var htmlAttribute in htmlAttributes)
+            //    {
+            //        attributes.Append(htmlAttribute);
+            //    }
+            //}
+
+            IHtmlRender part = null;
+
+            if (type.IsEnum)
+            {
+
+            }
+            else if(type == typeof(DateTime))
+            {
+
+            }
+            else if (type == typeof(bool))
+            {
+
+            }
+            else
+            {
+
+            }
+
+            return new HtmlString("");
+        }
+
         //public static IHtmlString IsCurrentAction(this HtmlHelper helper, string actionName, string controllerName)
         //{
         //    string currentControllerName = (string)helper.ViewContext.RouteData.Values["controller"];
@@ -65,6 +120,5 @@ namespace Web.Infastructure.Extensions
         //    helper.LabelForModel()
         //    return false;
         //}
-
     }
 }

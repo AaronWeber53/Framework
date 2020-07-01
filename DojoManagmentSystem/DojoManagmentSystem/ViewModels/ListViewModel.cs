@@ -1,5 +1,5 @@
 ﻿using Business;
-using DojoManagmentSystem.Infastructure.Extensions;
+using Web.Infastructure.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,13 +10,16 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Security.Policy;
 
-namespace DojoManagmentSystem.ViewModels
+namespace Web.ViewModels
 {
     public abstract class ListViewModel
     {
         public Type ObjectType { get; set; }
         public abstract IHtmlString BuildList();
+
+        protected UrlHelper urlHelper;
     }
 
     public class ListViewModel<T> : ListViewModel where T : BaseModel
@@ -24,7 +27,7 @@ namespace DojoManagmentSystem.ViewModels
         public ListViewModel()
         {
             ObjectType = typeof(T);
-
+            urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
             var routeValues = HttpContext.Current.Request.RequestContext.RouteData.Values;
 
             if (routeValues.ContainsKey("controller"))
@@ -32,6 +35,7 @@ namespace DojoManagmentSystem.ViewModels
 
             if (routeValues.ContainsKey("action"))
                 Action = (string)routeValues["action"];
+
         }
 
         public ListSettings ListSettings { get; set; } = new ListSettings();
@@ -121,7 +125,17 @@ namespace DojoManagmentSystem.ViewModels
 
                 if ((filterField?.IsSearchField ?? false) && !string.IsNullOrEmpty(CurrentSearch))
                 {
-                    list = list.Where($"{filterField.FieldName}=\"{CurrentSearch} \"");
+                    PropertyInfo field = filterField.GetProperty(ObjectType);
+                    Type fieldType = field.PropertyType;
+                    var search = fieldType.ConvertStringToType(CurrentSearch);
+                    //if (fieldType == typeof(string))
+                    //{
+                    //    list = list.Where($"{filterField.FieldName} like %@0%", new object[] { search });
+                    //}
+                    //else
+                    //{
+                        list = list.Where($"{filterField.FieldName}=@0", new object[] { search });
+                    //}
                 }
 
                 if (!ShowArchived)
@@ -178,8 +192,7 @@ namespace DojoManagmentSystem.ViewModels
         public override IHtmlString BuildList()
         {
             StringBuilder html = new StringBuilder();
-            html.Append($"<div id='pagingList' data-filter='{FilterField}' data-page='{CurrentPage}' data-sort='{CurrentSort}' data-search='{CurrentSearch}' data-baseurl='/{Controller}/{Action}{(RelationID != null ? $"/{RelationID}" : "")}'>");
-
+            html.Append($"<div id='pagingList' data-filter='{FilterField}' data-page='{CurrentPage}' data-sort='{CurrentSort}' data-search='{CurrentSearch}' data-baseurl='{urlHelper.Content($"~/{Controller}/{Action}{(RelationID != null ? $"/{RelationID}" : "")}")}'>");
             html.Append(BuildTableHeader());
             html.Append($"<div class='table-responsive'><table class='table tabled-hover'>");
             html.Append(BuildRowHeaders());
@@ -272,12 +285,12 @@ namespace DojoManagmentSystem.ViewModels
             {
                 if (ListSettings.ModalOpen)
                 {
-                    stringBuilder.Append($"data-targeturl='/{ObjectType.Name}/Details/{obj.Id}'");
+                    stringBuilder.Append($"data-targeturl='{urlHelper.Content($"~/{ObjectType.Name}/Edit/{obj.Id}")}'");
                     classNames.Add("modal-row-link");
                 }
                 else
                 {
-                    stringBuilder.Append($"id='linkRow' data-link='/{ObjectType.Name}/Details/{obj.Id}'");
+                    stringBuilder.Append($"id='linkRow' data-link='{urlHelper.Content($"~/{ObjectType.Name}/Details/{obj.Id}")}'");
                 }
             }
             stringBuilder.Append("class='");
@@ -293,13 +306,13 @@ namespace DojoManagmentSystem.ViewModels
                 stringBuilder.Append("<td>");
                 if (ListSettings.ModalOpen)
                 {
-                    stringBuilder.Append($"<button class='btn btn-primary modal-link' data-targeturl='/{ObjectType.Name}/Edit/{obj.Id}'>");
+                    stringBuilder.Append($"<button class='btn btn-primary modal-link' data-targeturl='{urlHelper.Content($"~/{ObjectType.Name}/Edit/{obj.Id}")}'>");
                     stringBuilder.Append("<i class='fas fa-external-link-alt'></i>");
                     stringBuilder.Append("</button>");
                 }
                 else
                 {
-                    stringBuilder.Append($"<a class='btn btn-primary' href='/{ObjectType.Name}/Details/{obj.Id}'>");
+                    stringBuilder.Append($"<a class='btn btn-primary' href='{urlHelper.Content($"~/{ObjectType.Name}/Details/{obj.Id}")}'>");
                     stringBuilder.Append("<i class='fas fa-external-link-alt'></i>");
                     stringBuilder.Append("</a>");
                 }
@@ -329,12 +342,11 @@ namespace DojoManagmentSystem.ViewModels
             if (ListSettings.AllowDelete)
             {
                 stringBuilder.Append("<td>");
-                stringBuilder.Append($"<button type='button' class='btn btn-danger modal-link' data-targeturl='/{ObjectType.Name}/Delete/{obj.Id}'>");
+                stringBuilder.Append($"<button type='button' class='btn btn-danger modal-link' data-targeturl='{urlHelper.Content($"~/{ObjectType.Name}/Delete/{obj.Id}")}'>");
                 stringBuilder.Append("<i class='fas fa-trash-alt'></i>");
                 stringBuilder.Append("</button>");
                 stringBuilder.Append("</td>");
             }
-
             stringBuilder.Append("</tr>");
 
             return stringBuilder.ToString();
@@ -411,6 +423,7 @@ namespace DojoManagmentSystem.ViewModels
                 }
 
                 //TODO: write extension to get field type by only using type instead of entire object. This way don't need to pass in the object in unnessesary places
+                field.PropertyType.GetInputByType($"Search {headerText}", CurrentSearch, new { @class = "form-control table-search", @name = "searchString" });
                 html.Append($"<input type='text' name='searchString' class='form-control table-search' placeholder='Search {headerText}' value='{CurrentSearch}' />");
             }
 
@@ -427,10 +440,10 @@ namespace DojoManagmentSystem.ViewModels
         {
             StringBuilder html = new StringBuilder();
 
-            int count = ListSettings.Links.Count;
-            foreach(Link link in ListSettings.Links)
+            int count = ListSettings.Links.Count(l => l.CheckSecurityPermissions());
+            foreach(Link link in ListSettings.Links.Where(l => l.CheckSecurityPermissions()))
             {
-                html.Append(link.BuildButton(count <= 1));
+                html.Append(link.BuildButton(urlHelper, count <= 1));
                 count--;
             }
 

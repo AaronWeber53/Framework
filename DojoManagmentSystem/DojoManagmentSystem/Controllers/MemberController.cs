@@ -11,16 +11,24 @@ using System.Web.Mvc;
 using Business.DAL;
 using Business.Infastructure.Enums;
 using Business.Models;
-using DojoManagmentSystem.Infastructure.Attributes;
-using DojoManagmentSystem.ViewModels;
+using Web.Infastructure.Attributes;
+using Web.ViewModels;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class MemberController : BaseController<Member>
     {
         protected override ListSettings ListSettings => new ListSettings()
         {
-            AllowSearch = true
+            AllowSearch = true,
+            Links = new List<Link>()
+            {
+                new Link()
+                {
+                    URL = "/Member/Create",
+                    Text = "Add Member"
+                }
+            }
         };
 
         protected override List<FieldDisplay> ListDisplay => new List<FieldDisplay>()
@@ -61,7 +69,7 @@ namespace DojoManagmentSystem.Controllers
                         },
                         new Link()
                         {
-                            URL = $"/Payments/Create/{id}",
+                            URL = $"/Payment/Create/{id}",
                             Text = "Add Payment"
                         }
                     }
@@ -192,7 +200,7 @@ namespace DojoManagmentSystem.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Member member = db.GetDbSet<Member>().Include("User").FirstOrDefault(m => m.Id == id);
+           Member member = db.GetDbSet<Member>().Include("User").FirstOrDefault(m => m.Id == id);
 
             if (member == null)
             {
@@ -235,7 +243,7 @@ namespace DojoManagmentSystem.Controllers
                 {
                     return Json(new JsonReturn
                     {
-                        RedirectLink = Url.Action("Index"),
+                        RedirectLink = Url.Action("List"),
                     });
                 }
                 else
@@ -251,6 +259,11 @@ namespace DojoManagmentSystem.Controllers
             }
 
             return PartialView("Create", member);
+        }
+
+        public override ActionResult EditValidation(long? id)
+        {
+            return base.EditValidation(id);
         }
 
         [HttpPost]

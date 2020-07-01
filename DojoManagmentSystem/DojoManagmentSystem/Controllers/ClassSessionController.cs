@@ -7,12 +7,12 @@ using System.Net;
 using System.Reflection;
 using System.Web;
 using System.Web.Mvc;
-using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Infastructure.Extensions;
+using Web.ViewModels;
+using Web.Infastructure.Extensions;
 using Business.DAL;
 using Business.Models;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class ClassSessionController : BaseController<ClassSession>
     {

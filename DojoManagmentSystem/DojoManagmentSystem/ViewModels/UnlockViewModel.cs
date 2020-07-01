@@ -1,4 +1,4 @@
-﻿namespace DojoManagmentSystem.ViewModels
+﻿namespace Web.ViewModels
 {
     public class UnlockViewModel
     {

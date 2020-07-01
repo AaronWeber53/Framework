@@ -7,10 +7,10 @@ using System.Web;
 using System.Web.Mvc;
 using System.Security.Cryptography;
 using System.Text;
-using DojoManagmentSystem.ViewModels;
-using DojoManagmentSystem.Infastructure.Attributes;
+using Web.ViewModels;
+using Web.Infastructure.Attributes;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class HomeController : BaseController
     {

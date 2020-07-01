@@ -9,9 +9,9 @@ using System.Web;
 using System.Web.Mvc;
 using Business.DAL;
 using Business.Models;
-using DojoManagmentSystem.ViewModels;
+using Web.ViewModels;
 
-namespace DojoManagmentSystem.Controllers
+namespace Web.Controllers
 {
     public class DisciplineController : BaseController<Discipline>
     {

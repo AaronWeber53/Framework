@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Web;
 
-namespace DojoManagmentSystem.Infastructure.Extensions
+namespace Web.Infastructure.Extensions
 {
     public static class Queryable
     {
