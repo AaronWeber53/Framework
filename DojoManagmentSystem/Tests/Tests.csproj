@@ -9,8 +9,8 @@
     <ProjectGuid>{77EB43A0-907D-430F-B493-B3112A733848}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DojoManagmentSystem.Tests</RootNamespace>
-    <AssemblyName>DojoManagmentSystem.Tests</AssemblyName>
+    <RootNamespace>Tests</RootNamespace>
+    <AssemblyName>Tests</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -101,7 +101,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DojoManagmentSystem\Web.csproj">
+    <ProjectReference Include="..\Web\Web.csproj">
       <Project>{5EB54D85-42ED-4F31-9B7D-AF64F221FEFF}</Project>
       <Name>Web</Name>
     </ProjectReference>
