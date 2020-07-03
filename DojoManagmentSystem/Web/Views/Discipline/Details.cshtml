@@ -29,7 +29,7 @@
                         <div class="card-header">
                             <h4 class="float-left">Weekly Class Sessions</h4>
                             <div class="float-right">
-                                <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/ClassSession/Create/@Model.Id">
+                                <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="@Url.Content($"~/ClassSession/Create/{Model.Id}")">>
                                     <i class="fas fa-plus"></i> Create Session
                                 </button>
                             </div>
@@ -49,7 +49,7 @@
                         <div class="card-header">
                             <h4 class="float-left">Members</h4>
                             <div class="float-right">
-                                <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="/DisciplineEnrolledMember/Create/@Model.Id">
+                                <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="@Url.Content($"~/DisciplineEnrolledMember/Create/{Model.Id}")">>
                                     <i class="fas fa-plus"></i> Enroll Member
                                 </button>
                             </div>

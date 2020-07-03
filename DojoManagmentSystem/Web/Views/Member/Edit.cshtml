@@ -68,7 +68,7 @@
                             </fieldset>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-danger btn-sm modal-link" data-targeturl="/Users/Delete/@Model.User.Id">Remove User</button>
+                            <button type="button" class="btn btn-danger btn-sm modal-link" data-targeturl="@Url.Content($"~/Users/Delete/{Model.User.Id}")">Remove User</button>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -80,7 +80,7 @@
                             </fieldset>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" class="btn btn-danger btn-sm modal-link" data-targeturl="/Users/Delete/@Model.User.Id">Remove User</button>
+                            <button type="button" class="btn btn-danger btn-sm modal-link" data-targeturl="@Url.Content($"~/Users/Delete/{Model.User.Id}")">Remove User</button>
                         </div>
                     </div>
                 }

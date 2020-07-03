@@ -194,7 +194,11 @@ namespace Web.Controllers
         {
             return HttpNotFound();
         }
-        public ActionResult Details(int? id, string tab)
+
+        [NonAction]
+        public override ActionResult Details(long? id) { return null; }
+
+        public ActionResult Details(long? id, string tab)
         {
             if (id == null)
             {

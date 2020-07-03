@@ -10,7 +10,7 @@
             Wisconsin Budokai Martial Arts
             @if (ViewBag.IsLocked)
             {
-                <a class="modal-link text-primary float-right lockButton" href="" onclick="return false;" data-targeturl="/Session/UnlockSession">
+                <a class="modal-link text-primary float-right lockButton" href="" onclick="return false;" data-targeturl="@Url.Content($"~Session/UnlockSession")">
                     <i class="fas fa-lock"></i>
                 </a>
             }

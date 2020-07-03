@@ -15,7 +15,14 @@ namespace Web.Controllers
 {
     public class DisciplineController : BaseController<Discipline>
     {
-        protected override ListSettings ListSettings => new ListSettings() { AllowDelete = false };
+        protected override ListSettings ListSettings => new ListSettings() 
+        { 
+            AllowDelete = false,
+            Links = new List<Link>()
+            {
+                new Link() { URL = "/Discipline/Create", Text = "Add Discipline" }
+            }
+        };
 
         protected override List<FieldDisplay> ListDisplay
         {
@@ -97,7 +104,7 @@ namespace Web.Controllers
                 db.SaveChanges();
                 return Json(new JsonReturn
                 {
-                    RedirectLink = Url.Action("Details", new { id = discipline.Id })
+                    RedirectLink = Url.Action($"Details/{discipline.Id}")
                 });
             }
 

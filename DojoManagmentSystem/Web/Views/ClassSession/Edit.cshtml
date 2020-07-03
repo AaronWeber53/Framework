@@ -3,7 +3,7 @@
 
 <div id="form">
     <div class="float-right" style="float:right">
-        <button type="button" class="btn btn-primary modal-link" data-targeturl="/AttendanceSheet/Create/@Model.Id">
+        <button type="button" class="btn btn-primary modal-link" data-targeturl="@Url.Content($"~AttendanceSheet/Create/{Model.Id}")">
             Take Attendance
         </button>
     </div>

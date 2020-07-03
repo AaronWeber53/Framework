@@ -31,7 +31,7 @@
 
             <div class="table">
                 <table class="table" id="attendanceTable">
-                    <button type="button" class="btn btn-primary modal-link" data-targeturl="/AttendanceSheet/DropIn/@ViewBag.ClassSessionId?Date=@ViewBag.Date">
+                    <button type="button" class="btn btn-primary modal-link" data-targeturl="@Url.Content($"~AttendanceSheet/DropIn/{ViewBag.ClassSessionId}?Date={ViewBag.Date}")">
                         Add Drop In Member
                     </button>
 

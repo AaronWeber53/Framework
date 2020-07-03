@@ -29,7 +29,7 @@
                 @Html.GenerateLinkWithSecurity("Member", "TestNormal", "Normal", null, new { @class = "list-group-item list-group-item-action bg-primary text-white" })
             </div>
             <div class="list-group list-group-flush navBottom">
-                <a class="list-group-item list-group-item-action bg-primary text-white" href="/Member/Details/@ViewBag.UserId">
+                <a class="list-group-item list-group-item-action bg-primary text-white" href="@Url.Content($"~/Member/Details/{@ViewBag.UserId}")">
                     Hello @ViewBag.FullName,
                     <br />
                     View Profile
@@ -46,7 +46,7 @@
                 <button class="btn btn-light" id="menu-toggle">
                     <span class="nav__Icon fas navbar-toggler-icon"></span>
                 </button>
-                <div style="text-align:center" class="navwelcome mx-auto"><h3><a base href="/Home/Index">Wisconsin Budokai</a></h3></div>
+                <div style="text-align:center" class="navwelcome mx-auto"><h3><a base href="@Url.Content("~/Home/Index")">Wisconsin Budokai</a></h3></div>
             </nav>
             <div class="container-fluid" id="lockIcon">
                 @RenderBody()

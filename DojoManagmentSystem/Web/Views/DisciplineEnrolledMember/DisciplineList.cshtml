@@ -41,9 +41,9 @@
                 {
                     ViewBag.ClassName = string.Empty;
                 }
-            <tr data-targeturl="/DisciplineEnrolledMember/Edit/?id=@item.Id&origin=member" class="modal-row-link @ViewBag.ClassName">
+            <tr data-targeturl="@Url.Content($"~/DisciplineEnrolledMember/Edit/?id={item.Id}&origin=member")" class="modal-row-link @ViewBag.ClassName">
                 <td scope="row">
-                    <button type="button" class="btn btn-primary modal-link" data-targeturl="/DisciplineEnrolledMember/Edit/?id=@item.Id&origin=member">
+                    <button type="button" class="btn btn-primary modal-link" data-targeturl="@Url.Content($"~/DisciplineEnrolledMember/Edit/?id={item.Id}&origin=member}")">
                         <i class="fas fa-external-link-alt"></i>
                     </button>
                 </td>
@@ -66,7 +66,7 @@
                     @Html.DisplayFor(modelItem => item.TotalCount)
                 </td>
                 <td>
-                    <button type="button" class="btn btn-danger modal-link" data-targeturl="/DisciplineEnrolledMember/Delete/@item.Id">
+                    <button type="button" class="btn btn-danger modal-link" data-targeturl="@Url.Content($"~/DisciplineEnrolledMember/Delete/{item.Id}")">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>

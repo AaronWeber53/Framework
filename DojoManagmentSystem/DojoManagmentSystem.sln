@@ -14,28 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Busine
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Migrations\Migrations.csproj", "{F8D3F44F-26CD-452C-BE76-43CCE63E666E}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DojoWCFSvc", "DojoWCFSvc\", "{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7.2"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_55792"
-		Debug.AspNetCompiler.PhysicalPath = "DojoWCFSvc\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55792\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_55792"
-		Release.AspNetCompiler.PhysicalPath = "DojoWCFSvc\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55792\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "55792"
-		SlnRelativePath = "DojoWCFSvc\"
-		DefaultWebSiteLanguage = "Visual C#"
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,10 +36,6 @@ Global
 		{F8D3F44F-26CD-452C-BE76-43CCE63E666E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D3F44F-26CD-452C-BE76-43CCE63E666E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D3F44F-26CD-452C-BE76-43CCE63E666E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

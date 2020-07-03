@@ -36,7 +36,6 @@ namespace Web
             using (DatabaseContext db = new DatabaseContext())
             {
                 // Set variables for layout data.
-                bool isValidSession = true;
                 Session curSession = null;
                 HttpCookie sessionCookie = null;
                 if (TryGetCookie("SessionGuid", out sessionCookie))
@@ -77,10 +76,6 @@ namespace Web
 
                         ApplicationContext.CurrentApplicationContext.CurrentSession = curSession;
                     }
-                    else
-                    {
-                        isValidSession = false;
-                    }
                 }
                 else
                 {
@@ -98,7 +93,6 @@ namespace Web
                     // If session is valid...
                     if (!test)
                     {
-                        isValidSession = false;
                         AccessForbidden(filterContext);
                     }
                 }
@@ -246,6 +240,20 @@ namespace Web
             return RedirectToAction("List");
         }
 
+        public virtual ActionResult Details(long? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            T obj = GetObj(id);
+
+            if (obj == null)
+            {
+                return HttpNotFound();
+            }
+            return View(obj);
+        }
 
         [PageSecurity(SecurityLevel.User)]
         public virtual ActionResult Edit(long? id)
@@ -332,8 +340,7 @@ namespace Web
         {
             IQueryable<T> list = db.GetDbSet<T>();
             list = IncludeRelationshipsInSearch(list);
-            list.Where(o => o.Id == id);
-            return list.First();
+            return list.FirstOrDefault (o => o.Id == id);
         }
 
         private IQueryable<T> IncludeRelationshipsInSearch(IQueryable<T> query)
