@@ -9,7 +9,7 @@ using System.Web.Routing;
 namespace Web
 {
     public class MvcApplication : System.Web.HttpApplication
-    {
+    {        
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
@@ -17,5 +17,6 @@ namespace Web
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
         }
+
     }
 }

@@ -198,7 +198,7 @@ namespace Web.Controllers
         [NonAction]
         public override ActionResult Details(long? id) { return null; }
 
-        public ActionResult Details(long? id, string tab)
+        public ActionResult Details(long id, string tab)
         {
             if (id == null)
             {

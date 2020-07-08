@@ -6,8 +6,9 @@ using System.Linq;
 
 namespace Business
 {
-    public abstract class BaseModel
+    public abstract class BaseModel : IBaseModel
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
         public DateTime? LastModified { get; set; }

@@ -35,7 +35,7 @@ namespace Business.DAL
             return new List<T>();
         }
 
-        public DbSet<T> GetDbSet<T>() where T : BaseModel
+        public DbSet<T> GetDbSet<T>() where T : class, IBaseModel
         {
             return this.Set<T>();
         }
@@ -72,7 +72,7 @@ namespace Business.DAL
         }
 
 
-        public IQueryable<T> GetDBList<T>() where T : BaseModel
+        public IQueryable<T> GetDBList<T>() where T : class, IBaseModel
         {
             Type type = typeof(DbSet<T>);
             var objectList = this.GetType().GetProperties();
