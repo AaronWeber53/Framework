@@ -69,7 +69,7 @@ namespace Business.Models
             Waivers.ToList().ForEach(a => a.IsArchived = true);
             Contacts.ToList().ForEach(a => a.IsArchived = true);
             AttendanceSheets.ToList().ForEach(a => a.IsArchived = true);
-            User?.Delete(db);
+            //User?.Delete(db);
             base.Delete(db);
         }
 

@@ -1,4 +1,4 @@
-namespace Business.DAL
+namespace Business.Migrations
 {
     using Business.Models;
     using System;
@@ -23,7 +23,7 @@ namespace Business.DAL
                 context.GetDbSet<Member>().AddOrUpdate(memberAdmin);
                 context.SaveChanges();
 
-                User admin = new User() { Id = -1, Username = "Admin", HashPassword = "Password" };
+                User admin = new User() {Username = "Admin", HashPassword = "Password" };
                 memberAdmin.User = admin;
                 admin.Member = memberAdmin;
 

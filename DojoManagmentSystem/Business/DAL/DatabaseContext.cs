@@ -1,4 +1,5 @@
-﻿using Business.Models;
+﻿using Business.Migrations;
+using Business.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -12,7 +13,7 @@ namespace Business.DAL
     {
         public DatabaseContext() : base()
         {
-            Database.SetInitializer<DatabaseContext>(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
+            //Database.SetInitializer<DatabaseContext>(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
             Configuration.LazyLoadingEnabled = false;
         }
 

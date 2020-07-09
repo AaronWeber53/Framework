@@ -47,18 +47,18 @@ namespace Business.Models
         }
 
 
-        public void Delete(DatabaseContext db)
-        {
-            int userCount = db.GetDbSet<User>().Count(u => !u.IsArchived);
-            if (userCount <= 1)
-            {
-                throw new LastUserExpection("The last user in the system can not be deleted");
-            }
-            else
-            {
-                base.Delete(db);
-            }
-        }
+        //public void Delete(DatabaseContext db)
+        //{
+        //    int userCount = db.GetDbSet<User>().Count(u => !u.IsArchived);
+        //    if (userCount <= 1)
+        //    {
+        //        throw new LastUserExpection("The last user in the system can not be deleted");
+        //    }
+        //    else
+        //    {
+        //        base.Delete(db);
+        //    }
+        //}
 
         public void Save(DatabaseContext db)
         {

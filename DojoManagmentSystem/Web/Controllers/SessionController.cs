@@ -17,7 +17,7 @@ namespace Web.Controllers
     [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Normal)]
     public class SessionController : BaseController
     {
-        private DatabaseContext db = new DatabaseContext();        
+        private DatabaseContext db = new DatabaseContext();
 
         // GET: Session
         public ActionResult Index()

@@ -11,7 +11,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Business.DAL;
-using Web.Infastructure; 
+using Web.Infastructure;
 using Business.Models;
 using Business.Infastructure.Exceptions;
 using Business.Infastructure;
@@ -155,7 +155,7 @@ namespace Web.Controllers
                 return HttpNotFound();
             }
 
-            ChangePasswordModel obj = new ChangePasswordModel() { Id = id ?? 0};
+            ChangePasswordModel obj = new ChangePasswordModel() { Id = id ?? 0 };
             return PartialView("ChangePassword", obj);
         }
 

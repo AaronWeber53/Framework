@@ -34,7 +34,7 @@ namespace Web.Infastructure.Attributes
                 long? currentUserID = ApplicationContext.CurrentApplicationContext?.CurrentSession?.UserId;
                 User user = db.GetDbSet<User>().FirstOrDefault(u => u.Id == currentUserID);
 
-                if(user != null)
+                if (user != null)
                 {
                     return user.SecurityLevel >= SecurityLevel;
                 }
