@@ -1,0 +1,101 @@
+﻿@model Web.ViewModels.ContactViewModel
+
+<h2>Create</h2>
+
+@using (Html.BeginForm("Create", "Contact", FormMethod.Post, new { id = "ModalForm" })) 
+{
+    @Html.AntiForgeryToken()
+    
+<div class="form-horizontal">
+    <h4>Contact</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    @Html.HiddenFor(model => model.Contact.MemberId, new { htmlAttributes = new { @class = "form-control" } })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Contact.Name, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Contact.Name, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Contact.Name, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Contact.RelationShip, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Contact.RelationShip, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.Contact.RelationShip, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MemberPhone.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MemberPhone.PhoneNumber, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MemberPhone.PhoneNumber, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MemberEmail.Email, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MemberEmail.Email, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MemberEmail.Email, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MemberAddress.Street, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MemberAddress.Street, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MemberAddress.Street, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MemberAddress.City, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MemberAddress.City, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MemberAddress.City, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MemberAddress.State, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MemberAddress.State, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MemberAddress.State, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.MemberAddress.ZipCode, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.MemberAddress.ZipCode, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.MemberAddress.ZipCode, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Contact.IsPrimary, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-10">
+            <div class="custom-control custom-checkbox">
+                @Html.EditorFor(model => model.Contact.IsPrimary, new { htmlAttributes = new { @class = "custom-control-input", id = "IsPrimary" } })
+                <label class="custom-control-label" for="IsPrimary"></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default btn-primary" />
+            <button type="button" class="btn btn-primary float-right" data-dismiss="modal"><span aria-hidden="true">Cancel</span></button>
+        </div>
+    </div>
+</div>
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

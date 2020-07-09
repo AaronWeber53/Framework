@@ -29,7 +29,7 @@ namespace Business.Models
         #region Relationships
         public virtual Member Member { get; set; }
 
-        public int MemberID { get; set; }
+        public long MemberID { get; set; }
         #endregion
     }
 }

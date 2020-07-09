@@ -1,0 +1,143 @@
+﻿@model Business.Models.Member
+@using Web.Infastructure.Extensions
+@{
+    ViewBag.Title = "Details";
+}
+<ul class="nav nav-tabs ml-2" id="tabList">
+    <li class="nav-item">
+        <a class="nav-link @if (ViewBag.TabName == "general") { <text>active</text> }" data-toggle="tab" href="#general">General</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="nav-link @if (ViewBag.TabName == "memberships") { <text>active</text> }" data-toggle="tab" href="#memberships">Memberships</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @if (ViewBag.TabName == "payments") { <text>active</text> }" data-toggle="tab" href="#payments">Payments</a>
+    </li>
+</ul>
+
+<div class="row details">
+    @* Left Column *@
+    <div id="myTabContent" class="tab-content col-sm-12 pl-0 pr-0">
+        @* Card used to display general information on member *@
+        <div class="tab-pane fade @if (ViewBag.TabName == "general") { <text>active show</text> }" id="general">
+            <div class="row col-sm-12">
+                <p class="col-lg-8 mt-2">
+                    <a href="@Url.Action("Index")" class="h4">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </p>
+            </div>
+            <div class="col-xl-7 details-column float-left">
+                <div class="card bg-light col-sm-12">
+                    <div class="card-header">
+                        <h4 class="float-left">General Information</h4>
+                        @if (Model.HasUser)
+                        {
+                            <button type="button" class="btn btn-primary modal-link float-right" data-targeturl="@Url.Content($"~/Users/ChangePassword/{Model.Id}")">
+                                Change Password
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button" class="btn btn-primary modal-link float-right" data-targeturl="@Url.Content($"~/Users/Create/{Model.Id}")">
+                                Create User
+                            </button>
+                        }
+
+                    </div>
+                    <div class="card-body">
+                        @* Implement the details/edit for the member *@
+                        @Html.Action("Edit", new { id = Model.Id })
+                    </div>
+                </div>
+
+                <div class="card bg-light col-sm-12">
+                    <div class="card-header">
+                        <h4 class="float-left">Contact Information</h4>
+                        <div class="float-right">
+                            <button type="button" class="btn btn-sm btn-primary modal-link" data-targeturl="@Url.Content($"~/Contact/Create/{Model.Id}")">
+                                <i class="fas fa-plus"></i> Add Contact
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @Html.Action("Contacts", new { id = Model.Id })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-5 details-column float-right">
+                @* Card used to display waivers *@
+                <div class="card bg-light col-sm-12">
+                    <div class="card-header">
+                        <h4 class="float-left">Waivers</h4>
+                        <div class="float-right">
+                            <button type="button" class="btn btn-sm btn-primary modal-link float-right" data-targeturl="@Url.Content($"~/Waiver/Create/{Model.Id}")">
+                                <i class="fas fa-plus"></i> Add Waiver
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @Html.Action("Waivers", new { id = Model.Id })
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="tab-pane fade @if (ViewBag.TabName == "memberships") { <text>active show</text> }" id="memberships">
+            <div class="row col-sm-12">
+                <p class="col-lg-8 mt-2">
+                    <a href="@Url.Action("Index")" class="h4">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </p>
+            </div>
+            <div class="col-xl-7 details-column float-left">
+                @* Card used to display memberships *@
+                <div class="card bg-light col-sm-12">
+                    <div class="card-header">
+                        <h4 class="float-left">Memberships</h4>
+                    </div>
+                    <div class="card-body">
+                        @Html.Action("Disciplines", new { id = Model.Id })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-5 details-column float-right">
+                @* Attendance History table here *@
+                @Html.Action("Attendance", new { id = Model.Id })
+
+            </div>
+        </div>
+
+        <div class="tab-pane fade @if (ViewBag.TabName == "payments") { <text>active show</text> }" id="payments">
+            <div class="row col-sm-12">
+                <p class="col-lg-8 mt-2">
+                    <a href="@Url.Action("Index")" class="h4">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
+                </p>
+            </div>
+            @*Payment history table here*@
+            <div class="col-xl-12 details-column float-left">
+
+                <div class="card bg-light col-sm-12">
+                    <div class="card-header">
+                        <h4 class="float-left">Payments</h4>
+                    </div>
+                    <div class="card-body">
+                       @* @Html.Action("Payments", new { id = Model.Id })*@
+                        @Html.ActionWithSecurity("Member", "Payments", new { id = Model.Id })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Modal.js")
+}

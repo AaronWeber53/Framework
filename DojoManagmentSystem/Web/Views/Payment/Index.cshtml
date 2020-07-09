@@ -1,0 +1,27 @@
+﻿@model IEnumerable<Business.Models.Payment>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h3>Recent Payments</h3>
+
+
+<p class="col-sm-12">
+    <button type="button" class="btn btn-info modal-link float-right" data-targeturl="@Url.Content($"~/Payments/DateRange")">
+        Print Payments
+    </button>
+</p>
+
+<div class="form-inline my-2 my-lg-0">
+    @Html.TextBox("searchString", null, new { @class = "form-control mr-sm-2", placeholder = "Search by Name" })<button class="btn btn-primary my-2 my-sm-0 searchButton" type="submit" value="Search">Search</button>
+    <a href="/Payments" class="btn btn-secondary my-2 ml-1">Clear</a>
+</div>
+
+<br />
+
+@Html.Action("List")
+
+@section Scripts {
+    @Scripts.Render("~/Scripts/Modal.js")
+}

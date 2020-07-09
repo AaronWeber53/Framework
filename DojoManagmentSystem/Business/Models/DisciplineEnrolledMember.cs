@@ -10,7 +10,7 @@ namespace Business.Models
 {
     public class DisciplineEnrolledMember : BaseModel
     {
-        private DojoManagmentContext db = new DojoManagmentContext();
+        private DatabaseContext db = new DatabaseContext();
 
         [DataType(DataType.Currency)]
         [Range(1, int.MaxValue, ErrorMessage = "Only positive costs allowed")]
@@ -110,11 +110,11 @@ namespace Business.Models
         }
 
         #region Relationships
-        public int DisciplineId { get; set; }
+        public long DisciplineId { get; set; }
 
         public virtual Discipline Discipline { get; set; }
 
-        public int MemberId { get; set; }
+        public long MemberId { get; set; }
 
         public virtual Member Member { get; set; }
 

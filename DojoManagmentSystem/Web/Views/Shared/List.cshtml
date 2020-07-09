@@ -1,0 +1,7 @@
+﻿@model Web.ViewModels.ListViewModel
+@using Web.Infastructure.Extensions
+
+@Model.BuildList()
+@section Scripts {
+    @Scripts.Render("~/Scripts/Modal.js")
+}

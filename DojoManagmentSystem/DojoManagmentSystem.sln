@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DojoManagmentSystem", "DojoManagmentSystem\DojoManagmentSystem.csproj", "{5EB54D85-42ED-4F31-9B7D-AF64F221FEFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "Web\Web.csproj", "{5EB54D85-42ED-4F31-9B7D-AF64F221FEFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DojoManagmentSystem.Tests", "DojoManagmentSystem.Tests\DojoManagmentSystem.Tests.csproj", "{77EB43A0-907D-430F-B493-B3112A733848}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{77EB43A0-907D-430F-B493-B3112A733848}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E8CAA665-B299-49CB-97DA-B0E9DFA4F9BB} = {E8CAA665-B299-49CB-97DA-B0E9DFA4F9BB}
 	EndProjectSection
@@ -14,27 +14,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Busine
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrations", "Migrations\Migrations.csproj", "{F8D3F44F-26CD-452C-BE76-43CCE63E666E}"
 EndProject
-Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "DojoWCFSvc", "DojoWCFSvc\", "{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}"
-	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.7.2"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_55792"
-		Debug.AspNetCompiler.PhysicalPath = "DojoWCFSvc\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55792\"
-		Debug.AspNetCompiler.Updateable = "true"
-		Debug.AspNetCompiler.ForceOverwrite = "true"
-		Debug.AspNetCompiler.FixedNames = "false"
-		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_55792"
-		Release.AspNetCompiler.PhysicalPath = "DojoWCFSvc\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_55792\"
-		Release.AspNetCompiler.Updateable = "true"
-		Release.AspNetCompiler.ForceOverwrite = "true"
-		Release.AspNetCompiler.FixedNames = "false"
-		Release.AspNetCompiler.Debug = "False"
-		VWDPort = "55792"
-		SlnRelativePath = "DojoWCFSvc\"
-		DefaultWebSiteLanguage = "Visual C#"
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebCore", "WebCore\WebCore.csproj", "{DF7EC3B7-FA8F-4BE3-BADB-9CA1015F7E6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "WebApplication1\WebApplication1.csproj", "{5A7DE064-A678-4382-8A41-2BC59F0662B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,10 +40,14 @@ Global
 		{F8D3F44F-26CD-452C-BE76-43CCE63E666E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8D3F44F-26CD-452C-BE76-43CCE63E666E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8D3F44F-26CD-452C-BE76-43CCE63E666E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{93403845-7EC5-4BB1-B6EE-EBAE733FEC16}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{DF7EC3B7-FA8F-4BE3-BADB-9CA1015F7E6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF7EC3B7-FA8F-4BE3-BADB-9CA1015F7E6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF7EC3B7-FA8F-4BE3-BADB-9CA1015F7E6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7EC3B7-FA8F-4BE3-BADB-9CA1015F7E6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A7DE064-A678-4382-8A41-2BC59F0662B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A7DE064-A678-4382-8A41-2BC59F0662B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A7DE064-A678-4382-8A41-2BC59F0662B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A7DE064-A678-4382-8A41-2BC59F0662B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

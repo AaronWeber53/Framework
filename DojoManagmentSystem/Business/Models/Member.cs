@@ -46,7 +46,7 @@ namespace Business.Models
         #region Relationships
         public virtual User User { get; set; }
 
-        public virtual ICollection<Contact> Contact { get; set; } = new List<Contact>();
+        public virtual ICollection<Contact> Contacts { get; set; } = new List<Contact>();
 
         public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
@@ -62,15 +62,20 @@ namespace Business.Models
         /// Overriding the delete to make sure that all of the attached items are deleted as well from the member.
         /// </summary>
         /// <param name="db">Database being used.</param>
-        public override void Delete(DojoManagmentContext db)
+        public override void Delete(DatabaseContext db)
         {
             DisciplineEnrolledMembers.ToList().ForEach(a => a.IsArchived = true);
             Payments.ToList().ForEach(a => a.IsArchived = true);
             Waivers.ToList().ForEach(a => a.IsArchived = true);
-            Contact.ToList().ForEach(a => a.IsArchived = true);
+            Contacts.ToList().ForEach(a => a.IsArchived = true);
             AttendanceSheets.ToList().ForEach(a => a.IsArchived = true);
-            User?.Delete(db);
+            //User?.Delete(db);
             base.Delete(db);
+        }
+
+        public override void Save(DatabaseContext db)
+        {
+            base.Save(db);
         }
     }
 }

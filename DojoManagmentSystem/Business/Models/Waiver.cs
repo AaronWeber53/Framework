@@ -24,7 +24,7 @@ namespace Business.Models
         #region Relationships 
         public virtual Member Member { get; set; }
 
-        public int MemberId { get; set; }
+        public long MemberId { get; set; }
         #endregion
     }
 }

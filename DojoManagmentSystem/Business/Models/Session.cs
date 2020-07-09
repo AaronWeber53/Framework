@@ -7,10 +7,13 @@ using System.Web;
 
 namespace Business.Models
 {
+    /// <summary>
+    /// This object represents the cookie stored for the user information
+    /// </summary>
     public class Session : BaseModel
     {
         public Session() { }
-        public Session(int userId, bool rememberMe = false)
+        public Session(long? userId, bool rememberMe = false)
         {
             SessionHash = Guid.NewGuid().ToString();
             UserId = userId;
@@ -25,12 +28,13 @@ namespace Business.Models
 
         public bool RememberMe { get; set; }
 
-        public int UserId { get; set; }
+        public long? UserId { get; set; }
 
         public bool AttendanceLock { get; set; }
 
         public virtual User User { get; set; }
 
+        // Update this to user login expires, session should always hold imformation about this user while cookie is active
         [DataType(DataType.DateTime)]
         public DateTime Expires { get; set; } = DateTime.Now.Add(new TimeSpan(1, 10, 0));
     }

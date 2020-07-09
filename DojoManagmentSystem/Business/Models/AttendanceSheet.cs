@@ -14,11 +14,11 @@ namespace Business.Models
         [DisplayName("Attendance Date")]
         public DateTime AttendanceDate { get; set; }
 
-        public int ClassSessionId { get; set; }
+        public long ClassSessionId { get; set; }
 
         public virtual ClassSession ClassSession { get; set; }
 
-        public int MemberId { get; set; }
+        public long MemberId { get; set; }
 
         public virtual Member Member { get; set; }
     }
