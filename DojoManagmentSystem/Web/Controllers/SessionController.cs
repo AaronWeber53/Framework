@@ -9,12 +9,10 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Business.Infastructure;
-using Web.Infastructure.Attributes;
 using Business;
 
 namespace Web.Controllers
 {
-    [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Normal)]
     public class SessionController : BaseController
     {
         private DatabaseContext db = new DatabaseContext();
@@ -101,7 +99,6 @@ namespace Web.Controllers
         }
 
         [HttpGet]
-        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult LockSession()
         {
             Session curSession = GetCurrentSession(db);
@@ -118,7 +115,6 @@ namespace Web.Controllers
         /// </summary>
         /// <param name="password"></param>
         /// <returns></returns>
-        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult UnlockSession()
         {
             Session curSession = GetCurrentSession(db);
@@ -132,7 +128,6 @@ namespace Web.Controllers
         /// <param name="password"></param>
         /// <returns></returns>
         [HttpPost]
-        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.User)]
         public ActionResult UnlockSession([Bind(Include = "Password,Username")] UnlockViewModel model)
         {
             Session curSession = GetCurrentSession(db);

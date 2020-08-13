@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Business
 {
-    public abstract class BaseModel : IBaseModel
+    public abstract class BaseModel : IBaseModel<long>
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }

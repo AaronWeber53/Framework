@@ -16,6 +16,7 @@ using System.Web;
 
 namespace Business.Models
 {
+    [Table("OldTable")]
     public class User : BaseModel
     {
         [MaxLength(100)]

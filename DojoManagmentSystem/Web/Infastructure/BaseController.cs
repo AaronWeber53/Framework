@@ -3,7 +3,6 @@ using Business.DAL;
 using Business.Infastructure.Enums;
 using Business.Infastructure.Exceptions;
 using Business.Models;
-using Web.Infastructure.Attributes;
 using Web.Infastructure.Extensions;
 using Web.ViewModels;
 using System;
@@ -20,7 +19,6 @@ using System.Web.Routing;
 
 namespace Web
 {
-    [PageSecurity(SecurityLevel.User)]
     public abstract class BaseController : Controller
     {
         protected DatabaseContext db = new DatabaseContext();
@@ -85,17 +83,17 @@ namespace Web
                 ApplicationContext.CurrentApplicationContext.CurrentSession = curSession;
 
                 
-                if (filterContext.TryGetAttribute(true, out PageSecurityAttribute attribute) && attribute.SecurityLevel >= SecurityLevel.User)
-                {
-                    // Check if the SesssionGuid cookie is set.
-                    bool test = attribute.CheckUserHasPermission();
+                //if (filterContext.TryGetAttribute(true, out PageSecurityAttribute attribute) && attribute.SecurityLevel >= SecurityLevel.User)
+                //{
+                //    // Check if the SesssionGuid cookie is set.
+                //    bool test = attribute.CheckUserHasPermission();
 
-                    // If session is valid...
-                    if (!test)
-                    {
-                        AccessForbidden(filterContext);
-                    }
-                }
+                //    // If session is valid...
+                //    if (!test)
+                //    {
+                //        AccessForbidden(filterContext);
+                //    }
+                //}
 
                 if (curSession != null)
                 {
@@ -255,7 +253,6 @@ namespace Web
             return View(obj);
         }
 
-        [PageSecurity(SecurityLevel.User)]
         public virtual ActionResult Edit(long? id)
         {
             if (id == null)

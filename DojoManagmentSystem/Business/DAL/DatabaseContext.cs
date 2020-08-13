@@ -1,5 +1,6 @@
 ﻿using Business.Migrations;
 using Business.Models;
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,15 +10,20 @@ using System.Web;
 
 namespace Business.DAL
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext<ApplicationUser>
     {
-        public DatabaseContext() : base()
+        public DatabaseContext()
+            : base("DefaultConnection", throwIfV1Schema: false)
         {
-            //Database.SetInitializer<DatabaseContext>(new MigrateDatabaseToLatestVersion<DatabaseContext, Configuration>());
             Configuration.LazyLoadingEnabled = false;
         }
 
-        public static List<T> GetGenericList<T>() where T : BaseModel
+        public static DatabaseContext Create()
+        {
+            return new DatabaseContext();
+        }
+
+        public static List<T> GetGenericList<T>() where T : class, IBaseModel<long>
         {
             List<T> myDynamicList;
 
@@ -36,7 +42,7 @@ namespace Business.DAL
             return new List<T>();
         }
 
-        public DbSet<T> GetDbSet<T>() where T : class, IBaseModel
+        public DbSet<T> GetDbSet<T>() where T : class, IBaseModel<long>
         {
             return this.Set<T>();
         }
@@ -48,6 +54,7 @@ namespace Business.DAL
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
 
             // Create a relationship where a member may exist without a user 
@@ -57,6 +64,14 @@ namespace Business.DAL
                 .WithRequired(u => u.Member);
             //modelBuilder.Entity<User>()
             //    .HasRequired(q => q.Member);
+
+            modelBuilder.Entity<IdentityUserClaim>().ToTable("UserClaims", "Security");
+            modelBuilder.Entity<IdentityRole>().ToTable("Role", "Security");
+            modelBuilder.Entity<IdentityUserRole>().ToTable("UserRoles", "Security");
+            modelBuilder.Entity<IdentityUserLogin>().ToTable("UserLogins", "Security");
+            modelBuilder.Entity<IdentityUser>().ToTable("Users", "Security");
+            modelBuilder.Entity<ApplicationUser>().ToTable("Users", "Security");
+
         }
 
         public override int SaveChanges()
@@ -73,7 +88,7 @@ namespace Business.DAL
         }
 
 
-        public IQueryable<T> GetDBList<T>() where T : class, IBaseModel
+        public IQueryable<T> GetDBList<T>() where T : class, IBaseModel<long>
         {
             Type type = typeof(DbSet<T>);
             var objectList = this.GetType().GetProperties();

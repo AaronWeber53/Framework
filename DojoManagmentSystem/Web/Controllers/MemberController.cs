@@ -11,7 +11,6 @@ using System.Web.Mvc;
 using Business.DAL;
 using Business.Infastructure.Enums;
 using Business.Models;
-using Web.Infastructure.Attributes;
 using Web.ViewModels;
 
 namespace Web.Controllers
@@ -51,7 +50,6 @@ namespace Web.Controllers
 
         #region Relation Lists
         //// GET: Payments
-        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Owner)]
         public ActionResult Payments(int id, string filter = null, string sortOrder = null, string searchString = null, int page = 1)
         {
             ListViewModel<Payment> test = RelationshipList<Payment>(id, filter, sortOrder, searchString, page);
@@ -171,25 +169,21 @@ namespace Web.Controllers
         }
         #endregion
 
-        [PageSecurity(SecurityLevel.Owner)]
         public ActionResult TestOwner()
         {
             return HttpNotFound();
         }
 
-        [PageSecurity(SecurityLevel.Admin)]
         public ActionResult TestAdmin()
         {
             return HttpNotFound();
         }
 
-        [PageSecurity(SecurityLevel.User)]
         public ActionResult TestUser()
         {
             return HttpNotFound();
         }
 
-        [PageSecurity(SecurityLevel.Normal)]
         public ActionResult TestNormal()
         {
             return HttpNotFound();

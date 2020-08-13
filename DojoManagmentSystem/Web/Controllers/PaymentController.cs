@@ -13,7 +13,6 @@ using Rotativa;
 using Web.ViewModels;
 using System.Linq.Expressions;
 using Business;
-using Web.Infastructure.Attributes;
 
 namespace Web.Controllers
 {
@@ -51,7 +50,6 @@ namespace Web.Controllers
         }
 
         // GET: Payments/Create
-        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Admin)]
         public ActionResult Create(int id)
         {
             Member member = db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").FirstOrDefault(m => m.Id == id);
@@ -68,7 +66,6 @@ namespace Web.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [PageSecurity(Business.Infastructure.Enums.SecurityLevel.Admin)]
         public ActionResult Create([Bind(Include = "Id,Description,Amount,Date,MemberId,PaymentType,Member")] Payment payment, int membershipId)
         {
             Member member = db.GetDbSet<Member>().Include("DisciplineEnrolledMembers").Include("DisciplineEnrolledMembers.Discipline").First(m => m.Id == payment.MemberID);

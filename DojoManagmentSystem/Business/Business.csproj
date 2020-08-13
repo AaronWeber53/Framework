@@ -63,6 +63,7 @@
     <Compile Include="Infastructure\Enums\SecurityLevel.cs" />
     <Compile Include="Infastructure\Exceptions\LastUserExpection.cs" />
     <Compile Include="Infastructure\IBaseModel.cs" />
+    <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\AttendanceSheet.cs" />
     <Compile Include="Models\ClassSession.cs" />
     <Compile Include="Models\Contact.cs" />

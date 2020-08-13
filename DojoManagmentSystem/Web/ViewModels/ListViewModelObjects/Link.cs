@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using Web.Infastructure.Attributes;
 using Web.Infastructure.Extensions;
 
 namespace Web.ViewModels
@@ -110,10 +109,6 @@ namespace Web.ViewModels
                     string controllerName = controller + "Controller";
                     Assembly asm = typeof(BaseController).Assembly;
                     Type typeTest = asm.GetTypes().FirstOrDefault(t => t.Name.ToLower() == controllerName.ToLower());
-                    if (typeTest.TryGetAttribute(action, true, out PageSecurityAttribute attribute) && attribute.SecurityLevel >= Business.Infastructure.Enums.SecurityLevel.Normal)
-                    {
-                        return attribute.CheckUserHasPermission();
-                    }
                 }
                 catch { }
             }

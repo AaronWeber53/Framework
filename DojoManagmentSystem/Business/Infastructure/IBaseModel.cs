@@ -4,9 +4,9 @@ using System.Data.Entity.Core.Objects.DataClasses;
 
 namespace Business
 {
-    public interface IBaseModel
+    public interface IBaseModel<out Tkey>
     {
-        long Id { get; set; }
+        Tkey Id { get; }
         DateTime? LastModified { get; set; }
         long? LastUserIdModifiedBy { get; set; }
         bool IsArchived { get; set; }

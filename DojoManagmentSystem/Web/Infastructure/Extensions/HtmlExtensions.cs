@@ -1,5 +1,4 @@
 ﻿using Web;
-using Web.Infastructure.Attributes;
 using Web.Infastructure.Extensions;
 using Microsoft.Ajax.Utilities;
 using System;
@@ -33,10 +32,10 @@ namespace Web.Infastructure.Extensions
             string controller = controllerName + "Controller";
             Assembly asm = typeof(BaseController).Assembly;
             Type typeTest = asm.GetTypes().FirstOrDefault(t => t.Name.ToLower() == controller.ToLower());
-            if(typeTest.TryGetAttribute(actionName, true, out PageSecurityAttribute attribute) && attribute.SecurityLevel >= Business.Infastructure.Enums.SecurityLevel.Normal)
-            {
-                return attribute.CheckUserHasPermission();
-            }
+            //if(typeTest.TryGetAttribute(actionName, true, out PageSecurityAttribute attribute) && attribute.SecurityLevel >= Business.Infastructure.Enums.SecurityLevel.Normal)
+            //{
+            //    return attribute.CheckUserHasPermission();
+            //}
             return true;
         }
 
